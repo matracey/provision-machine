@@ -92,6 +92,11 @@ Write-Host 'Installing Visual Studio...'
 Invoke-WebRequest -Uri $Vs2022Url -OutFile "$Downloads\vs_enterprise.exe"
 Invoke-WebRequest -Uri $Vs2022PreviewUrl -OutFile "$Downloads\vs_enterprise_preview.exe"
 
+Write-Host 'Installing WinGet...'
+$WinGetUrl = ((((Invoke-WebRequest 'https://api.github.com/repos/microsoft/winget-cli/releases/latest') | ConvertFrom-Json).assets.browser_download_url) -match 'msix')[0]
+Invoke-WebRequest -Uri $WinGetUrl -OutFile "$Downloads\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
+Add-AppPackage -Path "$Downloads\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -ForceUpdateFromAnyVersion
+
 cmd.exe /C "$Downloads\vs_enterprise.exe" --norestart -p --config "$env:USERPROFILE\.vsconfig"
 cmd.exe /C "$Downloads\vs_enterprise_preview.exe" --norestart -p --config "$env:USERPROFILE\.vsconfig"
 

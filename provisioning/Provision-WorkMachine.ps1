@@ -1,3 +1,16 @@
+param(
+  [Parameter][switch]$Vs,
+  [Parameter][switch]$VsPreview,
+  [Parameter][switch]$VsIntPreview
+)
+
+# If no switches are passed, set the defaults
+if ($Vs -eq $false -and $VsPreview -eq $false -and $VsIntPreview -eq $false) {
+  $Vs = $true
+  $VsPreview = $true
+  $VsIntPreview = $false
+}
+
 Set-ExecutionPolicy Unrestricted -Scope CurrentUser
 Set-ExecutionPolicy Unrestricted
 
@@ -87,13 +100,23 @@ $Downloads = "$env:USERPROFILE\Downloads"
 $Fonts = "$env:USERPROFILE/fonts"
 $Vs2022Url = 'https://c2rsetup.officeapps.live.com/c2r/downloadVS.aspx?sku=enterprise&channel=Release&version=VS2022'
 $Vs2022PreviewUrl = 'https://c2rsetup.officeapps.live.com/c2r/downloadVS.aspx?sku=enterprise&channel=Preview&version=VS2022'
+$Vs2022IntPreviewUrl = 'https://aka.ms/vs/17/intpreview/vs_enterprise.exe'
 
-Write-Host 'Installing Visual Studio...'
-Invoke-WebRequest -Uri $Vs2022Url -OutFile "$Downloads\vs_enterprise.exe"
-Invoke-WebRequest -Uri $Vs2022PreviewUrl -OutFile "$Downloads\vs_enterprise_preview.exe"
+Write-Host 'Installing Visual Studio Enterprise...'
+if ($Vs -eq $true) {
+  Invoke-WebRequest -Uri $Vs2022Url -OutFile "$Downloads\vs_enterprise.exe"
+  Start-Process "$Downloads\vs_enterprise.exe" -ArgumentList '--norestart','-p',"--config $env:USERPROFILE\.vsconfig" -NoNewWindow -Wait
+}
 
-Start-Process "$Downloads\vs_enterprise.exe" -ArgumentList '--norestart','-p',"--config $env:USERPROFILE\.vsconfig" -NoNewWindow -Wait
-Start-Process "$Downloads\vs_enterprise_preview.exe" -ArgumentList '--norestart','-p',"--config $env:USERPROFILE\.vsconfig" -NoNewWindow -Wait
+if ($VsPreview -eq $true) {
+  Invoke-WebRequest -Uri $Vs2022PreviewUrl -OutFile "$Downloads\vs_enterprise_preview.exe"
+  Start-Process "$Downloads\vs_enterprise_preview.exe" -ArgumentList '--norestart','-p',"--config $env:USERPROFILE\.vsconfig" -NoNewWindow -Wait
+}
+
+if ($VsIntPreview -eq $true) {
+  Invoke-WebRequest -Uri $Vs2022IntPreviewUrl -OutFile "$Downloads\vs_enterprise_intpreview.exe"
+  Start-Process "$Downloads\vs_enterprise_intpreview.exe" -ArgumentList '--norestart','-p',"--config $env:USERPROFILE\.vsconfig" -NoNewWindow -Wait
+}
 
 Write-Host 'Installing WinGet...'
 $WinGetUrl = ((((Invoke-WebRequest 'https://api.github.com/repos/microsoft/winget-cli/releases/latest') | ConvertFrom-Json).assets.browser_download_url) -match 'msix')[0]

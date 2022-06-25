@@ -3,6 +3,33 @@
   "$schema": "https://aka.ms/terminal-profiles-schema",
   "actions": [
     {
+      "command": "paste",
+      "keys": "ctrl+v"
+    },
+    {
+      "command": "duplicateTab",
+      "keys": "ctrl+t"
+    },
+    {
+      "command": {
+        "action": "copy",
+        "singleLine": false
+      },
+      "keys": "ctrl+c"
+    },
+    {
+      "command": "find",
+      "keys": "ctrl+shift+f"
+    },
+    {
+      "command": {
+        "action": "splitPane",
+        "split": "auto",
+        "splitMode": "duplicate"
+      },
+      "keys": "alt+shift+d"
+    },
+    {
       "command": {
         "action": "wt",
         "commandline": "new-tab -p \"SourceVNextAlt\" ; split-pane -p \"SourceVNextAlt\"; split-pane -p \"SourceVNextAlt\"; move-focus left"
@@ -21,14 +48,6 @@
       "name": "\ud83d\udcbb SourceVNext"
     },
     {
-      "command": "paste",
-      "keys": "ctrl+v"
-    },
-    {
-      "command": "duplicateTab",
-      "keys": "ctrl+t"
-    },
-    {
       "command": {
         "action": "wt",
         "commandline": "new-tab -p \"PCS\" ; split-pane -p \"PCS\"; split-pane -p \"PCS\"; move-focus left"
@@ -36,6 +55,8 @@
       "name": "\ud83d\udcbb Part Catalog Service (PCS)"
     }
   ],
+  "copyFormatting": "none",
+  "copyOnSelect": false,
   "defaultProfile": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
   "profiles": {
     "defaults": {
@@ -62,7 +83,7 @@
           "face": "MesloLGS NF"
         },
         "guid": "{0caa0dad-35be-5f56-a8ff-afceeeaa6101}",
-        "name": "cmd",
+        "name": "Command Prompt",
         "opacity": 75
       },
       {
@@ -330,9 +351,9 @@
     },
     {
       "background": "#002B36",
-      "black": "#073642",
+      "black": "#002B36",
       "blue": "#268BD2",
-      "brightBlack": "#002B36",
+      "brightBlack": "#073642",
       "brightBlue": "#839496",
       "brightCyan": "#93A1A1",
       "brightGreen": "#586E75",
@@ -353,9 +374,9 @@
     },
     {
       "background": "#FDF6E3",
-      "black": "#073642",
+      "black": "#002B36",
       "blue": "#268BD2",
-      "brightBlack": "#002B36",
+      "brightBlack": "#073642",
       "brightBlue": "#839496",
       "brightCyan": "#93A1A1",
       "brightGreen": "#586E75",

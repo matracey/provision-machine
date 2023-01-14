@@ -1,110 +1,283 @@
 param(
-  [Parameter][Switch]$Vs,
-  [Parameter][Switch]$VsPreview,
-  [Parameter][Switch]$VsIntPreview
+  [Parameter()][Switch]$Winget,
+  [Parameter()][Switch]$WingetPkgs,
+  [Parameter()][Switch]$NodeJs,
+  [Parameter()][Switch]$Scoop,
+  [Parameter()][Switch]$VsRelease,
+  [Parameter()][Switch]$VsPreview,
+  [Parameter()][Switch]$VsIntPrev,
+  [Parameter()][Switch]$Fonts
 )
 
 # If no switches are passed, set the defaults
-if ($Vs -eq $false -and $VsPreview -eq $false -and $VsIntPreview -eq $false) {
-  $Vs = $true
+if ($Winget -eq $false -and $WingetPkgs -eq $false -and $NodeJs -eq $false -and $Scoop -eq $false -and $VsRelease -eq $false -and $VsPreview -eq $false -and $VsIntPrev -eq $false -and $Fonts -eq $false) {
+  $Winget = $false
+  $WingetPkgs = $true
+  $NodeJs = $true
+  $Scoop = $true
+  $VsRelease = $false
   $VsPreview = $true
-  $VsIntPreview = $false
+  $VsIntPrev = $false
+  $Fonts = $true
 }
+
+$Downloads = "$env:USERPROFILE\Downloads"
+$FontsFolder = "$env:USERPROFILE\fonts"
+
+Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name 'fDenyTSConnections' -Value 0
+Enable-NetFirewallRule -DisplayGroup 'Remote Desktop'
+Set-NetFirewallRule -DisplayGroup 'File And Printer Sharing' -Enabled False -Profile Any
 
 Set-ExecutionPolicy Unrestricted -Scope CurrentUser
 Set-ExecutionPolicy Unrestricted
 
-@'
-{
-    "version": "1.0",
-    "components": [
-      "Microsoft.VisualStudio.Component.NuGet",
-      "Microsoft.VisualStudio.Component.Roslyn.Compiler",
-      "Microsoft.Component.MSBuild",
-      "Microsoft.NetCore.Component.Runtime.6.0",
-      "Microsoft.NetCore.Component.SDK",
-      "Microsoft.Net.Component.4.7.2.TargetingPack",
-      "Microsoft.VisualStudio.Component.Roslyn.LanguageServices",
-      "Microsoft.VisualStudio.Component.FSharp",
-      "Microsoft.ComponentGroup.ClickOnce.Publish",
-      "Microsoft.NetCore.Component.DevelopmentTools",
-      "Microsoft.VisualStudio.Component.MSODBC.SQL",
-      "Microsoft.VisualStudio.Component.MSSQL.CMDLnUtils",
-      "Microsoft.VisualStudio.Component.SQL.LocalDB.Runtime",
-      "Microsoft.VisualStudio.Component.SQL.CLR",
-      "Microsoft.VisualStudio.Component.CoreEditor",
-      "Microsoft.VisualStudio.Workload.CoreEditor",
-      "Microsoft.Net.Component.4.8.SDK",
-      "Microsoft.Net.ComponentGroup.DevelopmentPrerequisites",
-      "Microsoft.VisualStudio.Component.TypeScript.TSServer",
-      "Microsoft.VisualStudio.ComponentGroup.WebToolsExtensions",
-      "Microsoft.VisualStudio.Component.JavaScript.TypeScript",
-      "Microsoft.VisualStudio.Component.JavaScript.Diagnostics",
-      "Microsoft.VisualStudio.Component.TextTemplating",
-      "Component.Microsoft.VisualStudio.RazorExtension",
-      "Microsoft.VisualStudio.Component.IISExpress",
-      "Microsoft.VisualStudio.Component.Common.Azure.Tools",
-      "Microsoft.Component.ClickOnce",
-      "Microsoft.VisualStudio.Component.ManagedDesktop.Core",
-      "Microsoft.VisualStudio.Component.SQL.SSDT",
-      "Microsoft.VisualStudio.Component.SQL.DataSources",
-      "Component.Microsoft.Web.LibraryManager",
-      "Component.Microsoft.WebTools.BrowserLink.WebLivePreview",
-      "Microsoft.VisualStudio.ComponentGroup.Web",
-      "Microsoft.VisualStudio.Component.FSharp.WebTemplates",
-      "Microsoft.VisualStudio.Component.DockerTools",
-      "Microsoft.NetCore.Component.Web",
-      "Microsoft.VisualStudio.Component.WebDeploy",
-      "Microsoft.VisualStudio.Component.AppInsights.Tools",
-      "Microsoft.VisualStudio.Component.Web",
-      "Microsoft.Net.Component.4.8.TargetingPack",
-      "Microsoft.Net.ComponentGroup.4.8.DeveloperTools",
-      "Microsoft.VisualStudio.Component.AspNet45",
-      "Microsoft.VisualStudio.Component.AspNet",
-      "Component.Microsoft.VisualStudio.Web.AzureFunctions",
-      "Microsoft.VisualStudio.ComponentGroup.AzureFunctions",
-      "Microsoft.VisualStudio.Component.Debugger.Snapshot",
-      "Microsoft.VisualStudio.ComponentGroup.Web.CloudTools",
-      "Microsoft.VisualStudio.Component.IntelliTrace.FrontEnd",
-      "Microsoft.VisualStudio.Component.DiagnosticTools",
-      "Microsoft.VisualStudio.Component.EntityFramework",
-      "Microsoft.VisualStudio.Component.LiveUnitTesting",
-      "Microsoft.VisualStudio.Component.Debugger.JustInTime",
-      "Component.Microsoft.VisualStudio.LiveShare.2022",
-      "Microsoft.VisualStudio.Component.WslDebugging",
-      "Microsoft.VisualStudio.Component.IntelliCode",
-      "Microsoft.VisualStudio.Workload.NetWeb",
-      "Microsoft.VisualStudio.Component.Azure.ClientLibs",
-      "Microsoft.VisualStudio.ComponentGroup.Azure.Prerequisites",
-      "Microsoft.Component.Azure.DataLake.Tools",
-      "Microsoft.VisualStudio.Component.Azure.ResourceManager.Tools",
-      "Microsoft.VisualStudio.ComponentGroup.Azure.ResourceManager.Tools",
-      "Microsoft.VisualStudio.Component.Azure.AuthoringTools",
-      "Microsoft.VisualStudio.Component.Azure.Waverton.BuildTools",
-      "Microsoft.VisualStudio.Component.Azure.Compute.Emulator",
-      "Microsoft.VisualStudio.Component.Azure.Waverton",
-      "Microsoft.VisualStudio.ComponentGroup.Azure.CloudServices",
-      "Microsoft.VisualStudio.Component.Azure.ServiceFabric.Tools",
-      "Microsoft.VisualStudio.Component.Azure.Powershell",
-      "Microsoft.VisualStudio.Workload.Azure",
-      "Microsoft.VisualStudio.Component.Node.Tools",
-      "Microsoft.VisualStudio.Workload.Node",
-      "Microsoft.VisualStudio.Component.ManagedDesktop.Prerequisites",
-      "Microsoft.ComponentGroup.Blend",
-      "Microsoft.VisualStudio.Component.DotNetModelBuilder",
-      "Microsoft.VisualStudio.Workload.ManagedDesktop"
-    ]
-  }
-'@ | Out-File "$env:USERPROFILE\.vsconfig"
-$Downloads = "$env:USERPROFILE\Downloads"
-$Fonts = "$env:USERPROFILE/fonts"
-$Vs2022Url = 'https://c2rsetup.officeapps.live.com/c2r/downloadVS.aspx?sku=enterprise&channel=Release&version=VS2022'
-$Vs2022PreviewUrl = 'https://c2rsetup.officeapps.live.com/c2r/downloadVS.aspx?sku=enterprise&channel=Preview&version=VS2022'
-$Vs2022IntPreviewUrl = 'https://aka.ms/vs/17/intpreview/vs_enterprise.exe'
+if ($Winget -eq $true) {
+  Write-Host 'Installing winget...'
+  $WingetUrl = ((((Invoke-WebRequest 'https://api.github.com/repos/microsoft/winget-cli/releases/latest') | ConvertFrom-Json).assets.browser_download_url) -match 'msix')[0]
+  Invoke-WebRequest -Uri $WingetUrl -OutFile "$Downloads\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
+  Add-AppPackage -Path "$Downloads\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -ForceUpdateFromAnyVersion
+}
 
-Write-Host 'Installing Visual Studio Enterprise...'
-if ($Vs -eq $true) {
-  Invoke-WebRequest -Uri $Vs2022Url -OutFile "$Downloads\vs_enterprise.exe"
+if ($WingetPkgs -eq $true) {
+  Write-Host 'Installing winget packages...'
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=7zip.7zip -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Adobe.Acrobat.Reader.64-bit -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Audacity.Audacity -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=DBBrowserForSQLite.DBBrowserForSQLite -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Discord.Discord -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=File-New-Project.EarTrumpet -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Git.Git -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=NordPassTeam.NordPass -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=NordVPN.NordVPN -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=GitHub.cli -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=GitHub.GitHubDesktop -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=GitHub.GitLFS -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=GNE.DualMonitorTools -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Google.Chrome -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Iterate.Cyberduck -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=JanDeDobbeleer.OhMyPosh -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=LLVM.LLVM -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.AzureCLI -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.AzureDataStudio -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.AzureFunctionsCoreTools -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.AzureStorageEmulator -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.AzureStorageExplorer -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.DotNet.SDK.7 -e --force
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.DotNet.SDK.6 -e --force
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.Edge -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.Edge.Beta -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.EdgeWebView2Runtime -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.GitCredentialManagerCore -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.Office -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.OneDrive -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.OpenJDK.11 -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.OpenJDK.16 -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.OpenJDK.17 -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.PowerShell -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.PowerToys -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.RemoteDesktopClient -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.SQLServerManagementStudio -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VCRedist.2015+.x64 -e --force
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VCRedist.2015+.x86 -e --force
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VCRedist.2013.x64 -e --force
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VCRedist.2013.x86 -e --force
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VCRedist.2012.x64 -e --force
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VCRedist.2012.x86 -e --force
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VCRedist.2010.x64 -e --force
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VCRedist.2010.x86 -e --force
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VCRedist.2008.x64 -e --force
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VCRedist.2008.x86 -e --force
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VCRedist.2005.x64 -e --force
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VCRedist.2005.x86 -e --force
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VisualStudioCode -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VisualStudioCode.Insiders -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.WindowsTerminal -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Mozilla.Firefox -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Mp3tag.Mp3tag -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=NordPassTeam.NordPass -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=NordVPN.NordVPN -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Notepad++.Notepad++ -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=OpenWhisperSystems.Signal -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=PeterPawlowski.foobar2000 -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Postman.Postman -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Rufus.Rufus -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=SomePythonThings.WingetUIStore -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Spotify.Spotify -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=tailscale.tailscale -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=TIDALMusicAS.TIDAL -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=VideoLAN.VLC -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Volta.Volta -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=WinDirStat.WinDirStat -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=WinSCP.WinSCP -e
+  winget install -s msstore -h --accept-package-agreements --accept-source-agreements --id=9P8DVF1XW02V -e # Affinity Photo 2
+  winget install -s msstore -h --accept-package-agreements --accept-source-agreements --id=9N2D0P16C80H -e # Affinity Designer 2
+  winget install -s msstore -h --accept-package-agreements --accept-source-agreements --id=9NTV2DZ11KD9 -e # Affinity Publisher 2
+  winget install -s msstore -h --accept-package-agreements --accept-source-agreements --id=9NBDXK71NK08 -e # WhatsApp Beta
+}
+
+if ($NodeJs -eq $true) {
+  Write-Host 'Installing nodejs...'
+
+  $NodeTools = (
+    'node@18',
+    'node@19',
+    'npm@8',
+    '@angular/cli',
+    'eslint',
+    'playwright',
+    'prettier',
+    'typescript',
+    'vsts-npm-auth'
+  )
+
+  & "$env:PROGRAMFILES\Volta\volta.exe" install @NodeTools
+}
+
+if ($Scoop -eq $true) {
+  Write-Host 'Installing scoop...'
+  Invoke-WebRequest -useb get.scoop.sh -OutFile 'install.ps1'
+  .\install.ps1 -RunAsAdmin
+  Remove-Item 'install.ps1'
+
+  $ScoopPrereqs = (
+    '7zip',
+    'git',
+    'innounp',
+    'wixtoolset',
+    'lessmsi',
+    'dark'
+  )
+
+  $ScoopApps = $(
+    'azure-functions-core-tools',
+    'php',
+    'servicebusexplorer',
+    'cacert',
+    'chromedriver',
+    'cru',
+    'curl',
+    'edgedriver',
+    'ffmpeg',
+    'geckodriver',
+    'git-filter-repo',
+    'nuget',
+    'pyenv',
+    'resharper-clt',
+    'sudo',
+    'sysinternals',
+    'vim',
+    'wget',
+    'yt-dlp'
+  )
+
+  scoop install @ScoopPrereqs
+
+  & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" config SCOOP_REPO 'https://github.com/Ash258/Scoop-Core'
+  & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" update
+  & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" status
+  & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" checkup
+
+  & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" install aria2
+
+  & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" bucket add extras
+
+  # Optional buckets, disabled for now.
+  # & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" bucket add games
+  # & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" bucket add 'ash258.ash258' 'https://github.com/Ash258/Shovel-Ash258.git'
+  # & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" bucket add emulators 'https://github.com/hermanjustnu/scoop-emulators.git'
+
+  scoop install @ScoopApps
+}
+
+if ($VsRelease -eq $true -or $VsPreview -eq $true -or $VsIntPrev -eq $true) {
+  Write-Host 'Installing Visual Studio Enterprise...'
+  $Vs2022ReleaseUrl = 'https://c2rsetup.officeapps.live.com/c2r/downloadVS.aspx?sku=enterprise&channel=Release&version=VS2022'
+  $Vs2022PreviewUrl = 'https://c2rsetup.officeapps.live.com/c2r/downloadVS.aspx?sku=enterprise&channel=Preview&version=VS2022'
+  $Vs2022IntPrevUrl = 'https://aka.ms/vs/17/intpreview/vs_enterprise.exe'
+
+  $VsComponents = @(
+    'Component.Microsoft.VisualStudio.LiveShare.2022',
+    'Component.Microsoft.VisualStudio.RazorExtension',
+    'Component.Microsoft.VisualStudio.Web.AzureFunctions',
+    'Component.Microsoft.Web.LibraryManager',
+    'Component.Microsoft.WebTools.BrowserLink.WebLivePreview',
+    'Microsoft.Component.Azure.DataLake.Tools',
+    'Microsoft.Component.ClickOnce',
+    'Microsoft.Component.MSBuild',
+    'Microsoft.ComponentGroup.Blend',
+    'Microsoft.ComponentGroup.ClickOnce.Publish',
+    'Microsoft.Net.Component.4.7.2.TargetingPack',
+    'Microsoft.Net.Component.4.8.SDK',
+    'Microsoft.Net.Component.4.8.TargetingPack',
+    'Microsoft.Net.ComponentGroup.4.8.DeveloperTools',
+    'Microsoft.Net.ComponentGroup.DevelopmentPrerequisites',
+    'Microsoft.NetCore.Component.DevelopmentTools',
+    'Microsoft.NetCore.Component.Runtime.6.0',
+    'Microsoft.NetCore.Component.SDK',
+    'Microsoft.NetCore.Component.Web',
+    'Microsoft.VisualStudio.Component.AppInsights.Tools',
+    'Microsoft.VisualStudio.Component.AspNet',
+    'Microsoft.VisualStudio.Component.AspNet45',
+    'Microsoft.VisualStudio.Component.Azure.AuthoringTools',
+    'Microsoft.VisualStudio.Component.Azure.ClientLibs',
+    'Microsoft.VisualStudio.Component.Azure.Compute.Emulator',
+    'Microsoft.VisualStudio.Component.Azure.Powershell',
+    'Microsoft.VisualStudio.Component.Azure.ResourceManager.Tools',
+    'Microsoft.VisualStudio.Component.Azure.ServiceFabric.Tools',
+    'Microsoft.VisualStudio.Component.Azure.Waverton',
+    'Microsoft.VisualStudio.Component.Azure.Waverton.BuildTools',
+    'Microsoft.VisualStudio.Component.Common.Azure.Tools',
+    'Microsoft.VisualStudio.Component.CoreEditor',
+    'Microsoft.VisualStudio.Component.Debugger.JustInTime',
+    'Microsoft.VisualStudio.Component.Debugger.Snapshot',
+    'Microsoft.VisualStudio.Component.DiagnosticTools',
+    'Microsoft.VisualStudio.Component.DockerTools',
+    'Microsoft.VisualStudio.Component.DotNetModelBuilder',
+    'Microsoft.VisualStudio.Component.EntityFramework',
+    'Microsoft.VisualStudio.Component.FSharp',
+    'Microsoft.VisualStudio.Component.FSharp.WebTemplates',
+    'Microsoft.VisualStudio.Component.IISExpress',
+    'Microsoft.VisualStudio.Component.IntelliCode',
+    'Microsoft.VisualStudio.Component.IntelliTrace.FrontEnd',
+    'Microsoft.VisualStudio.Component.JavaScript.Diagnostics',
+    'Microsoft.VisualStudio.Component.JavaScript.TypeScript',
+    'Microsoft.VisualStudio.Component.LiveUnitTesting',
+    'Microsoft.VisualStudio.Component.MSODBC.SQL',
+    'Microsoft.VisualStudio.Component.MSSQL.CMDLnUtils',
+    'Microsoft.VisualStudio.Component.ManagedDesktop.Core',
+    'Microsoft.VisualStudio.Component.ManagedDesktop.Prerequisites',
+    'Microsoft.VisualStudio.Component.Node.Tools',
+    'Microsoft.VisualStudio.Component.NuGet',
+    'Microsoft.VisualStudio.Component.Roslyn.Compiler',
+    'Microsoft.VisualStudio.Component.Roslyn.LanguageServices',
+    'Microsoft.VisualStudio.Component.SQL.CLR',
+    'Microsoft.VisualStudio.Component.SQL.DataSources',
+    'Microsoft.VisualStudio.Component.SQL.LocalDB.Runtime',
+    'Microsoft.VisualStudio.Component.SQL.SSDT',
+    'Microsoft.VisualStudio.Component.TextTemplating',
+    'Microsoft.VisualStudio.Component.TypeScript.TSServer',
+    'Microsoft.VisualStudio.Component.Web',
+    'Microsoft.VisualStudio.Component.WebDeploy',
+    'Microsoft.VisualStudio.Component.WslDebugging',
+    'Microsoft.VisualStudio.ComponentGroup.Azure.CloudServices',
+    'Microsoft.VisualStudio.ComponentGroup.Azure.Prerequisites',
+    'Microsoft.VisualStudio.ComponentGroup.Azure.ResourceManager.Tools',
+    'Microsoft.VisualStudio.ComponentGroup.AzureFunctions',
+    'Microsoft.VisualStudio.ComponentGroup.Web',
+    'Microsoft.VisualStudio.ComponentGroup.Web.CloudTools',
+    'Microsoft.VisualStudio.ComponentGroup.WebToolsExtensions',
+    'Microsoft.VisualStudio.Workload.Azure',
+    'Microsoft.VisualStudio.Workload.CoreEditor',
+    'Microsoft.VisualStudio.Workload.ManagedDesktop',
+    'Microsoft.VisualStudio.Workload.NetWeb',
+    'Microsoft.VisualStudio.Workload.Node'
+  )
+
+  @{ version = '1.0'; components = $VsComponents } | ConvertTo-Json | Out-File "$env:USERPROFILE\.vsconfig"
+}
+
+if ($VsRelease -eq $true) {
+  Invoke-WebRequest -Uri $Vs2022ReleaseUrl -OutFile "$Downloads\vs_enterprise.exe"
   Start-Process "$Downloads\vs_enterprise.exe" -ArgumentList '--norestart', '-p', "--config $env:USERPROFILE\.vsconfig" -NoNewWindow -Wait
 }
 
@@ -113,117 +286,30 @@ if ($VsPreview -eq $true) {
   Start-Process "$Downloads\vs_enterprise_preview.exe" -ArgumentList '--norestart', '-p', "--config $env:USERPROFILE\.vsconfig" -NoNewWindow -Wait
 }
 
-if ($VsIntPreview -eq $true) {
-  Invoke-WebRequest -Uri $Vs2022IntPreviewUrl -OutFile "$Downloads\vs_enterprise_intpreview.exe"
+if ($VsIntPrev -eq $true) {
+  Invoke-WebRequest -Uri $Vs2022IntPrevUrl -OutFile "$Downloads\vs_enterprise_intpreview.exe"
   Start-Process "$Downloads\vs_enterprise_intpreview.exe" -ArgumentList '--norestart', '-p', "--config $env:USERPROFILE\.vsconfig" -NoNewWindow -Wait
 }
 
-Write-Host 'Installing winget...'
-$WingetUrl = ((((Invoke-WebRequest 'https://api.github.com/repos/microsoft/winget-cli/releases/latest') | ConvertFrom-Json).assets.browser_download_url) -match 'msix')[0]
-Invoke-WebRequest -Uri $WingetUrl -OutFile "$Downloads\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
-Add-AppPackage -Path "$Downloads\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -ForceUpdateFromAnyVersion
+if ($Fonts -eq $true) {
+  Write-Host 'Installing fonts...'
 
-Write-Host 'Installing winget packages...'
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=7zip.7zip -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Adobe.Acrobat.Reader.64-bit -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Audacity.Audacity -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=DBBrowserForSQLite.DBBrowserForSQLite -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Discord.Discord -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=ExpressVPN.ExpressVPN -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=File-New-Project.EarTrumpet -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Git.Git -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=GitHub.cli -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=GitHub.GitHubDesktop -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=GitHub.GitLFS -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=GNE.DualMonitorTools -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Google.Chrome -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Google.ChromeRemoteDesktop -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Iterate.Cyberduck -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=JanDeDobbeleer.OhMyPosh -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=LLVM.LLVM -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.AzureCLI -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.AzureDataStudio -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.AzureFunctionsCoreTools -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.AzureStorageEmulator -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.AzureStorageExplorer -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.Edge -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.Edge.Beta -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.EdgeWebView2Runtime -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.GitCredentialManagerCore -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.Office -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.OneDrive -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.OpenJDK.11 -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.OpenJDK.16 -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.OpenJDK.17 -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.PowerShell -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.PowerToys -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.RemoteDesktopClient -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.SQLServerManagementStudio -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VC++2005Redist-x64 -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VC++2005Redist-x86 -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VC++2008Redist-x64 -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VC++2008Redist-x86 -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VC++2010Redist-x64 -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VC++2010Redist-x86 -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VC++2012Redist-x64 -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VC++2012Redist-x86 -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VC++2013Redist-x64 -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VC++2013Redist-x86 -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VC++2015-2022Redist-x64 -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VC++2015-2022Redist-x86 -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VisualStudioCode -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VisualStudioCode.Insiders -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.WindowsTerminal -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Mozilla.Firefox -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Mp3tag.Mp3tag -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Notepad++.Notepad++ -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=OpenWhisperSystems.Signal -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Postman.Postman -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Rufus.Rufus -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=TIDALMusicAS.TIDAL -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=VideoLAN.VLC -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Volta.Volta -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=WhatsApp.WhatsApp -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=WinDirStat.WinDirStat -e
-winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=WinSCP.WinSCP -e
+  if (!(Test-Path $FontsFolder)) {
+    mkdir "$FontsFolder"
+  }
 
-Write-Host 'Installing nodejs...'
-& "$env:PROGRAMFILES\Volta\volta.exe" install node@17 node@16 npm@7 @angular/cli eslint playwright prettier typescript vsts-npm-auth
+  if (!(Test-Path "$FontsFolder/files")) {
+    mkdir "$FontsFolder/files"
+  }
 
-Write-Host 'Installing scoop...'
-Invoke-WebRequest -useb get.scoop.sh -OutFile 'install.ps1'
-.\install.ps1 -RunAsAdmin
-Remove-Item 'install.ps1'
+  if (!(Test-Path "$FontsFolder/google-fonts")) {
+    git clone --depth 1 https://github.com/google/fonts.git "$env:USERPROFILE/fonts/google-fonts"
+  }
+  Get-ChildItem -Path "$FontsFolder/google-fonts" -Include *.otf, *.ttf -Recurse | Move-Item -Destination "$FontsFolder/files"
 
-& "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" install aria2
 
-& "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" bucket add dorado https://github.com/chawyehsu/dorado
-& "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" bucket add extras
-& "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" bucket add games
-& "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" bucket add main
-& "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" bucket add nerd-fonts
-& "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" bucket add nonportable
-& "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" bucket add versions
-
-& "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" install azure-functions-core-tools cacert chromedriver cru curl edgedriver ffmpeg geckodriver git-filter-repo nuget pyenv php resharper-clt servicebusexplorer sudo vim wget youtube-dl
-
-Write-Host 'Installing fonts...'
-
-if (!(Test-Path $Fonts)) {
-  mkdir "$Fonts"
+  if (!(Test-Path "$FontsFolder/nerd-fonts")) {
+    git clone --depth 1 https://github.com/ryanoasis/nerd-fonts.git "$env:USERPROFILE/fonts/nerd-fonts"
+  }
+  Get-ChildItem -Path "$FontsFolder/nerd-fonts" -Include *.otf, *.ttf -Recurse | Move-Item -Destination "$FontsFolder/files"
 }
-
-if (!(Test-Path "$Fonts/files")) {
-  mkdir "$Fonts/files"
-}
-
-if (!(Test-Path "$Fonts/google-fonts")) {
-  git clone --depth 1 https://github.com/google/fonts.git "$env:USERPROFILE/fonts/google-fonts"
-}
-Get-ChildItem -Path "$Fonts/google-fonts" -Include *.otf, *.ttf -Recurse | Move-Item -Destination "$Fonts/files"
-
-
-if (!(Test-Path "$Fonts/nerd-fonts")) {
-  git clone --depth 1 https://github.com/ryanoasis/nerd-fonts.git "$env:USERPROFILE/fonts/nerd-fonts"
-}
-Get-ChildItem -Path "$Fonts/nerd-fonts" -Include *.otf, *.ttf -Recurse | Move-Item -Destination "$Fonts/files"

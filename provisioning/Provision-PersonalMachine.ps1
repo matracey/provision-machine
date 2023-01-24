@@ -1,4 +1,5 @@
 param(
+  [Parameter()][Switch]$Cfg,
   [Parameter()][Switch]$Winget,
   [Parameter()][Switch]$WingetPkgs,
   [Parameter()][Switch]$NodeJs,
@@ -10,7 +11,8 @@ param(
 )
 
 # If no switches are passed, set the defaults
-if ($Winget -eq $false -and $WingetPkgs -eq $false -and $NodeJs -eq $false -and $Scoop -eq $false -and $VsRelease -eq $false -and $VsPreview -eq $false -and $VsIntPrev -eq $false -and $Fonts -eq $false) {
+if ($Cfg -eq $false -and $Winget -eq $false -and $WingetPkgs -eq $false -and $NodeJs -eq $false -and $Scoop -eq $false -and $VsRelease -eq $false -and $VsPreview -eq $false -and $VsIntPrev -eq $false -and $Fonts -eq $false) {
+  $Cfg = $false
   $Winget = $false
   $WingetPkgs = $true
   $NodeJs = $true
@@ -24,12 +26,48 @@ if ($Winget -eq $false -and $WingetPkgs -eq $false -and $NodeJs -eq $false -and 
 $Downloads = "$env:USERPROFILE\Downloads"
 $FontsFolder = "$env:USERPROFILE\fonts"
 
-Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name 'fDenyTSConnections' -Value 0
-Enable-NetFirewallRule -DisplayGroup 'Remote Desktop'
-Set-NetFirewallRule -DisplayGroup 'File And Printer Sharing' -Enabled False -Profile Any
+if ($Cfg -eq $true) {
+  # Execution Policy
+  Write-Host 'Setting execution policy to unrestricted.'
+  Set-ExecutionPolicy Unrestricted -Scope CurrentUser
+  Set-ExecutionPolicy Unrestricted
 
-Set-ExecutionPolicy Unrestricted -Scope CurrentUser
-Set-ExecutionPolicy Unrestricted
+  # Remote Desktop
+  Write-Host 'Enabling Remote Desktop.'
+  Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name 'fDenyTSConnections' -Value 0
+  Enable-NetFirewallRule -DisplayGroup 'Remote Desktop'
+
+  # File Sharing
+  Write-Host 'Enabling file and printer sharing.'
+  Set-NetFirewallRule -DisplayGroup 'File And Printer Sharing' -Enabled True -Profile Any
+  Set-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' -Name 'LongPathsEnabled' -Value 1
+
+  # Windows Defender Exceptions
+  Write-Host 'Adding Windows Defender exclusions.'
+  Add-MpPreference -ExclusionPath "$env:USERPROFILE\scoop"
+  Add-MpPreference -ExclusionPath "$env:PROGRAMFILES\Volta"
+  Add-MpPreference -ExclusionPath "$env:LOCALAPPDATA\Volta"
+
+  # UAC Settings to Level 1
+  Write-Host 'Setting UAC to Level 1.'
+  Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'ConsentPromptBehaviorAdmin' -Value 5
+  Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'ConsentPromptBehaviorUser' -Value 3
+  Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'EnableInstallerDetection' -Value 1
+  Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'EnableLUA' -Value 1
+  Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'EnableVirtualization' -Value 1
+  Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'PromptOnSecureDesktop' -Value 0
+  Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'ValidateAdminCodeSignatures' -Value 0
+  Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'FilterAdministratorToken' -Value 0
+
+  # Developer Mode
+  Write-Host 'Enabling Developer Mode.'
+  $DeveloperModeRegistryKeyPath = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock'
+  if (-not(Test-Path -Path $DeveloperModeRegistryKeyPath)) {
+    New-Item -Path $DeveloperModeRegistryKeyPath -ItemType Directory -Force
+  }
+
+  Set-ItemProperty -Path $DeveloperModeRegistryKeyPath -Name AllowDevelopmentWithoutDevLicense -Type DWord -Value 1
+}
 
 if ($Winget -eq $true) {
   Write-Host 'Installing winget...'
@@ -187,6 +225,12 @@ if ($Scoop -eq $true) {
   # & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" bucket add emulators 'https://github.com/hermanjustnu/scoop-emulators.git'
 
   scoop install @ScoopApps
+}
+
+if ($Cfg -eq $true -and (Get-Command git -ErrorAction SilentlyContinue)) {
+  Write-Host 'Configuring git...'
+  git config --system core.longpaths true
+  git config --global credential.helper manager
 }
 
 if ($VsRelease -eq $true -or $VsPreview -eq $true -or $VsIntPrev -eq $true) {

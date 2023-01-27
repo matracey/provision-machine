@@ -196,7 +196,6 @@ if ($Winget -eq $true) {
 
 if ($WingetPkgs -eq $true) {
   Write-Host 'Installing winget packages...'
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=7zip.7zip -e
   winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Adobe.Acrobat.Reader.64-bit -e
   winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Audacity.Audacity -e
   winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=DBBrowserForSQLite.DBBrowserForSQLite -e
@@ -213,6 +212,7 @@ if ($WingetPkgs -eq $true) {
   winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Iterate.Cyberduck -e
   winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=JanDeDobbeleer.OhMyPosh -e
   winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=LLVM.LLVM -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=M2Team.NanaZip -e
   winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.AzureCLI -e
   winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.AzureDataStudio -e
   winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.AzureFunctionsCoreTools -e

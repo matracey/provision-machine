@@ -45,10 +45,128 @@ if ($Cfg -eq $true) {
   Set-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' -Name 'LongPathsEnabled' -Value 1
 
   # Windows Defender Exceptions
-  Write-Host 'Adding Windows Defender exclusions.'
-  Add-MpPreference -ExclusionPath "$env:USERPROFILE\scoop"
-  Add-MpPreference -ExclusionPath "$env:PROGRAMFILES\Volta"
-  Add-MpPreference -ExclusionPath "$env:LOCALAPPDATA\Volta"
+  $PathExclusions = (
+    'C:\Program Files (x86)\Microsoft SDKs',
+    'C:\Program Files (x86)\Microsoft SDKs\NuGetPackages',
+    'C:\Program Files (x86)\Microsoft Visual Studio 10.0',
+    'C:\Program Files (x86)\Microsoft Visual Studio 14.0',
+    'C:\Program Files (x86)\Microsoft Visual Studio',
+    'C:\Program Files (x86)\MSBuild',
+    'C:\Program Files\Microsoft Visual Studio\2022\Community',
+    'C:\Program Files\Microsoft Visual Studio\2022\Enterprise',
+    'C:\Program Files\Microsoft Visual Studio\2022\IntPreview',
+    'C:\Program Files\Microsoft Visual Studio\2022\Preview',
+    'C:\Program Files\Microsoft Visual Studio\2022\Professional',
+    'C:\ProgramData\Microsoft\VisualStudio\Packages',
+    'C:\Windows\assembly',
+    'C:\Windows\Microsoft.NET',
+    "$($env:LOCALAPPDATA)\Microsoft\VisualStudio",
+    "$($env:LOCALAPPDATA)\Volta",
+    "$($env:PROGRAMFILES)\Volta",
+    "$($env:USERPROFILE)\scoop"
+  )
+
+  $ProcessExclusions = $(
+    # VS
+    'vshost-clr2.exe',
+    'VSInitializer.exe',
+    'VSIXInstaller.exe',
+    'VSLaunchBrowser.exe',
+    'vsn.exe',
+    'VsRegEdit.exe',
+    'VSWebHandler.exe',
+    'VSWebLauncher.exe',
+    'XDesProc.exe',
+    'Blend.exe',
+    'DDConfigCA.exe',
+    'devenv.exe',
+    'FeedbackCollector.exe',
+    'Microsoft.VisualStudio.Web.Host.exe',
+    'mspdbsrv.exe',
+    'MSTest.exe',
+    'PerfWatson2.exe',
+    'Publicize.exe',
+    'QTAgent.exe',
+    'QTAgent_35.exe',
+    'QTAgent_40.exe',
+    'QTAgent32.exe',
+    'QTAgent32_35.exe',
+    'QTAgent32_40.exe',
+    'QTDCAgent.exe',
+    'QTDCAgent32.exe',
+    'StorePID.exe',
+    'T4VSHostProcess.exe',
+    'TailoredDeploy.exe',
+    'TCM.exe',
+    'TextTransform.exe',
+    'TfsLabConfig.exe',
+    'UserControlTestContainer.exe',
+    'vb7to8.exe',
+    'VcxprojReader.exe',
+    'VsDebugWERHelper.exe',
+    'VSFinalizer.exe',
+    'VsGa.exe',
+    'VSHiveStub.exe',
+    'vshost.exe',
+    'vshost32.exe',
+    'vshost32-clr2.exe',
+
+    # VS Code
+    'Code - Insiders.exe',
+    'Code.exe',
+
+    # Runtimes, build tools
+    'dotnet.exe',
+    'mono.exe',
+    'mono-sgen.exe',
+    'java.exe',
+    'java64.exe',
+    'msbuild.exe',
+    'volta.exe',
+    'node.exe',
+    'node.js',
+    'perfwatson2.exe',
+    'ServiceHub.Host.Node.x86.exe',
+    'vbcscompiler.exe',
+    'nuget.exe',
+
+    # VCS
+    'git.exe',
+
+    # Shells
+    'git-bash.exe',
+    'bash.exe',
+    'powershell.exe',
+    'pwsh.exe',
+    'wsl.exe'
+  )
+
+  Write-Host 'Creating Windows Defender exclusions for common Visual Studio folders and processes.'
+  $ProjectsFolder = 'C:\source'
+
+  Write-Verbose ''
+  Write-Verbose "Adding Path Exclusion: $ProjectsFolder"
+  Add-MpPreference -ExclusionPath $ProjectsFolder
+
+  foreach ($Exclusion in $PathExclusions | Where-Object { Test-Path $_ }) {
+    Write-Verbose "Adding Path Exclusion: $Exclusion"
+    Add-MpPreference -ExclusionPath $Exclusion
+  }
+
+  foreach ($Exclusion in $ProcessExclusions) {
+    Write-Verbose "Adding Process Exclusion: $Exclusion"
+    Add-MpPreference -ExclusionProcess $Exclusion
+  }
+
+  Write-Host ''
+  Write-Host 'Windows Defender Exclusions:'
+
+  $Prefs = Get-MpPreference
+  $Prefs.ExclusionPath
+  $Prefs.ExclusionProcess
+  Write-Host ''
+  Write-Host ''
+
 
   # UAC Settings to Level 1
   Write-Host 'Setting UAC to Level 1.'

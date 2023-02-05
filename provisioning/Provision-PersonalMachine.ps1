@@ -23,168 +23,201 @@ if ($Cfg -eq $false -and $Winget -eq $false -and $WingetPkgs -eq $false -and $No
   $Fonts = $true
 }
 
+<#
+.SYNOPSIS
+Tries to run a script block with elevated permissions.
+
+.DESCRIPTION
+Tries to run a script block with elevated permissions. If the current session is already elevated, the script block is run directly. If the current session is not elevated, the script is re-run with elevated permissions.
+
+.PARAMETER ScriptBlock
+The script block to run.
+
+.EXAMPLE
+Try-RunBlockElevated { Get-ChildItem 'C:\' }
+
+.NOTES
+This function is based on the `Elevate` function from the `InvokeBuild` module:
+#>
+function Invoke-BlockElevated {
+  param ([scriptblock] $ScriptBlock, [string]$NotifyText = 'Restarting as administrator.')
+
+  if ($IsWindows) {
+    if (([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+      Invoke-Command -ScriptBlock $ScriptBlock
+    } else {
+      Write-Host $NotifyText
+      Start-Process powershell.exe -Verb RunAs -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `"$ScriptBlock`""
+    }
+  } else {
+    Invoke-Command -ScriptBlock $ScriptBlock
+  }
+}
+
 $Downloads = "$env:USERPROFILE\Downloads"
 $FontsFolder = "$env:USERPROFILE\fonts"
 
 if ($Cfg -eq $true) {
-  # Execution Policy
-  Write-Host 'Setting execution policy to unrestricted.'
-  Set-ExecutionPolicy Unrestricted -Scope CurrentUser
-  Set-ExecutionPolicy Unrestricted
+  Invoke-BlockElevated -NotifyText 'Elevation required to apply cfg. Attempting to elevate...' -ScriptBlock {
+    # Execution Policy
+    Write-Host 'Setting execution policy to unrestricted.'
+    Set-ExecutionPolicy Unrestricted -Scope CurrentUser
+    Set-ExecutionPolicy Unrestricted
 
-  # Remote Desktop
-  Write-Host 'Enabling Remote Desktop.'
-  Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name 'fDenyTSConnections' -Value 0
-  Enable-NetFirewallRule -DisplayGroup 'Remote Desktop'
+    # Remote Desktop
+    Write-Host 'Enabling Remote Desktop.'
+    Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name 'fDenyTSConnections' -Value 0
+    Enable-NetFirewallRule -DisplayGroup 'Remote Desktop'
 
-  # File Sharing
-  Write-Host 'Enabling file and printer sharing.'
-  Set-NetFirewallRule -DisplayGroup 'File And Printer Sharing' -Enabled True -Profile Any
-  Set-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' -Name 'LongPathsEnabled' -Value 1
+    # File Sharing
+    Write-Host 'Enabling file and printer sharing.'
+    Set-NetFirewallRule -DisplayGroup 'File And Printer Sharing' -Enabled True -Profile Any
+    Set-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' -Name 'LongPathsEnabled' -Value 1
 
-  # Windows Defender Exceptions
-  $PathExclusions = (
-    'C:\Program Files (x86)\Microsoft SDKs',
-    'C:\Program Files (x86)\Microsoft SDKs\NuGetPackages',
-    'C:\Program Files (x86)\Microsoft Visual Studio 10.0',
-    'C:\Program Files (x86)\Microsoft Visual Studio 14.0',
-    'C:\Program Files (x86)\Microsoft Visual Studio',
-    'C:\Program Files (x86)\MSBuild',
-    'C:\Program Files\Microsoft Visual Studio\2022\Community',
-    'C:\Program Files\Microsoft Visual Studio\2022\Enterprise',
-    'C:\Program Files\Microsoft Visual Studio\2022\IntPreview',
-    'C:\Program Files\Microsoft Visual Studio\2022\Preview',
-    'C:\Program Files\Microsoft Visual Studio\2022\Professional',
-    'C:\ProgramData\Microsoft\VisualStudio\Packages',
-    'C:\Windows\assembly',
-    'C:\Windows\Microsoft.NET',
-    "$($env:LOCALAPPDATA)\Microsoft\VisualStudio",
-    "$($env:LOCALAPPDATA)\Volta",
-    "$($env:PROGRAMFILES)\Volta",
-    "$($env:USERPROFILE)\scoop"
-  )
+    # Windows Defender Exceptions
+    $PathExclusions = (
+      'C:\Program Files (x86)\Microsoft SDKs',
+      'C:\Program Files (x86)\Microsoft SDKs\NuGetPackages',
+      'C:\Program Files (x86)\Microsoft Visual Studio 10.0',
+      'C:\Program Files (x86)\Microsoft Visual Studio 14.0',
+      'C:\Program Files (x86)\Microsoft Visual Studio',
+      'C:\Program Files (x86)\MSBuild',
+      'C:\Program Files\Microsoft Visual Studio\2022\Community',
+      'C:\Program Files\Microsoft Visual Studio\2022\Enterprise',
+      'C:\Program Files\Microsoft Visual Studio\2022\IntPreview',
+      'C:\Program Files\Microsoft Visual Studio\2022\Preview',
+      'C:\Program Files\Microsoft Visual Studio\2022\Professional',
+      'C:\ProgramData\Microsoft\VisualStudio\Packages',
+      'C:\Windows\assembly',
+      'C:\Windows\Microsoft.NET',
+      "$($env:LOCALAPPDATA)\Microsoft\VisualStudio",
+      "$($env:LOCALAPPDATA)\Volta",
+      "$($env:PROGRAMFILES)\Volta",
+      "$($env:USERPROFILE)\scoop"
+    )
 
-  $ProcessExclusions = $(
-    # VS
-    'vshost-clr2.exe',
-    'VSInitializer.exe',
-    'VSIXInstaller.exe',
-    'VSLaunchBrowser.exe',
-    'vsn.exe',
-    'VsRegEdit.exe',
-    'VSWebHandler.exe',
-    'VSWebLauncher.exe',
-    'XDesProc.exe',
-    'Blend.exe',
-    'DDConfigCA.exe',
-    'devenv.exe',
-    'FeedbackCollector.exe',
-    'Microsoft.VisualStudio.Web.Host.exe',
-    'mspdbsrv.exe',
-    'MSTest.exe',
-    'PerfWatson2.exe',
-    'Publicize.exe',
-    'QTAgent.exe',
-    'QTAgent_35.exe',
-    'QTAgent_40.exe',
-    'QTAgent32.exe',
-    'QTAgent32_35.exe',
-    'QTAgent32_40.exe',
-    'QTDCAgent.exe',
-    'QTDCAgent32.exe',
-    'StorePID.exe',
-    'T4VSHostProcess.exe',
-    'TailoredDeploy.exe',
-    'TCM.exe',
-    'TextTransform.exe',
-    'TfsLabConfig.exe',
-    'UserControlTestContainer.exe',
-    'vb7to8.exe',
-    'VcxprojReader.exe',
-    'VsDebugWERHelper.exe',
-    'VSFinalizer.exe',
-    'VsGa.exe',
-    'VSHiveStub.exe',
-    'vshost.exe',
-    'vshost32.exe',
-    'vshost32-clr2.exe',
+    $ProcessExclusions = $(
+      # VS
+      'vshost-clr2.exe',
+      'VSInitializer.exe',
+      'VSIXInstaller.exe',
+      'VSLaunchBrowser.exe',
+      'vsn.exe',
+      'VsRegEdit.exe',
+      'VSWebHandler.exe',
+      'VSWebLauncher.exe',
+      'XDesProc.exe',
+      'Blend.exe',
+      'DDConfigCA.exe',
+      'devenv.exe',
+      'FeedbackCollector.exe',
+      'Microsoft.VisualStudio.Web.Host.exe',
+      'mspdbsrv.exe',
+      'MSTest.exe',
+      'PerfWatson2.exe',
+      'Publicize.exe',
+      'QTAgent.exe',
+      'QTAgent_35.exe',
+      'QTAgent_40.exe',
+      'QTAgent32.exe',
+      'QTAgent32_35.exe',
+      'QTAgent32_40.exe',
+      'QTDCAgent.exe',
+      'QTDCAgent32.exe',
+      'StorePID.exe',
+      'T4VSHostProcess.exe',
+      'TailoredDeploy.exe',
+      'TCM.exe',
+      'TextTransform.exe',
+      'TfsLabConfig.exe',
+      'UserControlTestContainer.exe',
+      'vb7to8.exe',
+      'VcxprojReader.exe',
+      'VsDebugWERHelper.exe',
+      'VSFinalizer.exe',
+      'VsGa.exe',
+      'VSHiveStub.exe',
+      'vshost.exe',
+      'vshost32.exe',
+      'vshost32-clr2.exe',
 
-    # VS Code
-    'Code - Insiders.exe',
-    'Code.exe',
+      # VS Code
+      'Code - Insiders.exe',
+      'Code.exe',
 
-    # Runtimes, build tools
-    'dotnet.exe',
-    'mono.exe',
-    'mono-sgen.exe',
-    'java.exe',
-    'java64.exe',
-    'msbuild.exe',
-    'volta.exe',
-    'node.exe',
-    'node.js',
-    'perfwatson2.exe',
-    'ServiceHub.Host.Node.x86.exe',
-    'vbcscompiler.exe',
-    'nuget.exe',
+      # Runtimes, build tools
+      'dotnet.exe',
+      'mono.exe',
+      'mono-sgen.exe',
+      'java.exe',
+      'java64.exe',
+      'msbuild.exe',
+      'volta.exe',
+      'node.exe',
+      'node.js',
+      'perfwatson2.exe',
+      'ServiceHub.Host.Node.x86.exe',
+      'vbcscompiler.exe',
+      'nuget.exe',
 
-    # VCS
-    'git.exe',
+      # VCS
+      'git.exe',
 
-    # Shells
-    'git-bash.exe',
-    'bash.exe',
-    'powershell.exe',
-    'pwsh.exe',
-    'wsl.exe'
-  )
+      # Shells
+      'git-bash.exe',
+      'bash.exe',
+      'powershell.exe',
+      'pwsh.exe',
+      'wsl.exe'
+    )
 
-  Write-Host 'Creating Windows Defender exclusions for common Visual Studio folders and processes.'
-  $ProjectsFolder = 'C:\source'
+    Write-Host 'Creating Windows Defender exclusions for common Visual Studio folders and processes.'
+    $ProjectsFolder = 'C:\source'
 
-  Write-Verbose ''
-  Write-Verbose "Adding Path Exclusion: $ProjectsFolder"
-  Add-MpPreference -ExclusionPath $ProjectsFolder
+    Write-Verbose ''
+    Write-Verbose "Adding Path Exclusion: $ProjectsFolder"
+    Add-MpPreference -ExclusionPath $ProjectsFolder
 
-  foreach ($Exclusion in $PathExclusions | Where-Object { Test-Path $_ }) {
-    Write-Verbose "Adding Path Exclusion: $Exclusion"
-    Add-MpPreference -ExclusionPath $Exclusion
+    foreach ($Exclusion in $PathExclusions | Where-Object { Test-Path $_ }) {
+      Write-Verbose "Adding Path Exclusion: $Exclusion"
+      Add-MpPreference -ExclusionPath $Exclusion
+    }
+
+    foreach ($Exclusion in $ProcessExclusions) {
+      Write-Verbose "Adding Process Exclusion: $Exclusion"
+      Add-MpPreference -ExclusionProcess $Exclusion
+    }
+
+    Write-Host ''
+    Write-Host 'Windows Defender Exclusions:'
+
+    $Prefs = Get-MpPreference
+    $Prefs.ExclusionPath
+    $Prefs.ExclusionProcess
+    Write-Host ''
+    Write-Host ''
+
+
+    # UAC Settings to Level 1
+    Write-Host 'Setting UAC to Level 1.'
+    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'ConsentPromptBehaviorAdmin' -Value 5
+    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'ConsentPromptBehaviorUser' -Value 3
+    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'EnableInstallerDetection' -Value 1
+    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'EnableLUA' -Value 1
+    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'EnableVirtualization' -Value 1
+    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'PromptOnSecureDesktop' -Value 0
+    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'ValidateAdminCodeSignatures' -Value 0
+    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'FilterAdministratorToken' -Value 0
+
+    # Developer Mode
+    Write-Host 'Enabling Developer Mode.'
+    $DeveloperModeRegistryKeyPath = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock'
+    if (-not(Test-Path -Path $DeveloperModeRegistryKeyPath)) {
+      New-Item -Path $DeveloperModeRegistryKeyPath -ItemType Directory -Force
+    }
+
+    Set-ItemProperty -Path $DeveloperModeRegistryKeyPath -Name AllowDevelopmentWithoutDevLicense -Type DWord -Value 1
   }
-
-  foreach ($Exclusion in $ProcessExclusions) {
-    Write-Verbose "Adding Process Exclusion: $Exclusion"
-    Add-MpPreference -ExclusionProcess $Exclusion
-  }
-
-  Write-Host ''
-  Write-Host 'Windows Defender Exclusions:'
-
-  $Prefs = Get-MpPreference
-  $Prefs.ExclusionPath
-  $Prefs.ExclusionProcess
-  Write-Host ''
-  Write-Host ''
-
-
-  # UAC Settings to Level 1
-  Write-Host 'Setting UAC to Level 1.'
-  Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'ConsentPromptBehaviorAdmin' -Value 5
-  Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'ConsentPromptBehaviorUser' -Value 3
-  Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'EnableInstallerDetection' -Value 1
-  Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'EnableLUA' -Value 1
-  Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'EnableVirtualization' -Value 1
-  Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'PromptOnSecureDesktop' -Value 0
-  Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'ValidateAdminCodeSignatures' -Value 0
-  Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'FilterAdministratorToken' -Value 0
-
-  # Developer Mode
-  Write-Host 'Enabling Developer Mode.'
-  $DeveloperModeRegistryKeyPath = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock'
-  if (-not(Test-Path -Path $DeveloperModeRegistryKeyPath)) {
-    New-Item -Path $DeveloperModeRegistryKeyPath -ItemType Directory -Force
-  }
-
-  Set-ItemProperty -Path $DeveloperModeRegistryKeyPath -Name AllowDevelopmentWithoutDevLicense -Type DWord -Value 1
 }
 
 if ($Winget -eq $true) {

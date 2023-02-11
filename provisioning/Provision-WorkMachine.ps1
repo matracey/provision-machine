@@ -1,5 +1,7 @@
 param(
   [Parameter()] [switch]$Cfg,
+  [Parameter()] [switch]$TurboRdpHw,
+  [Parameter()] [switch]$TurboRdpSw,
   [Parameter()] [switch]$Scoop,
   [Parameter()] [switch]$WinGet,
   [Parameter()] [switch]$WinGetPkgs,
@@ -11,10 +13,12 @@ param(
 )
 
 # If no switches are passed, set the defaults
-if ($Cfg -eq $false -and $Scoop -eq $false -and $WinGet -eq $false -and $WinGetPkgs -eq $false -and $NodeJs -eq $false -and $VsRelease -eq $false -and $VsPreview -eq $false -and $VsIntPrev -eq $false -and $Fonts -eq $false) {
+if ($Cfg -eq $false -and $TurboRdpHw -eq $false -and $TurboRdpSw -eq $false -and $Scoop -eq $false -and $WinGet -eq $false -and $WinGetPkgs -eq $false -and $NodeJs -eq $false -and $VsRelease -eq $false -and $VsPreview -eq $false -and $VsIntPrev -eq $false -and $Fonts -eq $false) {
   Write-Host -ForegroundColor Cyan 'No switches passed. Proceeding with default flags: -Scoop, -WinGetPkgs, -NodeJs, -VsPreview, -Fonts.'
 
   $Cfg = $false
+  $TurboRdpHw = $false
+  $TurboRdpSw = $false
   $Scoop = $true
   $WinGet = $false
   $WinGetPkgs = $true
@@ -58,6 +62,64 @@ function Invoke-BlockElevated {
 
 $Downloads = "$env:USERPROFILE\Downloads"
 $FontsFolder = "$env:USERPROFILE\fonts"
+
+if ($TurboRdpHw -eq $true -or $TurboRdpSw -eq $true) {
+  Invoke-BlockElevated -NotifyText 'Elevation required to apply gp. Attempting to elevate...' -ScriptBlock {
+    $LgpoTool = 'https://gist.github.com/matracey/9a4126bb243f4966a6d914c05e1fff6a/raw/5e31fdcf1b6591fb1ea376d41d5a93eca79c05f4/LGPO.zip'
+    $LgpoFile = "$env:USERPROFILE\lgpo.txt"
+    $AvcHardwareEncodePreferred = 0
+    if ($TurboRdpHw -eq $true -and $TurboRdpSw -eq $false) {
+      $AvcHardwareEncodePreferred = 1
+    }
+
+    Remove-Item $LgpoFile -ErrorAction SilentlyContinue
+    @{
+      'Terminal Services|SelectTransport' = 0
+      'Terminal Services|bEnumerateHWBeforeSW' = 1
+      'Terminal Services|AVC444ModePreferred' = 1
+      'Terminal Services|AVCHardwareEncodePreferred' = $AvcHardwareEncodePreferred
+      'Terminal Services|MaxCompressionLevel' = 0
+      'Terminal Services|ImageQuality' = 2
+      'Terminal Services|fEnableVirtualizedGraphics' = 1
+      'Terminal Services|VGOptimization_CaptureFrameRate' = 1
+      'Terminal Services|VGOptimization_CompressionRatio' = 1
+      'Terminal Services|VisualExperiencePolicy' = 1
+      'Terminal Services\Client|fUsbRedirectionEnableMode' = 2
+    }.GetEnumerator() | ForEach-Object { "Computer`nSoftware\Policies\Microsoft\Windows NT\$($_.Name.Split('|')[0])`n$($_.Name.Split('|')[1])`nDWORD:$($_.Value)`n" | Out-File $LgpoFile -Append }
+
+    # Download the LGPO tool
+    Invoke-WebRequest -Uri $LgpoTool -OutFile "$Downloads\LGPO.zip"
+    # Unzip the LGPO tool
+    Expand-Archive -Path "$Downloads\LGPO.zip" -DestinationPath "$Downloads\LGPO" -Force
+
+    # Import the Group Policy
+    & (Get-ChildItem -Path "$Downloads\LGPO" -Recurse -Filter 'LGPO.exe').FullName /t $LgpoFile
+
+    # Sets 60 FPS limit on RDP
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations' -Name 'DWMFRAMEINTERVAL' -Value 15 -Type DWord
+
+    # Increase Windows Responsiveness
+    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile' -Name 'SystemResponsiveness' -Value 0 -Type DWord
+
+    # Sets the flow control for Display vs Channel Bandwidth (aka RemoteFX devices, including controllers)
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\TermDD' -Name 'FlowControlDisable' -Value 1 -Type DWord
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\TermDD' -Name 'FlowControlDisplayBandwidth' -Value 16 -Type DWord
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\TermDD' -Name 'FlowControlChannelBandwidth' -Value 144 -Type DWord
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\TermDD' -Name 'FlowControlChargePostCompression' -Value 0 -Type DWord
+
+    # Removes the artificial latency delay for RDP
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name 'InteractiveDelay' -Value 0 -Type DWord
+
+    # Disables Windows Network Throttling
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters' -Name 'DisableBandwidthThrottling' -Value 1 -Type DWord
+
+    # Enables large MTU packets
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters' -Name 'DisableLargeMtu' -Value 0 -Type DWord
+
+    # Disables the WDDM Drivers and goes back to legacy XDDM drivers (better for performance on Nvidia cards, you might want to change this setting for AMD cards)
+    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services' -Name 'fEnableWddmDriver' -Value 0 -Type DWord
+  }
+}
 
 if ($Cfg -eq $true) {
   Invoke-BlockElevated -NotifyText 'Elevation required to apply cfg. Attempting to elevate...' -ScriptBlock {

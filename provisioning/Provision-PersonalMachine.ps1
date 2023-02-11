@@ -357,7 +357,7 @@ if ($WingetPkgs -eq $true) {
   winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VCRedist.2005.x86 -e --force
   winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VisualStudioCode -e
   winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VisualStudioCode.Insiders -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.WindowsTerminal -e
+  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.WindowsTerminal.Preview -e
   winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Mozilla.Firefox -e
   winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Mp3tag.Mp3tag -e
   winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=NordPassTeam.NordPass -e

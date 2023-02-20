@@ -306,79 +306,105 @@ if ($Winget -eq $true) {
 
 if ($WingetPkgs -eq $true) {
   Write-Host 'Installing winget packages...'
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Adobe.Acrobat.Reader.64-bit -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Audacity.Audacity -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=DBBrowserForSQLite.DBBrowserForSQLite -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Discord.Discord -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=File-New-Project.EarTrumpet -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Git.Git -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=NordPassTeam.NordPass -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=NordVPN.NordVPN -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=GitHub.cli -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=GitHub.GitHubDesktop -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=GitHub.GitLFS -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=GNE.DualMonitorTools -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Google.Chrome -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Iterate.Cyberduck -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=JanDeDobbeleer.OhMyPosh -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=LLVM.LLVM -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=M2Team.NanaZip -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.AzureCLI -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.AzureDataStudio -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.AzureFunctionsCoreTools -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.AzureStorageEmulator -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.AzureStorageExplorer -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.DotNet.SDK.7 -e --force
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.DotNet.SDK.6 -e --force
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.Edge -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.Edge.Beta -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.EdgeWebView2Runtime -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.GitCredentialManagerCore -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.Office -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.OneDrive -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.OpenJDK.11 -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.OpenJDK.16 -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.OpenJDK.17 -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.PowerShell -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.PowerToys -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.RemoteDesktopClient -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.SQLServerManagementStudio -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VCRedist.2015+.x64 -e --force
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VCRedist.2015+.x86 -e --force
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VCRedist.2013.x64 -e --force
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VCRedist.2013.x86 -e --force
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VCRedist.2012.x64 -e --force
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VCRedist.2012.x86 -e --force
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VCRedist.2010.x64 -e --force
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VCRedist.2010.x86 -e --force
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VCRedist.2008.x64 -e --force
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VCRedist.2008.x86 -e --force
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VCRedist.2005.x64 -e --force
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VCRedist.2005.x86 -e --force
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VisualStudioCode -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.VisualStudioCode.Insiders -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Microsoft.WindowsTerminal.Preview -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Mozilla.Firefox -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Mp3tag.Mp3tag -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=NordPassTeam.NordPass -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=NordVPN.NordVPN -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Notepad++.Notepad++ -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=OpenWhisperSystems.Signal -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=PeterPawlowski.foobar2000 -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Postman.Postman -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Rufus.Rufus -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=SomePythonThings.WingetUIStore -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Spotify.Spotify -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=tailscale.tailscale -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=TIDALMusicAS.TIDAL -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=VideoLAN.VLC -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=Volta.Volta -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=WinDirStat.WinDirStat -e
-  winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=WinSCP.WinSCP -e
-  winget install -s msstore -h --accept-package-agreements --accept-source-agreements --id=9P8DVF1XW02V -e # Affinity Photo 2
-  winget install -s msstore -h --accept-package-agreements --accept-source-agreements --id=9N2D0P16C80H -e # Affinity Designer 2
-  winget install -s msstore -h --accept-package-agreements --accept-source-agreements --id=9NTV2DZ11KD9 -e # Affinity Publisher 2
-  winget install -s msstore -h --accept-package-agreements --accept-source-agreements --id=9NBDXK71NK08 -e # WhatsApp Beta
+
+  $StandardPackages = (
+    'Adobe.Acrobat.Reader.64-bit',
+    'Audacity.Audacity',
+    'DBBrowserForSQLite.DBBrowserForSQLite',
+    'Discord.Discord',
+    'File-New-Project.EarTrumpet',
+    'Git.Git',
+    'NordPassTeam.NordPass',
+    'NordVPN.NordVPN',
+    'GitHub.cli',
+    'GitHub.GitHubDesktop',
+    'GitHub.GitLFS',
+    'GNE.DualMonitorTools',
+    'Google.Chrome',
+    'Iterate.Cyberduck',
+    'JanDeDobbeleer.OhMyPosh',
+    'LLVM.LLVM',
+    'M2Team.NanaZip',
+    'Microsoft.AzureCLI',
+    'Microsoft.AzureDataStudio',
+    'Microsoft.AzureFunctionsCoreTools',
+    'Microsoft.AzureStorageEmulator',
+    'Microsoft.AzureStorageExplorer',
+    'Microsoft.Edge',
+    'Microsoft.Edge.Beta',
+    'Microsoft.EdgeWebView2Runtime',
+    'Microsoft.GitCredentialManagerCore',
+    'Microsoft.Office',
+    'Microsoft.OneDrive',
+    'Microsoft.OpenJDK.11',
+    'Microsoft.OpenJDK.16',
+    'Microsoft.OpenJDK.17',
+    'Microsoft.PowerShell',
+    'Microsoft.PowerToys',
+    'Microsoft.RemoteDesktopClient',
+    'Microsoft.SQLServerManagementStudio',
+    'Microsoft.VisualStudioCode',
+    'Microsoft.VisualStudioCode.Insiders',
+    'Microsoft.WindowsTerminal.Preview',
+    'Mozilla.Firefox',
+    'Mp3tag.Mp3tag',
+    'NordPassTeam.NordPass',
+    'NordVPN.NordVPN',
+    'Notepad++.Notepad++',
+    'OpenWhisperSystems.Signal',
+    'PeterPawlowski.foobar2000',
+    'Postman.Postman',
+    'Rufus.Rufus',
+    'SomePythonThings.WingetUIStore',
+    'Spotify.Spotify',
+    'tailscale.tailscale',
+    'TIDALMusicAS.TIDAL',
+    'VideoLAN.VLC',
+    'Volta.Volta',
+    'WinDirStat.WinDirStat',
+    'WinSCP.WinSCP'
+  )
+  $ForcedPackages = (
+    'Microsoft.DotNet.SDK.7',
+    'Microsoft.DotNet.SDK.6',
+    'Microsoft.VCRedist.2015+.x64',
+    'Microsoft.VCRedist.2015+.x86',
+    'Microsoft.VCRedist.2013.x64',
+    'Microsoft.VCRedist.2013.x86',
+    'Microsoft.VCRedist.2012.x64',
+    'Microsoft.VCRedist.2012.x86',
+    'Microsoft.VCRedist.2010.x64',
+    'Microsoft.VCRedist.2010.x86',
+    'Microsoft.VCRedist.2008.x64',
+    'Microsoft.VCRedist.2008.x86',
+    'Microsoft.VCRedist.2005.x64',
+    'Microsoft.VCRedist.2005.x86'
+  )
+  $MsStorePackages = (
+    # Affinity Photo 2
+    '9P8DVF1XW02V',
+    # Affinity Designer 2
+    '9N2D0P16C80H',
+    # Affinity Publisher 2
+    '9NTV2DZ11KD9',
+    # WhatsApp Beta
+    '9NBDXK71NK08'
+  )
+
+  # Install Standard Packages
+  foreach ($Package in $StandardPackages) {
+    winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=$Package -e
+  }
+
+  # Install Forced Packages
+  foreach ($Package in $ForcedPackages) {
+    winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=$Package -e --force
+  }
+
+  # Install msstore Packages
+  foreach ($Package in $MsStorePackages) {
+    winget install -s msstore -h --accept-package-agreements --accept-source-agreements --id=$Package -e
+  }
 }
 
 if ($NodeJs -eq $true) {

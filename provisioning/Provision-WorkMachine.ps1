@@ -273,6 +273,21 @@ if ($Cfg -eq $true) {
     Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'ValidateAdminCodeSignatures' -Value 0
     Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'FilterAdministratorToken' -Value 0
 
+    # Add 'Delete WVD Shortcuts' Scheduled Task. Use Windows PowerShell as Register-ScheduledJob is not available in PowerShell Core.
+    $Command = @'
+if (-not(Get-ScheduledJob -Name 'Delete WVD Shortcuts' -ErrorAction SilentlyContinue))
+{
+    Write-Host 'Adding Scheduled Task to delete WVD shortcuts.'
+    Register-ScheduledJob -Trigger $(New-JobTrigger -AtStartup -RandomDelay 00:00:30) -Name 'Delete WVD Shortcuts' -ScriptBlock {
+        Remove-Item -Force -Recurse "$($env:AppData)\Microsoft\Windows\Start Menu\Programs\Microsoft Virtual Desktop - EU Data Boundary (RD) (matracey@microsoft.com)";
+        Remove-Item -Force -Recurse "$($env:AppData)\Microsoft\Windows\Start Menu\Programs\Microsoft WVD Region 2 - East US (RD) (matracey@microsoft.com)";
+        Remove-Item -Force -Recurse "$($env:AppData)\Microsoft\Windows\Start Menu\Programs\Microsoft WVD Region 3 - Asia (RD) (matracey@microsoft.com)";
+        Remove-Item -Force -Recurse "$($env:AppData)\Microsoft\Windows\Start Menu\Programs\Microsoft WVD Region 4 - Europe (RD) (matracey@microsoft.com";
+    }
+}
+'@
+    & powershell.exe -NoProfile -ExecutionPolicy Bypass -Command $Command
+
     # Developer Mode
     Write-Host 'Enabling Developer Mode.'
     $DeveloperModeRegistryKeyPath = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock'

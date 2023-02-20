@@ -9,7 +9,9 @@ param(
   [Parameter()][Switch]$VsRelease,
   [Parameter()][Switch]$VsPreview,
   [Parameter()][Switch]$VsIntPrev,
-  [Parameter()][Switch]$Fonts
+  [Parameter()][Switch]$Fonts,
+  [Parameter()][Switch]$GoogleFonts,
+  [Parameter()][Switch]$NerdFonts
 )
 
 # If no switches are passed, set the defaults
@@ -25,6 +27,8 @@ if ($Cfg -eq $false -and $TurboRdpHw -eq $false -and $TurboRdpSw -eq $false -and
   $VsPreview = $true
   $VsIntPrev = $false
   $Fonts = $true
+  $GoogleFonts = $false
+  $NerdFonts = $false
 }
 
 <#
@@ -655,8 +659,13 @@ if ($VsIntPrev -eq $true) {
   Start-Process "$Downloads\vs_enterprise_intpreview.exe" -ArgumentList '--norestart', '-p', "--config $env:USERPROFILE\.vsconfig" -NoNewWindow -Wait
 }
 
-if ($Fonts -eq $true) {
-  Write-Host 'Installing fonts...'
+if ($Fonts -eq $true -or $GoogleFonts -eq $true -or $NerdFonts -eq $true) {
+  Write-Host "Downloading fonts to $FontsFolder/files..."
+
+  if ($GoogleFonts -eq $false -and $NerdFonts -eq $false) {
+    $GoogleFonts = $true
+    $NerdFonts = $true
+  }
 
   if (!(Test-Path $FontsFolder)) {
     mkdir "$FontsFolder"
@@ -666,14 +675,17 @@ if ($Fonts -eq $true) {
     mkdir "$FontsFolder/files"
   }
 
-  if (!(Test-Path "$FontsFolder/google-fonts")) {
-    git clone --depth 1 https://github.com/google/fonts.git "$env:USERPROFILE/fonts/google-fonts"
+  if ($GoogleFonts -eq $true -and !(Test-Path "$FontsFolder/google-fonts")) {
+    Remove-Item -Recurse -Force "$FontsFolder/google-fonts" -ErrorAction SilentlyContinue
+    git clone --depth 1 https://github.com/google/fonts.git "$FontsFolder/google-fonts"
+    Get-ChildItem -Path "$FontsFolder/google-fonts" -Include '*.ttf' -Recurse | Where-Object { $_ -match '^apache\\' -or $_ -match '^ofl\\' -or $_ -match '^ufl\\' } | Move-Item -Destination "$FontsFolder/files"
+    Remove-Item -Recurse -Force "$FontsFolder/google-fonts"
   }
-  Get-ChildItem -Path "$FontsFolder/google-fonts" -Include *.otf, *.ttf -Recurse | Move-Item -Destination "$FontsFolder/files"
 
-
-  if (!(Test-Path "$FontsFolder/nerd-fonts")) {
-    git clone --depth 1 https://github.com/ryanoasis/nerd-fonts.git "$env:USERPROFILE/fonts/nerd-fonts"
+  if ($NerdFonts -eq $true -and !(Test-Path "$FontsFolder/nerd-fonts")) {
+    Remove-Item -Recurse -Force "$FontsFolder/nerd-fonts" -ErrorAction SilentlyContinue
+    git clone --depth 1 https://github.com/ryanoasis/nerd-fonts.git "$FontsFolder/nerd-fonts"
+    Get-ChildItem -Path '$FontsFolder/nerd-fonts' -Include '*.otf' -Recurse | Where-Object { $_ -match 'Windows Compatible' -and $_ -match 'patched-fonts' } | Move-Item -Destination "$FontsFolder/files"
+    Remove-Item -Recurse -Force "$FontsFolder/nerd-fonts"
   }
-  Get-ChildItem -Path "$FontsFolder/nerd-fonts" -Include *.otf, *.ttf -Recurse | Move-Item -Destination "$FontsFolder/files"
 }

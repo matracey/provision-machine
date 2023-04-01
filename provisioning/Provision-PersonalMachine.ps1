@@ -8,14 +8,14 @@ param(
   [Parameter()][Switch]$Scoop,
   [Parameter()][Switch]$VsRelease,
   [Parameter()][Switch]$VsPreview,
-  [Parameter()][Switch]$VsIntPrev,
+  [Parameter()][Switch]$VsBldTool,
   [Parameter()][Switch]$Fonts,
   [Parameter()][Switch]$GoogleFonts,
   [Parameter()][Switch]$NerdFonts
 )
 
 # If no switches are passed, set the defaults
-if ($Cfg -eq $false -and $TurboRdpHw -eq $false -and $TurboRdpSw -eq $false -and $Winget -eq $false -and $WingetPkgs -eq $false -and $NodeJs -eq $false -and $Scoop -eq $false -and $VsRelease -eq $false -and $VsPreview -eq $false -and $VsIntPrev -eq $false -and $Fonts -eq $false) {
+if ($Cfg -eq $false -and $TurboRdpHw -eq $false -and $TurboRdpSw -eq $false -and $Winget -eq $false -and $WingetPkgs -eq $false -and $NodeJs -eq $false -and $Scoop -eq $false -and $VsRelease -eq $false -and $VsPreview -eq $false -and $VsBldTool -eq $false -and $Fonts -eq $false) {
   $Cfg = $false
   $TurboRdpHw = $false
   $TurboRdpSw = $false
@@ -25,7 +25,7 @@ if ($Cfg -eq $false -and $TurboRdpHw -eq $false -and $TurboRdpSw -eq $false -and
   $Scoop = $true
   $VsRelease = $false
   $VsPreview = $true
-  $VsIntPrev = $false
+  $VsBldTool = $false
   $Fonts = $true
   $GoogleFonts = $false
   $NerdFonts = $false
@@ -150,7 +150,6 @@ if ($Cfg -eq $true) {
       'C:\Program Files (x86)\MSBuild',
       'C:\Program Files\Microsoft Visual Studio\2022\Community',
       'C:\Program Files\Microsoft Visual Studio\2022\Enterprise',
-      'C:\Program Files\Microsoft Visual Studio\2022\IntPreview',
       'C:\Program Files\Microsoft Visual Studio\2022\Preview',
       'C:\Program Files\Microsoft Visual Studio\2022\Professional',
       'C:\ProgramData\Microsoft\VisualStudio\Packages',
@@ -238,7 +237,7 @@ if ($Cfg -eq $true) {
     )
 
     Write-Host 'Creating Windows Defender exclusions for common Visual Studio folders and processes.'
-    $ProjectsFolder = 'C:\source'
+    $ProjectsFolder = 'D:\Developer'
 
     Write-Verbose ''
     Write-Verbose "Adding Path Exclusion: $ProjectsFolder"
@@ -275,21 +274,6 @@ if ($Cfg -eq $true) {
     Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'ValidateAdminCodeSignatures' -Value 0
     Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'FilterAdministratorToken' -Value 0
 
-    # Add 'Delete WVD Shortcuts' Scheduled Task. Use Windows PowerShell as Register-ScheduledJob is not available in PowerShell Core.
-    $Command = @'
-if (-not(Get-ScheduledJob -Name 'Delete WVD Shortcuts' -ErrorAction SilentlyContinue))
-{
-    Write-Host 'Adding Scheduled Task to delete WVD shortcuts.'
-    Register-ScheduledJob -Trigger $(New-JobTrigger -AtStartup -RandomDelay 00:00:30) -Name 'Delete WVD Shortcuts' -ScriptBlock {
-        Remove-Item -Force -Recurse "$($env:AppData)\Microsoft\Windows\Start Menu\Programs\Microsoft Virtual Desktop - EU Data Boundary (RD) (matracey@microsoft.com)";
-        Remove-Item -Force -Recurse "$($env:AppData)\Microsoft\Windows\Start Menu\Programs\Microsoft WVD Region 2 - East US (RD) (matracey@microsoft.com)";
-        Remove-Item -Force -Recurse "$($env:AppData)\Microsoft\Windows\Start Menu\Programs\Microsoft WVD Region 3 - Asia (RD) (matracey@microsoft.com)";
-        Remove-Item -Force -Recurse "$($env:AppData)\Microsoft\Windows\Start Menu\Programs\Microsoft WVD Region 4 - Europe (RD) (matracey@microsoft.com";
-    }
-}
-'@
-    & powershell.exe -NoProfile -ExecutionPolicy Bypass -Command $Command
-
     # Developer Mode
     Write-Host 'Enabling Developer Mode.'
     $DeveloperModeRegistryKeyPath = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock'
@@ -315,25 +299,46 @@ if ($WingetPkgs -eq $true) {
     [PSCustomObject]@{Id = 'Microsoft.VisualStudioCode'; Override = '/VERYSILENT /MERGETASKS="!runcode,addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath"'; Force = $true },
     [PSCustomObject]@{Id = 'Microsoft.VisualStudioCode.Insiders'; Override = '/VERYSILENT /MERGETASKS="!runcode,addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath"'; Force = $true },
     'Adobe.Acrobat.Reader.64-bit',
+    'Amazon.Games',
+    'ATLauncher.ATLauncher',
     'Audacity.Audacity',
+    'Avidemux.Avidemux',
+    'calibre.calibre',
+    'ClockworkMod.UniversalADBDriver',
+    'CodecGuide.K-LiteCodecPack.Full',
+    'Codeusa.BorderlessGaming',
+    'Corsair.iCUE.4',
+    'CPUID.CPU-Z.MSI',
+    'CPUID.HWMonitor',
+    'CrystalDewWorld.CrystalDiskInfo',
     'DBBrowserForSQLite.DBBrowserForSQLite',
     'Discord.Discord',
+    'Discord.Discord.PTB',
+    'Docker.DockerDesktop',
+    'DolphinEmulator.Dolphin',
+    'ElectronicArts.EADesktop',
+    'EmoteInteractive.RemoteMouse',
+    'EpicGames.EpicGamesLauncher',
+    'FelixRieseberg.MacintoshJS',
+    'FelixRieseberg.Windows95',
     'File-New-Project.EarTrumpet',
     'Git.Git',
     'GitHub.cli',
     'GitHub.GitHubDesktop',
     'GitHub.GitLFS',
     'GNE.DualMonitorTools',
+    'GOG.Galaxy',
+    'Google.AndroidStudio',
     'Google.Chrome',
+    'HandBrake.HandBrake',
     'Iterate.Cyberduck',
     'JanDeDobbeleer.OhMyPosh',
+    'Lexikos.AutoHotkey',
+    'Libretro.RetroArch',
     'LLVM.LLVM',
+    'Logitech.GHUB',
     'M2Team.NanaZip',
-    'Microsoft.AzureCLI',
-    'Microsoft.AzureDataStudio',
-    'Microsoft.AzureFunctionsCoreTools',
-    'Microsoft.AzureStorageEmulator',
-    'Microsoft.AzureStorageExplorer',
+    'MediaArea.MediaInfo.GUI',
     'Microsoft.Edge',
     'Microsoft.Edge.Beta',
     'Microsoft.EdgeWebView2Runtime',
@@ -346,21 +351,37 @@ if ($WingetPkgs -eq $true) {
     'Microsoft.PowerShell',
     'Microsoft.PowerToys',
     'Microsoft.RemoteDesktopClient',
-    'Microsoft.SQLServerManagementStudio',
     'Microsoft.WindowsTerminal.Preview',
+    'MoritzBunkus.MKVToolNix',
     'Mozilla.Firefox',
     'Mp3tag.Mp3tag',
     'NordPassTeam.NordPass',
     'NordVPN.NordVPN',
     'Notepad++.Notepad++',
+    'Nvidia.Broadcast',
+    'Nvidia.GeForceExperience',
+    'Nvidia.PhysX',
+    'NZXT.CAM',
+    'OBSProject.OBSStudio',
     'OpenWhisperSystems.Signal',
     'PeterPawlowski.foobar2000',
+    'Plex.Plex',
+    'Plex.PlexMediaServer',
     'Postman.Postman',
+    'qBittorrent.qBittorrent',
+    'REALiX.HWiNFO',
     'Rufus.Rufus',
+    'SABnzbdTeam.SABnzbd',
+    'SomePythonThings.ElevenClock',
     'SomePythonThings.WingetUIStore',
     'Spotify.Spotify',
     'tailscale.tailscale',
+    'TeamProwlarr.Prowlarr',
+    'TeamRadarr.Radarr',
+    'TeamSonarr.Sonarr',
     'TIDALMusicAS.TIDAL',
+    'Ubisoft.Connect',
+    'Valve.Steam',
     'VideoLAN.VLC',
     'Volta.Volta',
     'WinDirStat.WinDirStat',
@@ -411,12 +432,10 @@ if ($NodeJs -eq $true) {
     'node@18',
     'node@19',
     'npm@8',
-    '@angular/cli',
     'eslint',
     'playwright',
     'prettier',
-    'typescript',
-    'vsts-npm-auth'
+    'typescript'
   )
 
   & "$env:PROGRAMFILES\Volta\volta.exe" install @NodeTools
@@ -438,9 +457,21 @@ if ($Scoop -eq $true) {
   )
 
   $ScoopApps = $(
-    'azure-functions-core-tools',
-    'php',
-    'servicebusexplorer',
+    'GameSaveManager',
+    'adb',
+    'android-clt',
+    'dnsjumper',
+    'duckstation',
+    'gog-galaxy-plugin-downloader',
+    'grep',
+    'lessmsi',
+    'mediainfo',
+    'msiafterburner',
+    'msikombustor',
+    'pcsx2',
+    'potrace',
+    'sqlite',
+    'xemu',
     'cacert',
     'chromedriver',
     'cru',
@@ -470,10 +501,10 @@ if ($Scoop -eq $true) {
 
   & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" bucket add extras
 
-  # Optional buckets, disabled for now.
-  # & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" bucket add games
-  # & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" bucket add 'ash258.ash258' 'https://github.com/Ash258/Shovel-Ash258.git'
-  # & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" bucket add emulators 'https://github.com/hermanjustnu/scoop-emulators.git'
+  # Optional buckets
+  & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" bucket add games
+  & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" bucket add 'ash258.ash258' 'https://github.com/Ash258/Shovel-Ash258.git'
+  & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" bucket add emulators 'https://github.com/hermanjustnu/scoop-emulators.git'
 
   scoop install @ScoopApps
 }
@@ -484,11 +515,11 @@ if ($Cfg -eq $true -and (Get-Command git -ErrorAction SilentlyContinue)) {
   git config --global credential.helper manager
 }
 
-if ($VsRelease -eq $true -or $VsPreview -eq $true -or $VsIntPrev -eq $true) {
-  Write-Host 'Installing Visual Studio Enterprise...'
-  $Vs2022ReleaseUrl = 'https://c2rsetup.officeapps.live.com/c2r/downloadVS.aspx?sku=enterprise&channel=Release&version=VS2022'
-  $Vs2022PreviewUrl = 'https://c2rsetup.officeapps.live.com/c2r/downloadVS.aspx?sku=enterprise&channel=Preview&version=VS2022'
-  $Vs2022IntPrevUrl = 'https://aka.ms/vs/17/intpreview/vs_enterprise.exe'
+if ($VsRelease -eq $true -or $VsPreview -eq $true -or $VsBldTool -eq $true) {
+  Write-Host 'Installing Visual Studio Professional...'
+  $Vs2022ReleaseUrl = 'https://c2rsetup.officeapps.live.com/c2r/downloadVS.aspx?sku=professional&channel=Release&version=VS2022'
+  $Vs2022PreviewUrl = 'https://c2rsetup.officeapps.live.com/c2r/downloadVS.aspx?sku=professional&channel=Preview&version=VS2022'
+  $Vs2022BldToolUrl = 'https://download.visualstudio.microsoft.com/download/pr/0502e0d3-64a5-4bb8-b049-6bcbea5ed247/d7293c5775ad824c05ee99d071d5262da3e7653d39f3ba8a28fb2917af7c041a/vs_BuildTools.exe'
 
   $VsComponents = @(
     'Component.Android.SDK.MAUI',
@@ -531,7 +562,6 @@ if ($VsRelease -eq $true -or $VsPreview -eq $true -or $VsIntPrev -eq $true) {
     'Microsoft.VisualStudio.Component.Common.Azure.Tools',
     'Microsoft.VisualStudio.Component.CoreEditor',
     'Microsoft.VisualStudio.Component.Debugger.JustInTime',
-    'Microsoft.VisualStudio.Component.Debugger.Snapshot',
     'Microsoft.VisualStudio.Component.DiagnosticTools',
     'Microsoft.VisualStudio.Component.DockerTools',
     'Microsoft.VisualStudio.Component.DotNetModelBuilder',
@@ -542,10 +572,8 @@ if ($VsRelease -eq $true -or $VsPreview -eq $true -or $VsIntPrev -eq $true) {
     'Microsoft.VisualStudio.Component.Graphics.Tools',
     'Microsoft.VisualStudio.Component.IISExpress',
     'Microsoft.VisualStudio.Component.IntelliCode',
-    'Microsoft.VisualStudio.Component.IntelliTrace.FrontEnd',
     'Microsoft.VisualStudio.Component.JavaScript.Diagnostics',
     'Microsoft.VisualStudio.Component.JavaScript.TypeScript',
-    'Microsoft.VisualStudio.Component.LiveUnitTesting',
     'Microsoft.VisualStudio.Component.MSODBC.SQL',
     'Microsoft.VisualStudio.Component.MSSQL.CMDLnUtils',
     'Microsoft.VisualStudio.Component.ManagedDesktop.Core',
@@ -647,9 +675,9 @@ if ($VsPreview -eq $true) {
   Start-Process "$Downloads\vs_enterprise_preview.exe" -ArgumentList '--norestart', '-p', "--config $env:USERPROFILE\.vsconfig" -NoNewWindow -Wait
 }
 
-if ($VsIntPrev -eq $true) {
-  Invoke-WebRequest -Uri $Vs2022IntPrevUrl -OutFile "$Downloads\vs_enterprise_intpreview.exe"
-  Start-Process "$Downloads\vs_enterprise_intpreview.exe" -ArgumentList '--norestart', '-p', "--config $env:USERPROFILE\.vsconfig" -NoNewWindow -Wait
+if ($VsBldTool -eq $true) {
+  Invoke-WebRequest -Uri $Vs2022BldToolUrl -OutFile "$Downloads\vs_BuildTools.exe"
+  Start-Process "$Downloads\vs_BuildTools.exe" -ArgumentList '--norestart', '-p' -NoNewWindow -Wait
 }
 
 if ($Fonts -eq $true -or $GoogleFonts -eq $true -or $NerdFonts -eq $true) {

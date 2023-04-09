@@ -369,15 +369,15 @@ if ($WinGet -eq $true) {
 if ($WinGetPkgs -eq $true) {
   Write-Host 'Installing WinGet packages...'
 
-  $StandardPackages = (
+  $Packages = @(
+    [pscustomobject]@{ Id = 'Microsoft.VisualStudioCode'; Override = '/VERYSILENT /MERGETASKS="!runcode,addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath"'; Force = $true },
+    [pscustomobject]@{ Id = 'Microsoft.VisualStudioCode.Insiders'; Override = '/VERYSILENT /MERGETASKS="!runcode,addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath"'; Force = $true },
     'Adobe.Acrobat.Reader.64-bit',
     'Audacity.Audacity',
     'DBBrowserForSQLite.DBBrowserForSQLite',
     'Discord.Discord',
     'File-New-Project.EarTrumpet',
     'Git.Git',
-    'NordPassTeam.NordPass',
-    'NordVPN.NordVPN',
     'GitHub.cli',
     'GitHub.GitHubDesktop',
     'GitHub.GitLFS',
@@ -405,8 +405,6 @@ if ($WinGetPkgs -eq $true) {
     'Microsoft.PowerToys',
     'Microsoft.RemoteDesktopClient',
     'Microsoft.SQLServerManagementStudio',
-    'Microsoft.VisualStudioCode',
-    'Microsoft.VisualStudioCode.Insiders',
     'Microsoft.WindowsTerminal.Preview',
     'Mozilla.Firefox',
     'Mp3tag.Mp3tag',
@@ -424,48 +422,43 @@ if ($WinGetPkgs -eq $true) {
     'VideoLAN.VLC',
     'Volta.Volta',
     'WinDirStat.WinDirStat',
-    'WinSCP.WinSCP'
-  )
-  $ForcedPackages = (
-    'Microsoft.DotNet.SDK.7',
-    'Microsoft.DotNet.SDK.6',
-    'Microsoft.VCRedist.2015+.x64',
-    'Microsoft.VCRedist.2015+.x86',
-    'Microsoft.VCRedist.2013.x64',
-    'Microsoft.VCRedist.2013.x86',
-    'Microsoft.VCRedist.2012.x64',
-    'Microsoft.VCRedist.2012.x86',
-    'Microsoft.VCRedist.2010.x64',
-    'Microsoft.VCRedist.2010.x86',
-    'Microsoft.VCRedist.2008.x64',
-    'Microsoft.VCRedist.2008.x86',
-    'Microsoft.VCRedist.2005.x64',
-    'Microsoft.VCRedist.2005.x86'
-  )
-  $MsStorePackages = (
+    'WinSCP.WinSCP',
+    [pscustomobject]@{ Id = 'Microsoft.DotNet.SDK.7'; Force = $true },
+    [pscustomobject]@{ Id = 'Microsoft.DotNet.SDK.6'; Force = $true },
+    [pscustomobject]@{ Id = 'Microsoft.VCRedist.2015+.x64'; Force = $true },
+    [pscustomobject]@{ Id = 'Microsoft.VCRedist.2015+.x86'; Force = $true },
+    [pscustomobject]@{ Id = 'Microsoft.VCRedist.2013.x64'; Force = $true },
+    [pscustomobject]@{ Id = 'Microsoft.VCRedist.2013.x86'; Force = $true },
+    [pscustomobject]@{ Id = 'Microsoft.VCRedist.2012.x64'; Force = $true },
+    [pscustomobject]@{ Id = 'Microsoft.VCRedist.2012.x86'; Force = $true },
+    [pscustomobject]@{ Id = 'Microsoft.VCRedist.2010.x64'; Force = $true },
+    [pscustomobject]@{ Id = 'Microsoft.VCRedist.2010.x86'; Force = $true },
+    [pscustomobject]@{ Id = 'Microsoft.VCRedist.2008.x64'; Force = $true },
+    [pscustomobject]@{ Id = 'Microsoft.VCRedist.2008.x86'; Force = $true },
+    [pscustomobject]@{ Id = 'Microsoft.VCRedist.2005.x64'; Force = $true },
+    [pscustomobject]@{ Id = 'Microsoft.VCRedist.2005.x86'; Force = $true },
     # Affinity Photo 2
-    '9P8DVF1XW02V',
+    [pscustomobject]@{ Id = '9P8DVF1XW02V'; Source = 'msstore' },
     # Affinity Designer 2
-    '9N2D0P16C80H',
+    [pscustomobject]@{ Id = '9N2D0P16C80H'; Source = 'msstore' },
     # Affinity Publisher 2
-    '9NTV2DZ11KD9',
+    [pscustomobject]@{ Id = '9NTV2DZ11KD9'; Source = 'msstore' },
     # WhatsApp Beta
-    '9NBDXK71NK08'
+    [pscustomobject]@{ Id = '9NBDXK71NK08'; Source = 'msstore' }
   )
 
-  # Install Standard Packages
-  foreach ($Package in $StandardPackages) {
-    winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=$Package -e
-  }
+  foreach ($Package in $Packages) {
+    if ($Package -is [string]) {
+      $Id = $Package
+      $Force = $Source = $Override = ''
+    } else {
+      $Id = $Package.Id
+      $Force = if ([bool]$Package.Force) { '--force' } else { '' }
+      $Source = if ($Package.Source) { $Package.Source } else { 'winget' }
+      $Override = if ($Package.Override) { "--override '$($Package.Override)'" } else { '' }
+    }
 
-  # Install Forced Packages
-  foreach ($Package in $ForcedPackages) {
-    winget install -s winget -h --accept-package-agreements --accept-source-agreements --id=$Package -e --force
-  }
-
-  # Install msstore Packages
-  foreach ($Package in $MsStorePackages) {
-    winget install -s msstore -h --accept-package-agreements --accept-source-agreements --id=$Package -e
+    Invoke-Expression "winget install -s $Source -h --accept-package-agreements --accept-source-agreements --id=$Id -e $Force $Override"
   }
 }
 

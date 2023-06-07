@@ -63,6 +63,15 @@ function Invoke-BlockElevated {
   }
 }
 
+function Import-ConfigurationJson {
+  param(
+    [Parameter(Mandatory = $false)]
+    [string]$Path = "$PSScriptRoot\Configuration.json"
+  )
+
+  return Get-Content -Path $Path -Raw | ConvertFrom-Json
+}
+
 function Set-ExecutionPolicyUnrestricted {
   param (
     [bool]$DryRun = $false
@@ -152,104 +161,13 @@ function Enable-FileSharing {
 
 function Add-WindowsDefenderExclusions {
   param (
+    [Parameter(Mandatory = $true)]
+    [string[]]$PathExclusions,
+    [Parameter(Mandatory = $true)]
+    [string[]]$ProcessExclusions,
     [Parameter(Mandatory = $false)]
     [string]$ProjectsFolder,
     [bool]$DryRun = $false
-  )
-
-  $PathExclusions = (
-    'C:\Program Files (x86)\Microsoft SDKs',
-    'C:\Program Files (x86)\Microsoft SDKs\NuGetPackages',
-    'C:\Program Files (x86)\Microsoft Visual Studio 10.0',
-    'C:\Program Files (x86)\Microsoft Visual Studio 14.0',
-    'C:\Program Files (x86)\Microsoft Visual Studio',
-    'C:\Program Files (x86)\MSBuild',
-    'C:\Program Files\Microsoft Visual Studio\2022\Community',
-    'C:\Program Files\Microsoft Visual Studio\2022\Enterprise',
-    'C:\Program Files\Microsoft Visual Studio\2022\Preview',
-    'C:\Program Files\Microsoft Visual Studio\2022\Professional',
-    'C:\ProgramData\Microsoft\VisualStudio\Packages',
-    'C:\Windows\assembly',
-    'C:\Windows\Microsoft.NET',
-    "$($env:LOCALAPPDATA)\Microsoft\VisualStudio",
-    "$($env:LOCALAPPDATA)\Volta",
-    "$($env:PROGRAMFILES)\Volta",
-    "$($env:USERPROFILE)\scoop"
-  )
-
-  $ProcessExclusions = $(
-    # VS
-    'vshost-clr2.exe',
-    'VSInitializer.exe',
-    'VSIXInstaller.exe',
-    'VSLaunchBrowser.exe',
-    'vsn.exe',
-    'VsRegEdit.exe',
-    'VSWebHandler.exe',
-    'VSWebLauncher.exe',
-    'XDesProc.exe',
-    'Blend.exe',
-    'DDConfigCA.exe',
-    'devenv.exe',
-    'FeedbackCollector.exe',
-    'Microsoft.VisualStudio.Web.Host.exe',
-    'mspdbsrv.exe',
-    'MSTest.exe',
-    'PerfWatson2.exe',
-    'Publicize.exe',
-    'QTAgent.exe',
-    'QTAgent_35.exe',
-    'QTAgent_40.exe',
-    'QTAgent32.exe',
-    'QTAgent32_35.exe',
-    'QTAgent32_40.exe',
-    'QTDCAgent.exe',
-    'QTDCAgent32.exe',
-    'StorePID.exe',
-    'T4VSHostProcess.exe',
-    'TailoredDeploy.exe',
-    'TCM.exe',
-    'TextTransform.exe',
-    'TfsLabConfig.exe',
-    'UserControlTestContainer.exe',
-    'vb7to8.exe',
-    'VcxprojReader.exe',
-    'VsDebugWERHelper.exe',
-    'VSFinalizer.exe',
-    'VsGa.exe',
-    'VSHiveStub.exe',
-    'vshost.exe',
-    'vshost32.exe',
-    'vshost32-clr2.exe',
-
-    # VS Code
-    'Code - Insiders.exe',
-    'Code.exe',
-
-    # Runtimes, build tools
-    'dotnet.exe',
-    'mono.exe',
-    'mono-sgen.exe',
-    'java.exe',
-    'java64.exe',
-    'msbuild.exe',
-    'volta.exe',
-    'node.exe',
-    'node.js',
-    'perfwatson2.exe',
-    'ServiceHub.Host.Node.x86.exe',
-    'vbcscompiler.exe',
-    'nuget.exe',
-
-    # VCS
-    'git.exe',
-
-    # Shells
-    'git-bash.exe',
-    'bash.exe',
-    'powershell.exe',
-    'pwsh.exe',
-    'wsl.exe'
   )
 
   $ExclusionPaths = @($ProjectsFolder) + @($PathExclusions | Where-Object { Test-Path $_ })
@@ -528,122 +446,8 @@ function Install-Winget {
 
 function Install-WingetPackages {
   param (
+    [array]$Packages,
     [bool]$DryRun = $false
-  )
-
-  $Packages = @(
-    [PSCustomObject]@{Id = 'Microsoft.VisualStudioCode'; Override = '/VERYSILENT /MERGETASKS="!runcode,addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath"'; Force = $true },
-    [PSCustomObject]@{Id = 'Microsoft.VisualStudioCode.Insiders'; Override = '/VERYSILENT /MERGETASKS="!runcode,addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath"'; Force = $true },
-    'Adobe.Acrobat.Reader.64-bit',
-    'Amazon.Games',
-    'ATLauncher.ATLauncher',
-    'Audacity.Audacity',
-    'Avidemux.Avidemux',
-    'calibre.calibre',
-    'ClockworkMod.UniversalADBDriver',
-    'CodecGuide.K-LiteCodecPack.Full',
-    'Codeusa.BorderlessGaming',
-    'CPUID.CPU-Z.MSI',
-    'CPUID.HWMonitor',
-    'CrystalDewWorld.CrystalDiskInfo',
-    'DasKeyboard.DasKeyboard',
-    'DBBrowserForSQLite.DBBrowserForSQLite',
-    'Discord.Discord',
-    'Discord.Discord.PTB',
-    'Docker.DockerDesktop',
-    'DolphinEmulator.Dolphin',
-    'ElectronicArts.EADesktop',
-    'EmoteInteractive.RemoteMouse',
-    'EpicGames.EpicGamesLauncher',
-    'FelixRieseberg.MacintoshJS',
-    'FelixRieseberg.Windows95',
-    'File-New-Project.EarTrumpet',
-    'Git.Git',
-    'GitHub.cli',
-    'GitHub.GitHubDesktop',
-    'GitHub.GitLFS',
-    'GNE.DualMonitorTools',
-    'GOG.Galaxy',
-    'Google.AndroidStudio',
-    'Google.Chrome',
-    'HandBrake.HandBrake',
-    'Iterate.Cyberduck',
-    'JanDeDobbeleer.OhMyPosh',
-    'Lexikos.AutoHotkey',
-    'Libretro.RetroArch',
-    'LLVM.LLVM',
-    'Logitech.GHUB',
-    'M2Team.NanaZip',
-    'MediaArea.MediaInfo.GUI',
-    'Microsoft.Edge',
-    'Microsoft.Edge.Beta',
-    'Microsoft.EdgeWebView2Runtime',
-    'Microsoft.GitCredentialManagerCore',
-    'Microsoft.Office',
-    'Microsoft.OneDrive',
-    'Microsoft.OpenJDK.11',
-    'Microsoft.OpenJDK.16',
-    'Microsoft.OpenJDK.17',
-    'Microsoft.PowerShell',
-    'Microsoft.PowerToys',
-    'Microsoft.RemoteDesktopClient',
-    'Microsoft.WindowsTerminal.Preview',
-    'MoritzBunkus.MKVToolNix',
-    'Mozilla.Firefox',
-    'Mp3tag.Mp3tag',
-    'NordPassTeam.NordPass',
-    'NordVPN.NordVPN',
-    'Notepad++.Notepad++',
-    'Nvidia.Broadcast',
-    'Nvidia.GeForceExperience',
-    'Nvidia.PhysX',
-    'NZXT.CAM',
-    'OBSProject.OBSStudio',
-    'OpenWhisperSystems.Signal',
-    'PeterPawlowski.foobar2000',
-    'Plex.Plex',
-    'Plex.PlexMediaServer',
-    'Postman.Postman',
-    'qBittorrent.qBittorrent',
-    'REALiX.HWiNFO',
-    'Rufus.Rufus',
-    'SABnzbdTeam.SABnzbd',
-    'SomePythonThings.ElevenClock',
-    'SomePythonThings.WingetUIStore',
-    'Spotify.Spotify',
-    'tailscale.tailscale',
-    'TeamProwlarr.Prowlarr',
-    'TeamRadarr.Radarr',
-    'TeamSonarr.Sonarr',
-    'TIDALMusicAS.TIDAL',
-    'Ubisoft.Connect',
-    'Valve.Steam',
-    'VideoLAN.VLC',
-    'Volta.Volta',
-    'WinDirStat.WinDirStat',
-    'WinSCP.WinSCP',
-    [PSCustomObject]@{Id = 'Microsoft.DotNet.SDK.7'; Force = $true },
-    [PSCustomObject]@{Id = 'Microsoft.DotNet.SDK.6'; Force = $true },
-    [PSCustomObject]@{Id = 'Microsoft.VCRedist.2015+.x64'; Force = $true },
-    [PSCustomObject]@{Id = 'Microsoft.VCRedist.2015+.x86'; Force = $true },
-    [PSCustomObject]@{Id = 'Microsoft.VCRedist.2013.x64'; Force = $true },
-    [PSCustomObject]@{Id = 'Microsoft.VCRedist.2013.x86'; Force = $true },
-    [PSCustomObject]@{Id = 'Microsoft.VCRedist.2012.x64'; Force = $true },
-    [PSCustomObject]@{Id = 'Microsoft.VCRedist.2012.x86'; Force = $true },
-    [PSCustomObject]@{Id = 'Microsoft.VCRedist.2010.x64'; Force = $true },
-    [PSCustomObject]@{Id = 'Microsoft.VCRedist.2010.x86'; Force = $true },
-    [PSCustomObject]@{Id = 'Microsoft.VCRedist.2008.x64'; Force = $true },
-    [PSCustomObject]@{Id = 'Microsoft.VCRedist.2008.x86'; Force = $true },
-    [PSCustomObject]@{Id = 'Microsoft.VCRedist.2005.x64'; Force = $true },
-    [PSCustomObject]@{Id = 'Microsoft.VCRedist.2005.x86'; Force = $true },
-    # Affinity Photo 2
-    [PSCustomObject]@{Id = '9P8DVF1XW02V'; Source = 'msstore' },
-    # Affinity Designer 2
-    [PSCustomObject]@{Id = '9N2D0P16C80H'; Source = 'msstore' },
-    # Affinity Publisher 2
-    [PSCustomObject]@{Id = '9NTV2DZ11KD9'; Source = 'msstore' },
-    # WhatsApp Beta
-    [PSCustomObject]@{Id = '9NBDXK71NK08'; Source = 'msstore' }
   )
 
   if ($DryRun) {
@@ -676,17 +480,8 @@ function Install-WingetPackages {
 
 function Install-NodeTools {
   param (
+    [string[]]$NodeTools,
     [bool]$DryRun = $false
-  )
-
-  $NodeTools = (
-    'node@18',
-    'node@19',
-    'npm@8',
-    'eslint',
-    'playwright',
-    'prettier',
-    'typescript'
   )
 
   if ($DryRun) {
@@ -722,63 +517,22 @@ function Install-Scoop {
 
 function Install-ScoopApps {
   param (
+    [Parameter(Mandatory = $true)]
+    [ValidateNotNullOrEmpty()]
+    [string[]]
+    $ScoopPrereqs,
+
+    [Parameter(Mandatory = $true)]
+    [ValidateNotNullOrEmpty()]
+    [string[]]
+    $ScoopApps,
+
+    [Parameter(Mandatory = $true)]
+    [ValidateNotNullOrEmpty()]
+    [string[]]
+    $ScoopBuckets,
+
     [bool]$DryRun = $false
-  )
-
-  $ScoopPrereqs = (
-    '7zip',
-    'git',
-    'innounp',
-    'wixtoolset',
-    'lessmsi',
-    'dark'
-  )
-
-  $ScoopApps = $(
-    'GameSaveManager',
-    'adb',
-    'android-clt',
-    'dnsjumper',
-    'duckstation',
-    'gog-galaxy-plugin-downloader',
-    'grep',
-    'lessmsi',
-    'mediainfo',
-    'msiafterburner',
-    'msikombustor',
-    'pcsx2',
-    'potrace',
-    'sqlite',
-    'xemu',
-    'cacert',
-    'chromedriver',
-    'cru',
-    'curl',
-    'edgedriver',
-    'ffmpeg',
-    'geckodriver',
-    'git-filter-repo',
-    'nuget',
-    'pyenv',
-    'resharper-clt',
-    'sudo',
-    'sysinternals',
-    'vim',
-    'wget',
-    'yt-dlp'
-  )
-
-  $ScoopBuckets = @(
-    'extras',
-    'games',
-    @{
-      'name' = 'ash258.ash258'
-      'url'  = 'https://github.com/Ash258/Shovel-Ash258.git'
-    },
-    @{
-      'name' = 'emulators'
-      'url'  = 'https://github.com/hermanjustnu/scoop-emulators.git'
-    }
   )
 
   if ($DryRun) {
@@ -821,16 +575,14 @@ function Install-ScoopApps {
 
 function Set-GitConfiguration {
   param (
+    [Parameter(Mandatory = $false)]
+    [hashtable]
+    $System,
+    [Parameter(Mandatory = $false)]
+    [hashtable]
+    $Global,
     [bool]$DryRun = $false
   )
-
-  $System = @{
-    'core.longpaths' = 'true'
-  }
-
-  $Global = @{
-    'credential.helper' = 'manager'
-  }
 
   if (Get-Command git -ErrorAction SilentlyContinue) {
     $existingSystem = git config --system --list | ConvertFrom-StringData
@@ -860,150 +612,12 @@ function Install-VisualStudio {
     [bool]$InstallVsPreview,
     [Parameter(Mandatory = $false)]
     [bool]$InstallVsBldTool,
+    [Parameter(Mandatory = $true)]
+    [ValidateNotNullOrEmpty()]
+    [string[]]$Components,
     [Parameter(Mandatory = $false)]
     [string]$DownloadsFolder = "$env:USERPROFILE\Downloads",
     [bool]$DryRun = $false
-  )
-
-  $Components = @(
-    'Component.Android.SDK.MAUI',
-    'Component.Microsoft.VisualStudio.LiveShare.2022',
-    'Component.Microsoft.VisualStudio.RazorExtension',
-    'Component.Microsoft.VisualStudio.Web.AzureFunctions',
-    'Component.Microsoft.Web.LibraryManager',
-    'Component.Microsoft.WebTools.BrowserLink.WebLivePreview',
-    'Component.OpenJDK',
-    'Component.Xamarin',
-    'Component.Xamarin.RemotedSimulator',
-    'Microsoft.Component.Azure.DataLake.Tools',
-    'Microsoft.Component.ClickOnce',
-    'Microsoft.Component.MSBuild',
-    'Microsoft.ComponentGroup.Blend',
-    'Microsoft.ComponentGroup.ClickOnce.Publish',
-    'Microsoft.Net.Component.4.7.2.TargetingPack',
-    'Microsoft.Net.Component.4.8.SDK',
-    'Microsoft.Net.Component.4.8.TargetingPack',
-    'Microsoft.Net.ComponentGroup.4.8.DeveloperTools',
-    'Microsoft.Net.ComponentGroup.DevelopmentPrerequisites',
-    'Microsoft.NetCore.Component.DevelopmentTools',
-    'Microsoft.NetCore.Component.Runtime.6.0',
-    'Microsoft.NetCore.Component.Runtime.7.0',
-    'Microsoft.NetCore.Component.SDK',
-    'Microsoft.NetCore.Component.Web',
-    'Microsoft.VisualStudio.Component.AppInsights.Tools',
-    'Microsoft.VisualStudio.Component.AspNet',
-    'Microsoft.VisualStudio.Component.AspNet45',
-    'Microsoft.VisualStudio.Component.Azure.AuthoringTools',
-    'Microsoft.VisualStudio.Component.Azure.ClientLibs',
-    'Microsoft.VisualStudio.Component.Azure.Compute.Emulator',
-    'Microsoft.VisualStudio.Component.Azure.Powershell',
-    'Microsoft.VisualStudio.Component.Azure.ResourceManager.Tools',
-    'Microsoft.VisualStudio.Component.Azure.ServiceFabric.Tools',
-    'Microsoft.VisualStudio.Component.Azure.Waverton',
-    'Microsoft.VisualStudio.Component.Azure.Waverton.BuildTools',
-    'Microsoft.VisualStudio.Component.ClassDesigner',
-    'Microsoft.VisualStudio.Component.CodeMap',
-    'Microsoft.VisualStudio.Component.Common.Azure.Tools',
-    'Microsoft.VisualStudio.Component.CoreEditor',
-    'Microsoft.VisualStudio.Component.Debugger.JustInTime',
-    'Microsoft.VisualStudio.Component.DiagnosticTools',
-    'Microsoft.VisualStudio.Component.DockerTools',
-    'Microsoft.VisualStudio.Component.DotNetModelBuilder',
-    'Microsoft.VisualStudio.Component.EntityFramework',
-    'Microsoft.VisualStudio.Component.FSharp',
-    'Microsoft.VisualStudio.Component.FSharp.WebTemplates',
-    'Microsoft.VisualStudio.Component.GraphDocument',
-    'Microsoft.VisualStudio.Component.Graphics.Tools',
-    'Microsoft.VisualStudio.Component.IISExpress',
-    'Microsoft.VisualStudio.Component.IntelliCode',
-    'Microsoft.VisualStudio.Component.JavaScript.Diagnostics',
-    'Microsoft.VisualStudio.Component.JavaScript.TypeScript',
-    'Microsoft.VisualStudio.Component.MSODBC.SQL',
-    'Microsoft.VisualStudio.Component.MSSQL.CMDLnUtils',
-    'Microsoft.VisualStudio.Component.ManagedDesktop.Core',
-    'Microsoft.VisualStudio.Component.ManagedDesktop.Prerequisites',
-    'Microsoft.VisualStudio.Component.Merq',
-    'Microsoft.VisualStudio.Component.MonoDebugger',
-    'Microsoft.VisualStudio.Component.Node.Tools',
-    'Microsoft.VisualStudio.Component.NuGet',
-    'Microsoft.VisualStudio.Component.Roslyn.Compiler',
-    'Microsoft.VisualStudio.Component.Roslyn.LanguageServices',
-    'Microsoft.VisualStudio.Component.SQL.CLR',
-    'Microsoft.VisualStudio.Component.SQL.DataSources',
-    'Microsoft.VisualStudio.Component.SQL.LocalDB.Runtime',
-    'Microsoft.VisualStudio.Component.SQL.SSDT',
-    'Microsoft.VisualStudio.Component.TextTemplating',
-    'Microsoft.VisualStudio.Component.TypeScript.TSServer',
-    'Microsoft.VisualStudio.Component.VC.14.29.16.11.x86.x64',
-    'Microsoft.VisualStudio.Component.VC.ASAN',
-    'Microsoft.VisualStudio.Component.VC.ATL',
-    'Microsoft.VisualStudio.Component.VC.CMake.Project',
-    'Microsoft.VisualStudio.Component.VC.CoreIde',
-    'Microsoft.VisualStudio.Component.VC.DiagnosticTools',
-    'Microsoft.VisualStudio.Component.VC.Redist.14.Latest',
-    'Microsoft.VisualStudio.Component.VC.TestAdapterForBoostTest',
-    'Microsoft.VisualStudio.Component.VC.TestAdapterForGoogleTest',
-    'Microsoft.VisualStudio.Component.VC.Tools.x86.x64',
-    'Microsoft.VisualStudio.Component.Web',
-    'Microsoft.VisualStudio.Component.WebDeploy',
-    'Microsoft.VisualStudio.Component.Windows10SDK',
-    'Microsoft.VisualStudio.Component.Windows10SDK.18362',
-    'Microsoft.VisualStudio.Component.Windows10SDK.19041',
-    'Microsoft.VisualStudio.Component.Windows10SDK.20348',
-    'Microsoft.VisualStudio.Component.Windows11SDK.22000',
-    'Microsoft.VisualStudio.Component.Windows11SDK.22621',
-    'Microsoft.VisualStudio.Component.WslDebugging',
-    'Microsoft.VisualStudio.ComponentGroup.ArchitectureTools.Native',
-    'Microsoft.VisualStudio.ComponentGroup.Azure.CloudServices',
-    'Microsoft.VisualStudio.ComponentGroup.Azure.Prerequisites',
-    'Microsoft.VisualStudio.ComponentGroup.Azure.ResourceManager.Tools',
-    'Microsoft.VisualStudio.ComponentGroup.AzureFunctions',
-    'Microsoft.VisualStudio.ComponentGroup.MSIX.Packaging',
-    'Microsoft.VisualStudio.ComponentGroup.Maui.All',
-    'Microsoft.VisualStudio.ComponentGroup.Maui.Android',
-    'Microsoft.VisualStudio.ComponentGroup.Maui.Blazor',
-    'Microsoft.VisualStudio.ComponentGroup.Maui.MacCatalyst',
-    'Microsoft.VisualStudio.ComponentGroup.Maui.Shared',
-    'Microsoft.VisualStudio.ComponentGroup.Maui.Windows',
-    'Microsoft.VisualStudio.ComponentGroup.Maui.iOS',
-    'Microsoft.VisualStudio.ComponentGroup.NativeDesktop.Core',
-    'Microsoft.VisualStudio.ComponentGroup.Web',
-    'Microsoft.VisualStudio.ComponentGroup.Web.CloudTools',
-    'Microsoft.VisualStudio.ComponentGroup.WebToolsExtensions',
-    'Microsoft.VisualStudio.ComponentGroup.WebToolsExtensions.CMake',
-    'Microsoft.VisualStudio.ComponentGroup.WebToolsExtensions.TemplateEngine',
-    'Microsoft.VisualStudio.Workload.Azure',
-    'Microsoft.VisualStudio.Workload.CoreEditor',
-    'Microsoft.VisualStudio.Workload.Data',
-    'Microsoft.VisualStudio.Workload.ManagedDesktop',
-    'Microsoft.VisualStudio.Workload.NativeDesktop',
-    'Microsoft.VisualStudio.Workload.NetCrossPlat',
-    'Microsoft.VisualStudio.Workload.NetWeb',
-    'Microsoft.VisualStudio.Workload.Node',
-    'android',
-    'ios',
-    'maccatalyst',
-    'maui.android',
-    'maui.blazor',
-    'maui.core',
-    'maui.ios',
-    'maui.maccatalyst',
-    'maui.windows',
-    'microsoft.net.runtime.android',
-    'microsoft.net.runtime.android.aot',
-    'microsoft.net.runtime.android.aot.net6',
-    'microsoft.net.runtime.android.net6',
-    'microsoft.net.runtime.ios',
-    'microsoft.net.runtime.ios.net6',
-    'microsoft.net.runtime.maccatalyst',
-    'microsoft.net.runtime.maccatalyst.net6',
-    'microsoft.net.runtime.mono.tooling',
-    'microsoft.net.runtime.mono.tooling.net6',
-    'runtimes.ios',
-    'runtimes.ios.net6',
-    'runtimes.maccatalyst',
-    'runtimes.maccatalyst.net6',
-    'runtimes.windows'
   )
 
   if ($DryRun) {
@@ -1134,6 +748,7 @@ function Get-FontSets {
   }
 }
 
+$Configuration = Import-ConfigurationJson
 $DownloadsFolder = "$env:USERPROFILE\Downloads"
 $FontsFolder = "$env:USERPROFILE\fonts"
 
@@ -1149,7 +764,7 @@ if ($Cfg -eq $true) {
 
     Enable-FileSharing -DryRun $DryRun
 
-    Add-WindowsDefenderExclusions -DryRun $DryRun
+    Add-WindowsDefenderExclusions -DryRun $DryRun -PathExclusions $Configuration.WindowsDefender.PathExclusions -ProcessExclusions $Configuration.WindowsDefender.ProcessExclusions -ProjectsFolder $Configuration.WindowsDefender.ProjectsFolder
 
     Set-UACLevel1 -DryRun $DryRun
 
@@ -1168,24 +783,24 @@ if ($Winget -eq $true) {
 }
 
 if ($WingetPkgs -eq $true) {
-  Install-WingetPackages -DryRun $DryRun
+  Install-WingetPackages -DryRun $DryRun -Packages $Configuration.Winget.Packages
 }
 
 if ($NodeJs -eq $true) {
-  Install-NodeTools -DryRun $DryRun
+  Install-NodeTools -DryRun $DryRun -NodeTools $Configuration.Volta.Packages
 }
 
 if ($Scoop -eq $true) {
   Install-Scoop -DryRun $DryRun
-  Install-ScoopApps -DryRun $DryRun
+  Install-ScoopApps -DryRun $DryRun -ScoopPrereqs $Configuration.Scoop.Prereqs -ScoopApps $Configuration.Scoop.Packages -ScoopBuckets $Configuration.Scoop.Buckets
 }
 
 if ($Cfg -eq $true) {
-  Set-GitConfiguration -DryRun $DryRun
+  Set-GitConfiguration -DryRun $DryRun -System $Configuration.Git.Config.System -Global $Configuration.Git.Config.Global
 }
 
 if ($VsRelease -eq $true -or $VsPreview -eq $true -or $VsBldTool -eq $true) {
-  Install-VisualStudio -DryRun $DryRun -InstallVsRelease $VsRelease -InstallVsPreview $VsPreview -InstallVsBldTool $VsBldTool -DownloadsFolder $DownloadsFolder
+  Install-VisualStudio -DryRun $DryRun -InstallVsRelease $VsRelease -InstallVsPreview $VsPreview -InstallVsBldTool $VsBldTool -Components $Configuration.VisualStudio.Components -DownloadsFolder $DownloadsFolder
 }
 
 if ($Fonts -eq $true -or $GoogleFonts -eq $true -or $NerdFonts -eq $true) {

@@ -62,239 +62,378 @@ function Invoke-BlockElevated {
   }
 }
 
-$Downloads = "$env:USERPROFILE\Downloads"
-$FontsFolder = "$env:USERPROFILE\fonts"
+function Set-ExecutionPolicyUnrestricted {
+  $CurrentUserPolicy = Get-ExecutionPolicy -Scope CurrentUser
+  $LocalMachinePolicy = Get-ExecutionPolicy -Scope LocalMachine
 
-if ($TurboRdpHw -eq $true -or $TurboRdpSw -eq $true) {
-  Invoke-BlockElevated -NotifyText 'Elevation required to apply gp. Attempting to elevate...' -ScriptBlock {
-    $LgpoTool = 'https://gist.github.com/matracey/9a4126bb243f4966a6d914c05e1fff6a/raw/5e31fdcf1b6591fb1ea376d41d5a93eca79c05f4/LGPO.zip'
-    $LgpoFile = "$env:USERPROFILE\lgpo.txt"
-    $AvcHardwareEncodePreferred = 0
-    if ($TurboRdpHw -eq $true -and $TurboRdpSw -eq $false) {
-      $AvcHardwareEncodePreferred = 1
-    }
-
-    Remove-Item $LgpoFile -ErrorAction SilentlyContinue
-    @{
-      'Terminal Services|SelectTransport'                  = 0
-      'Terminal Services|bEnumerateHWBeforeSW'             = 1
-      'Terminal Services|AVC444ModePreferred'              = 1
-      'Terminal Services|AVCHardwareEncodePreferred'       = $AvcHardwareEncodePreferred
-      'Terminal Services|MaxCompressionLevel'              = 0
-      'Terminal Services|ImageQuality'                     = 2
-      'Terminal Services|fEnableVirtualizedGraphics'       = 1
-      'Terminal Services|VGOptimization_CaptureFrameRate'  = 1
-      'Terminal Services|VGOptimization_CompressionRatio'  = 1
-      'Terminal Services|VisualExperiencePolicy'           = 1
-      'Terminal Services\Client|fUsbRedirectionEnableMode' = 2
-    }.GetEnumerator() | ForEach-Object { "Computer`nSoftware\Policies\Microsoft\Windows NT\$($_.Name.Split('|')[0])`n$($_.Name.Split('|')[1])`nDWORD:$($_.Value)`n" | Out-File $LgpoFile -Append }
-
-    # Download the LGPO tool
-    Invoke-WebRequest -Uri $LgpoTool -OutFile "$Downloads\LGPO.zip"
-    # Unzip the LGPO tool
-    Expand-Archive -Path "$Downloads\LGPO.zip" -DestinationPath "$Downloads\LGPO" -Force
-
-    # Import the Group Policy
-    & (Get-ChildItem -Path "$Downloads\LGPO" -Recurse -Filter 'LGPO.exe').FullName /t $LgpoFile
-
-    # Sets 60 FPS limit on RDP
-    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations' -Name 'DWMFRAMEINTERVAL' -Value 15 -Type DWord
-
-    # Increase Windows Responsiveness
-    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile' -Name 'SystemResponsiveness' -Value 0 -Type DWord
-
-    # Sets the flow control for Display vs Channel Bandwidth (aka RemoteFX devices, including controllers)
-    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\TermDD' -Name 'FlowControlDisable' -Value 1 -Type DWord
-    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\TermDD' -Name 'FlowControlDisplayBandwidth' -Value 16 -Type DWord
-    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\TermDD' -Name 'FlowControlChannelBandwidth' -Value 144 -Type DWord
-    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\TermDD' -Name 'FlowControlChargePostCompression' -Value 0 -Type DWord
-
-    # Removes the artificial latency delay for RDP
-    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name 'InteractiveDelay' -Value 0 -Type DWord
-
-    # Disables Windows Network Throttling
-    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters' -Name 'DisableBandwidthThrottling' -Value 1 -Type DWord
-
-    # Enables large MTU packets
-    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters' -Name 'DisableLargeMtu' -Value 0 -Type DWord
-
-    # Disables the WDDM Drivers and goes back to legacy XDDM drivers (better for performance on Nvidia cards, you might want to change this setting for AMD cards)
-    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services' -Name 'fEnableWddmDriver' -Value 0 -Type DWord
-  }
-}
-
-if ($Cfg -eq $true) {
-  Invoke-BlockElevated -NotifyText 'Elevation required to apply cfg. Attempting to elevate...' -ScriptBlock {
-    # Execution Policy
+  if ($CurrentUserPolicy -ne 'Unrestricted' -or $LocalMachinePolicy -ne 'Unrestricted') {
     Write-Host 'Setting execution policy to unrestricted.'
     Set-ExecutionPolicy Unrestricted -Scope CurrentUser
     Set-ExecutionPolicy Unrestricted
+  } else {
+    Write-Host 'Execution policy is already set to unrestricted.'
+  }
+}
 
-    # Remote Desktop
+function Enable-RemoteDesktop {
+  $RemoteDesktopEnabled = (Get-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server').fDenyTSConnections -eq 0
+  $FirewallRuleEnabled = (Get-NetFirewallRule -DisplayGroup 'Remote Desktop').Enabled -eq 'True'
+
+  if (-not $RemoteDesktopEnabled) {
     Write-Host 'Enabling Remote Desktop.'
     Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name 'fDenyTSConnections' -Value 0
-    Enable-NetFirewallRule -DisplayGroup 'Remote Desktop'
+  } else {
+    Write-Host 'Remote Desktop is already enabled.'
+  }
 
-    # File Sharing
+  if (-not $FirewallRuleEnabled) {
+    Write-Host 'Enabling firewall rule for Remote Desktop.'
+    Enable-NetFirewallRule -DisplayGroup 'Remote Desktop'
+  } else {
+    Write-Host 'Firewall rule for Remote Desktop is already enabled.'
+  }
+}
+
+function Enable-FileSharing {
+  $FirewallRuleEnabled = (Get-NetFirewallRule -DisplayGroup 'File And Printer Sharing').Enabled -eq 'True'
+  $LongPathsEnabled = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem').LongPathsEnabled -eq 1
+
+  if (-not $FirewallRuleEnabled) {
     Write-Host 'Enabling file and printer sharing.'
     Set-NetFirewallRule -DisplayGroup 'File And Printer Sharing' -Enabled True -Profile Any
+  } else {
+    Write-Host 'File and printer sharing is already enabled.'
+  }
+
+  if (-not $LongPathsEnabled) {
+    Write-Host 'Enabling long paths.'
     Set-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' -Name 'LongPathsEnabled' -Value 1
+  } else {
+    Write-Host 'Long paths are already enabled.'
+  }
+}
 
-    # Windows Defender Exceptions
-    $PathExclusions = (
-      'C:\Program Files (x86)\Microsoft SDKs',
-      'C:\Program Files (x86)\Microsoft SDKs\NuGetPackages',
-      'C:\Program Files (x86)\Microsoft Visual Studio 10.0',
-      'C:\Program Files (x86)\Microsoft Visual Studio 14.0',
-      'C:\Program Files (x86)\Microsoft Visual Studio',
-      'C:\Program Files (x86)\MSBuild',
-      'C:\Program Files\Microsoft Visual Studio\2022\Community',
-      'C:\Program Files\Microsoft Visual Studio\2022\Enterprise',
-      'C:\Program Files\Microsoft Visual Studio\2022\Preview',
-      'C:\Program Files\Microsoft Visual Studio\2022\Professional',
-      'C:\ProgramData\Microsoft\VisualStudio\Packages',
-      'C:\Windows\assembly',
-      'C:\Windows\Microsoft.NET',
-      "$($env:LOCALAPPDATA)\Microsoft\VisualStudio",
-      "$($env:LOCALAPPDATA)\Volta",
-      "$($env:PROGRAMFILES)\Volta",
-      "$($env:USERPROFILE)\scoop"
-    )
+function Add-WindowsDefenderExclusions {
+  param (
+    [Parameter(Mandatory = $false)]
+    [string]$ProjectsFolder
+  )
 
-    $ProcessExclusions = $(
-      # VS
-      'vshost-clr2.exe',
-      'VSInitializer.exe',
-      'VSIXInstaller.exe',
-      'VSLaunchBrowser.exe',
-      'vsn.exe',
-      'VsRegEdit.exe',
-      'VSWebHandler.exe',
-      'VSWebLauncher.exe',
-      'XDesProc.exe',
-      'Blend.exe',
-      'DDConfigCA.exe',
-      'devenv.exe',
-      'FeedbackCollector.exe',
-      'Microsoft.VisualStudio.Web.Host.exe',
-      'mspdbsrv.exe',
-      'MSTest.exe',
-      'PerfWatson2.exe',
-      'Publicize.exe',
-      'QTAgent.exe',
-      'QTAgent_35.exe',
-      'QTAgent_40.exe',
-      'QTAgent32.exe',
-      'QTAgent32_35.exe',
-      'QTAgent32_40.exe',
-      'QTDCAgent.exe',
-      'QTDCAgent32.exe',
-      'StorePID.exe',
-      'T4VSHostProcess.exe',
-      'TailoredDeploy.exe',
-      'TCM.exe',
-      'TextTransform.exe',
-      'TfsLabConfig.exe',
-      'UserControlTestContainer.exe',
-      'vb7to8.exe',
-      'VcxprojReader.exe',
-      'VsDebugWERHelper.exe',
-      'VSFinalizer.exe',
-      'VsGa.exe',
-      'VSHiveStub.exe',
-      'vshost.exe',
-      'vshost32.exe',
-      'vshost32-clr2.exe',
+  $PathExclusions = (
+    'C:\Program Files (x86)\Microsoft SDKs',
+    'C:\Program Files (x86)\Microsoft SDKs\NuGetPackages',
+    'C:\Program Files (x86)\Microsoft Visual Studio 10.0',
+    'C:\Program Files (x86)\Microsoft Visual Studio 14.0',
+    'C:\Program Files (x86)\Microsoft Visual Studio',
+    'C:\Program Files (x86)\MSBuild',
+    'C:\Program Files\Microsoft Visual Studio\2022\Community',
+    'C:\Program Files\Microsoft Visual Studio\2022\Enterprise',
+    'C:\Program Files\Microsoft Visual Studio\2022\Preview',
+    'C:\Program Files\Microsoft Visual Studio\2022\Professional',
+    'C:\ProgramData\Microsoft\VisualStudio\Packages',
+    'C:\Windows\assembly',
+    'C:\Windows\Microsoft.NET',
+    "$($env:LOCALAPPDATA)\Microsoft\VisualStudio",
+    "$($env:LOCALAPPDATA)\Volta",
+    "$($env:PROGRAMFILES)\Volta",
+    "$($env:USERPROFILE)\scoop"
+  )
 
-      # VS Code
-      'Code - Insiders.exe',
-      'Code.exe',
+  $ProcessExclusions = $(
+    # VS
+    'vshost-clr2.exe',
+    'VSInitializer.exe',
+    'VSIXInstaller.exe',
+    'VSLaunchBrowser.exe',
+    'vsn.exe',
+    'VsRegEdit.exe',
+    'VSWebHandler.exe',
+    'VSWebLauncher.exe',
+    'XDesProc.exe',
+    'Blend.exe',
+    'DDConfigCA.exe',
+    'devenv.exe',
+    'FeedbackCollector.exe',
+    'Microsoft.VisualStudio.Web.Host.exe',
+    'mspdbsrv.exe',
+    'MSTest.exe',
+    'PerfWatson2.exe',
+    'Publicize.exe',
+    'QTAgent.exe',
+    'QTAgent_35.exe',
+    'QTAgent_40.exe',
+    'QTAgent32.exe',
+    'QTAgent32_35.exe',
+    'QTAgent32_40.exe',
+    'QTDCAgent.exe',
+    'QTDCAgent32.exe',
+    'StorePID.exe',
+    'T4VSHostProcess.exe',
+    'TailoredDeploy.exe',
+    'TCM.exe',
+    'TextTransform.exe',
+    'TfsLabConfig.exe',
+    'UserControlTestContainer.exe',
+    'vb7to8.exe',
+    'VcxprojReader.exe',
+    'VsDebugWERHelper.exe',
+    'VSFinalizer.exe',
+    'VsGa.exe',
+    'VSHiveStub.exe',
+    'vshost.exe',
+    'vshost32.exe',
+    'vshost32-clr2.exe',
 
-      # Runtimes, build tools
-      'dotnet.exe',
-      'mono.exe',
-      'mono-sgen.exe',
-      'java.exe',
-      'java64.exe',
-      'msbuild.exe',
-      'volta.exe',
-      'node.exe',
-      'node.js',
-      'perfwatson2.exe',
-      'ServiceHub.Host.Node.x86.exe',
-      'vbcscompiler.exe',
-      'nuget.exe',
+    # VS Code
+    'Code - Insiders.exe',
+    'Code.exe',
 
-      # VCS
-      'git.exe',
+    # Runtimes, build tools
+    'dotnet.exe',
+    'mono.exe',
+    'mono-sgen.exe',
+    'java.exe',
+    'java64.exe',
+    'msbuild.exe',
+    'volta.exe',
+    'node.exe',
+    'node.js',
+    'perfwatson2.exe',
+    'ServiceHub.Host.Node.x86.exe',
+    'vbcscompiler.exe',
+    'nuget.exe',
 
-      # Shells
-      'git-bash.exe',
-      'bash.exe',
-      'powershell.exe',
-      'pwsh.exe',
-      'wsl.exe'
-    )
+    # VCS
+    'git.exe',
 
-    Write-Host 'Creating Windows Defender exclusions for common Visual Studio folders and processes.'
-    $ProjectsFolder = 'D:\Developer'
+    # Shells
+    'git-bash.exe',
+    'bash.exe',
+    'powershell.exe',
+    'pwsh.exe',
+    'wsl.exe'
+  )
 
-    Write-Verbose ''
-    Write-Verbose "Adding Path Exclusion: $ProjectsFolder"
-    Add-MpPreference -ExclusionPath $ProjectsFolder
+  $ExclusionPaths = @($ProjectsFolder) + @($PathExclusions | Where-Object { Test-Path $_ })
+  $ExistingExclusionPaths = Get-MpPreference | Select-Object -ExpandProperty ExclusionPath
+  $NewExclusionPaths = Compare-Object $ExclusionPaths $ExistingExclusionPaths | Where-Object { $_.SideIndicator -eq '=>' } | Select-Object -ExpandProperty InputObject
 
-    foreach ($Exclusion in $PathExclusions | Where-Object { Test-Path $_ }) {
-      Write-Verbose "Adding Path Exclusion: $Exclusion"
-      Add-MpPreference -ExclusionPath $Exclusion
+  $ExclusionProcesses = $ProcessExclusions
+  $ExistingExclusionProcesses = Get-MpPreference | Select-Object -ExpandProperty ExclusionProcess
+  $NewExclusionProcesses = Compare-Object $ExclusionProcesses $ExistingExclusionProcesses | Where-Object { $_.SideIndicator -eq '=>' } | Select-Object -ExpandProperty InputObject
+
+  Write-Host 'Creating Windows Defender exclusions for development folders and processes.'
+
+  if ($NewExclusionPaths) {
+    Add-MpPreference -ExclusionPath $NewExclusionPaths
+    Write-Host "Added exclusion paths: $($NewExclusionPaths -join ', ')"
+  } else {
+    Write-Host 'No new exclusion paths to add.'
+  }
+
+  if ($NewExclusionProcesses) {
+    Add-MpPreference -ExclusionProcess $NewExclusionProcesses
+    Write-Host "Added exclusion processes: $($NewExclusionProcesses -join ', ')"
+  } else {
+    Write-Host 'No new exclusion processes to add.'
+  }
+}
+
+function Set-UACLevel1 {
+  $GPOValues = @{
+    ConsentPromptBehaviorAdmin  = 5
+    ConsentPromptBehaviorUser   = 3
+    EnableInstallerDetection    = 1
+    EnableLUA                   = 1
+    EnableVirtualization        = 1
+    PromptOnSecureDesktop       = 0
+    ValidateAdminCodeSignatures = 0
+    FilterAdministratorToken    = 0
+  }
+
+  $CurrentValues = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System'
+
+  $Changes = $false
+  foreach ($Property in $GPOValues.Keys) {
+    $CurrentValue = $CurrentValues.$Property
+    $ExpectedValue = $GPOValues.$Property
+    if ($CurrentValue -ne $ExpectedValue) {
+      Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name $Property -Value $ExpectedValue
+      $Changes = $true
     }
 
-    foreach ($Exclusion in $ProcessExclusions) {
-      Write-Verbose "Adding Process Exclusion: $Exclusion"
-      Add-MpPreference -ExclusionProcess $Exclusion
+    if (-not($Changes)) {
+      Write-Host 'UAC is already set to Level 1.'
     }
+  }
+}
 
-    Write-Host ''
-    Write-Host 'Windows Defender Exclusions:'
+function Enable-DeveloperMode {
+  $DeveloperModeRegistryKeyPath = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock'
+  $DeveloperModeEnabled = (Get-ItemProperty -Path $DeveloperModeRegistryKeyPath).AllowDevelopmentWithoutDevLicense -eq 1
 
-    $Prefs = Get-MpPreference
-    $Prefs.ExclusionPath
-    $Prefs.ExclusionProcess
-    Write-Host ''
-    Write-Host ''
-
-
-    # UAC Settings to Level 1
-    Write-Host 'Setting UAC to Level 1.'
-    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'ConsentPromptBehaviorAdmin' -Value 5
-    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'ConsentPromptBehaviorUser' -Value 3
-    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'EnableInstallerDetection' -Value 1
-    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'EnableLUA' -Value 1
-    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'EnableVirtualization' -Value 1
-    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'PromptOnSecureDesktop' -Value 0
-    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'ValidateAdminCodeSignatures' -Value 0
-    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'FilterAdministratorToken' -Value 0
-
-    # Developer Mode
+  if (-not $DeveloperModeEnabled) {
     Write-Host 'Enabling Developer Mode.'
-    $DeveloperModeRegistryKeyPath = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock'
     if (-not(Test-Path -Path $DeveloperModeRegistryKeyPath)) {
       New-Item -Path $DeveloperModeRegistryKeyPath -ItemType Directory -Force
     }
 
-    Set-ItemProperty -Path $DeveloperModeRegistryKeyPath -Name AllowDevelopmentWithoutDevLicense -Type DWord -Value 1
+    Set-ItemProperty -Path $DeveloperModeRegistryKeyPath -Name AllowDevelopmentWithoutDevLicense -Type [Microsoft.Win32.RegistryValueKind]::DWord -Value 1
+  } else {
+    Write-Host 'Developer Mode is already enabled.'
   }
 }
 
-if ($Winget -eq $true) {
-  Write-Host 'Installing winget...'
-  $WingetUrl = ((((Invoke-WebRequest 'https://api.github.com/repos/microsoft/winget-cli/releases/latest') | ConvertFrom-Json).assets.browser_download_url) -match 'msix')[0]
-  Invoke-WebRequest -Uri $WingetUrl -OutFile "$Downloads\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
-  Add-AppPackage -Path "$Downloads\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -ForceUpdateFromAnyVersion
+function Set-RdpOptimizations {
+  param (
+    [bool]$AvcHardwareEncodePreferred = $false
+  )
+
+  $GPOValues = @{
+    'Terminal Services|SelectTransport'                  = 0
+    'Terminal Services|bEnumerateHWBeforeSW'             = 1
+    'Terminal Services|AVC444ModePreferred'              = 1
+    'Terminal Services|AVCHardwareEncodePreferred'       = [int]$AvcHardwareEncodePreferred
+    'Terminal Services|MaxCompressionLevel'              = 0
+    'Terminal Services|ImageQuality'                     = 2
+    'Terminal Services|fEnableVirtualizedGraphics'       = 1
+    'Terminal Services|VGOptimization_CaptureFrameRate'  = 1
+    'Terminal Services|VGOptimization_CompressionRatio'  = 1
+    'Terminal Services|VisualExperiencePolicy'           = 1
+    'Terminal Services\Client|fUsbRedirectionEnableMode' = 2
+  }
+
+  $RegistryEntries = $($GPOValues.GetEnumerator() | ForEach-Object {
+      $Item, $Property, $Value = $($_.Name.Split('|') + $($_.Value))
+      @{
+        Path  = "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\$Item"
+        Name  = $Property
+        Value = $Value
+        Type  = [Microsoft.Win32.RegistryValueKind]::DWord
+      }
+    }) + @(
+    # Sets 60 FPS limit on RDP
+    @{
+      Path  = 'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations'
+      Name  = 'DWMFRAMEINTERVAL'
+      Value = 15
+      Type  = [Microsoft.Win32.RegistryValueKind]::DWord
+    },
+
+    # Increase Windows Responsiveness
+    @{
+      Path  = 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile'
+      Name  = 'SystemResponsiveness'
+      Value = 0
+      Type  = [Microsoft.Win32.RegistryValueKind]::DWord
+    },
+
+    # Sets the flow control for Display vs Channel Bandwidth (aka RemoteFX devices, including controllers)
+    @{
+      Path  = 'HKLM:\SYSTEM\CurrentControlSet\Services\TermDD'
+      Name  = 'FlowControlDisable'
+      Value = 1
+      Type  = [Microsoft.Win32.RegistryValueKind]::DWord
+    },
+
+    @{
+      Path  = 'HKLM:\SYSTEM\CurrentControlSet\Services\TermDD'
+      Name  = 'FlowControlDisplayBandwidth'
+      Value = 16
+      Type  = [Microsoft.Win32.RegistryValueKind]::DWord
+    },
+
+    @{
+      Path  = 'HKLM:\SYSTEM\CurrentControlSet\Services\TermDD'
+      Name  = 'FlowControlChannelBandwidth'
+      Value = 144
+      Type  = [Microsoft.Win32.RegistryValueKind]::DWord
+    },
+
+    @{
+      Path  = 'HKLM:\SYSTEM\CurrentControlSet\Services\TermDD'
+      Name  = 'FlowControlChargePostCompression'
+      Value = 0
+      Type  = [Microsoft.Win32.RegistryValueKind]::DWord
+    },
+
+    # Removes the artificial latency delay for RDP
+    @{
+      Path  = 'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp'
+      Name  = 'InteractiveDelay'
+      Value = 0
+      Type  = [Microsoft.Win32.RegistryValueKind]::DWord
+    },
+
+    # Disables Windows Network Throttling
+    @{
+      Path  = 'HKLM:\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters'
+      Name  = 'DisableBandwidthThrottling'
+      Value = 1
+      Type  = [Microsoft.Win32.RegistryValueKind]::DWord
+    },
+
+    # Enables large MTU packets
+    @{
+      Path  = 'HKLM:\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters'
+      Name  = 'DisableLargeMtu'
+      Value = 0
+      Type  = [Microsoft.Win32.RegistryValueKind]::DWord
+    },
+
+    # Disables the WDDM Drivers and goes back to legacy XDDM drivers (better for performance on Nvidia cards, you might want to change this setting for AMD cards)
+    @{
+      Path  = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services'
+      Name  = 'fEnableWddmDriver'
+      Value = 0
+      Type  = [Microsoft.Win32.RegistryValueKind]::DWord
+    }
+  )
+
+  Write-Host 'Applying RDP optimizations...'
+
+  Invoke-BlockElevated -NotifyText 'Elevation required to apply gp. Attempting to elevate...' -ScriptBlock {
+    $LgpoTool = 'https://gist.github.com/matracey/9a4126bb243f4966a6d914c05e1fff6a/raw/5e31fdcf1b6591fb1ea376d41d5a93eca79c05f4/LGPO.zip'
+    $LgpoFile = "$env:USERPROFILE\lgpo.txt"
+
+    Remove-Item $LgpoFile -ErrorAction SilentlyContinue
+    $GPOValues.GetEnumerator() | ForEach-Object {
+      $Item, $Property, $Value = $($_.Name.Split('|') + $($_.Value))
+      "Computer`nSoftware\Policies\Microsoft\Windows NT\$Item`n$Property`nDWORD:$Value`n" | Out-File $LgpoFile -Append
+    }
+
+    # Download the LGPO tool
+    Invoke-WebRequest -Uri $LgpoTool -OutFile "$env:USERPROFILE\Downloads\LGPO.zip"
+
+    # Unzip the LGPO tool
+    Expand-Archive -Path "$env:USERPROFILE\Downloads\LGPO.zip" -DestinationPath "$env:USERPROFILE\Downloads\LGPO" -Force
+
+    # Import the Group Policy
+    & (Get-ChildItem -Path "$env:USERPROFILE\Downloads\LGPO" -Recurse -Filter 'LGPO.exe').FullName /t $LgpoFile
+
+    # Run Set-ItemProperty on each registry entry
+    $RegistryEntries | ForEach-Object {
+      Set-ItemProperty -Path $_.Path -Name $_.Name -Value $_.Value -Type $_.Type -Force
+    }
+  }
 }
 
-if ($WingetPkgs -eq $true) {
-  Write-Host 'Installing winget packages...'
+function Install-Winget {
+  param (
+    [string]$DownloadsFolder = "$env:USERPROFILE\Downloads"
+  )
 
+  if (Get-Command winget -ErrorAction SilentlyContinue) {
+    Write-Host 'Winget is already installed.'
+  } else {
+    Write-Host 'Installing winget...'
+    $WingetUrl = ((((Invoke-WebRequest 'https://api.github.com/repos/microsoft/winget-cli/releases/latest') | ConvertFrom-Json).assets.browser_download_url) -match 'msix')[0]
+    Invoke-WebRequest -Uri $WingetUrl -OutFile "$DownloadsFolder\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
+    Add-AppPackage -Path "$DownloadsFolder\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -ForceUpdateFromAnyVersion
+  }
+}
+
+function Install-WingetPackages {
   $Packages = @(
     [PSCustomObject]@{Id = 'Microsoft.VisualStudioCode'; Override = '/VERYSILENT /MERGETASKS="!runcode,addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath"'; Force = $true },
     [PSCustomObject]@{Id = 'Microsoft.VisualStudioCode.Insiders'; Override = '/VERYSILENT /MERGETASKS="!runcode,addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath"'; Force = $true },
@@ -410,6 +549,8 @@ if ($WingetPkgs -eq $true) {
     [PSCustomObject]@{Id = '9NBDXK71NK08'; Source = 'msstore' }
   )
 
+  Write-Host 'Installing winget packages...'
+
   foreach ($Package in $Packages) {
     if ($Package -is [string]) {
       $Id = $Package
@@ -425,9 +566,7 @@ if ($WingetPkgs -eq $true) {
   }
 }
 
-if ($NodeJs -eq $true) {
-  Write-Host 'Installing nodejs...'
-
+function Install-NodeTools {
   $NodeTools = (
     'node@18',
     'node@19',
@@ -438,15 +577,23 @@ if ($NodeJs -eq $true) {
     'typescript'
   )
 
+  Write-Host 'Installing nodejs...'
+
   & "$env:PROGRAMFILES\Volta\volta.exe" install @NodeTools
 }
 
-if ($Scoop -eq $true) {
-  Write-Host 'Installing scoop...'
-  Invoke-WebRequest -useb get.scoop.sh -OutFile 'install.ps1'
-  .\install.ps1 -RunAsAdmin
-  Remove-Item 'install.ps1'
+function Install-Scoop {
+  if (Get-Command scoop -ErrorAction SilentlyContinue) {
+    Write-Host 'Scoop is already installed.'
+  } else {
+    Write-Host 'Installing scoop...'
+    Invoke-WebRequest -useb get.scoop.sh -OutFile 'install.ps1'
+    .\install.ps1 -RunAsAdmin
+    Remove-Item 'install.ps1'
+  }
+}
 
+function Install-ScoopApps {
   $ScoopPrereqs = (
     '7zip',
     'git',
@@ -490,6 +637,21 @@ if ($Scoop -eq $true) {
     'yt-dlp'
   )
 
+  $ScoopBuckets = @(
+    'extras',
+    'games',
+    @{
+      'name' = 'ash258.ash258'
+      'url'  = 'https://github.com/Ash258/Shovel-Ash258.git'
+    },
+    @{
+      'name' = 'emulators'
+      'url'  = 'https://github.com/hermanjustnu/scoop-emulators.git'
+    }
+  )
+
+  Write-Host 'Installing scoop apps...'
+
   scoop install @ScoopPrereqs
 
   & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" config SCOOP_REPO 'https://github.com/Ash258/Scoop-Core'
@@ -497,31 +659,53 @@ if ($Scoop -eq $true) {
   & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" status
   & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" checkup
 
-  & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" install aria2
-
-  & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" bucket add extras
-
-  # Optional buckets
-  & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" bucket add games
-  & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" bucket add 'ash258.ash258' 'https://github.com/Ash258/Shovel-Ash258.git'
-  & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" bucket add emulators 'https://github.com/hermanjustnu/scoop-emulators.git'
+  foreach ($bucket in $ScoopBuckets) {
+    if ($bucket -is [string]) {
+      & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" bucket add $bucket
+    } else {
+      & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" bucket add $bucket.name $bucket.url
+    }
+  }
 
   scoop install @ScoopApps
 }
 
-if ($Cfg -eq $true -and (Get-Command git -ErrorAction SilentlyContinue)) {
-  Write-Host 'Configuring git...'
-  git config --system core.longpaths true
-  git config --global credential.helper manager
+function Set-GitConfiguration {
+  $System = @{
+    'core.longpaths' = 'true'
+  }
+
+  $Global = @{
+    'credential.helper' = 'manager'
+  }
+
+  if (Get-Command git -ErrorAction SilentlyContinue) {
+    $existingSystem = git config --system --list | ConvertFrom-StringData
+    $existingGlobal = git config --global --list | ConvertFrom-StringData
+    $PendingSystem = $System.Keys | Where-Object { $null -ne $_ -and $existingSystem.ContainsKey($_) -and $existingSystem.Item($_) -ne $System.Item($_) }
+    $PendingGlobal = $Global.Keys | Where-Object { $null -ne $_ -and $existingGlobal.ContainsKey($_) -and $existingGlobal.Item($_) -ne $Global.Item($_) }
+
+    if ($PendingGlobal -or $PendingSystem) {
+      Write-Host 'Configuring git...'
+      $System.GetEnumerator() | ForEach-Object { git config --system $_.Name $_.Value }
+      $Global.GetEnumerator() | ForEach-Object { git config --global $_.Name $_.Value }
+    }
+  }
 }
 
-if ($VsRelease -eq $true -or $VsPreview -eq $true -or $VsBldTool -eq $true) {
-  Write-Host 'Installing Visual Studio Professional...'
-  $Vs2022ReleaseUrl = 'https://c2rsetup.officeapps.live.com/c2r/downloadVS.aspx?sku=professional&channel=Release&version=VS2022'
-  $Vs2022PreviewUrl = 'https://c2rsetup.officeapps.live.com/c2r/downloadVS.aspx?sku=professional&channel=Preview&version=VS2022'
-  $Vs2022BldToolUrl = 'https://download.visualstudio.microsoft.com/download/pr/0502e0d3-64a5-4bb8-b049-6bcbea5ed247/d7293c5775ad824c05ee99d071d5262da3e7653d39f3ba8a28fb2917af7c041a/vs_BuildTools.exe'
+function Install-VisualStudio {
+  param (
+    [Parameter(Mandatory = $false)]
+    [bool]$InstallVsRelease,
+    [Parameter(Mandatory = $false)]
+    [bool]$InstallVsPreview,
+    [Parameter(Mandatory = $false)]
+    [bool]$InstallVsBldTool,
+    [Parameter(Mandatory = $false)]
+    [string]$DownloadsFolder = "$env:USERPROFILE\Downloads"
+  )
 
-  $VsComponents = @(
+  $Components = @(
     'Component.Android.SDK.MAUI',
     'Component.Microsoft.VisualStudio.LiveShare.2022',
     'Component.Microsoft.VisualStudio.RazorExtension',
@@ -662,51 +846,147 @@ if ($VsRelease -eq $true -or $VsPreview -eq $true -or $VsBldTool -eq $true) {
     'runtimes.windows'
   )
 
-  @{ version = '1.0'; components = $VsComponents } | ConvertTo-Json | Out-File "$env:USERPROFILE\.vsconfig"
+  Write-Host 'Installing Visual Studio...'
+
+  $Vs2022ReleaseUrl = 'https://c2rsetup.officeapps.live.com/c2r/downloadVS.aspx?sku=professional&channel=Release&version=VS2022'
+  $Vs2022PreviewUrl = 'https://c2rsetup.officeapps.live.com/c2r/downloadVS.aspx?sku=professional&channel=Preview&version=VS2022'
+  $Vs2022BldToolUrl = 'https://download.visualstudio.microsoft.com/download/pr/0502e0d3-64a5-4bb8-b049-6bcbea5ed247/d7293c5775ad824c05ee99d071d5262da3e7653d39f3ba8a28fb2917af7c041a/vs_BuildTools.exe'
+
+  if ($InstallVsRelease -or $InstallVsPreview) {
+    $VsConfigPath = Join-Path $env:USERPROFILE '.vsconfig'
+    $VsInstallerArgs = @('--norestart', '-p', "--config $VsConfigPath")
+  
+    @{
+      version    = '1.0'
+      components = $Components
+    } | ConvertTo-Json | Out-File $VsConfigPath
+  }
+
+  if ($InstallVsRelease) {
+    $ExecutablePath = Join-Path $DownloadsFolder 'vs_installer_release.exe'
+    Invoke-WebRequest -Uri $Vs2022ReleaseUrl -OutFile $ExecutablePath
+    Start-Process $ExecutablePath -ArgumentList $VsInstallerArgs -NoNewWindow -Wait
+  }
+
+  if ($InstallVsPreview) {
+    $ExecutablePath = Join-Path $DownloadsFolder 'vs_installer_preview.exe'
+    Invoke-WebRequest -Uri $Vs2022PreviewUrl -OutFile $ExecutablePath
+    Start-Process $ExecutablePath -ArgumentList $VsInstallerArgs -NoNewWindow -Wait
+  }
+
+  if ($InstallVsBldTool) {
+    $ExecutablePath = Join-Path $DownloadsFolder 'vs_BuildTools.exe'
+    Invoke-WebRequest -Uri $Vs2022BldToolUrl -OutFile $ExecutablePath
+    Start-Process $ExecutablePath -ArgumentList '--norestart', '-p' -NoNewWindow -Wait
+  }
+
+  Remove-Item $ExecutablePath
 }
 
-if ($VsRelease -eq $true) {
-  Invoke-WebRequest -Uri $Vs2022ReleaseUrl -OutFile "$Downloads\vs_enterprise.exe"
-  Start-Process "$Downloads\vs_enterprise.exe" -ArgumentList '--norestart', '-p', "--config $env:USERPROFILE\.vsconfig" -NoNewWindow -Wait
+function Get-FontSet {
+  param (
+    [Parameter(Mandatory = $true)]
+    [string]$RepoUrl,
+    [Parameter(Mandatory = $true)]
+    [string]$FontsFolder,
+    [Parameter(Mandatory = $true)]
+    [string]$FolderName,
+    [Parameter(Mandatory = $false)]
+    [scriptblock]$Filter
+  )
+
+  $FontSetDestFolder = Join-Path $FontsFolder $FolderName
+  $FontFilesFolder = Join-Path $FontsFolder 'files'
+
+  if (-not (Test-Path $FontSetDestFolder)) {
+    Remove-Item -Recurse -Force $FontSetDestFolder -ErrorAction SilentlyContinue
+    git clone --depth 1 $RepoUrl $FontSetDestFolder
+    Get-ChildItem -Path $FontSetDestFolder -Filter '*.ttf', '*.otf' -Recurse | Where-Object $Filter | Move-Item -Destination $FontFilesFolder
+    Remove-Item -Recurse -Force $FontSetDestFolder
+  }
 }
 
-if ($VsPreview -eq $true) {
-  Invoke-WebRequest -Uri $Vs2022PreviewUrl -OutFile "$Downloads\vs_enterprise_preview.exe"
-  Start-Process "$Downloads\vs_enterprise_preview.exe" -ArgumentList '--norestart', '-p', "--config $env:USERPROFILE\.vsconfig" -NoNewWindow -Wait
-}
-
-if ($VsBldTool -eq $true) {
-  Invoke-WebRequest -Uri $Vs2022BldToolUrl -OutFile "$Downloads\vs_BuildTools.exe"
-  Start-Process "$Downloads\vs_BuildTools.exe" -ArgumentList '--norestart', '-p' -NoNewWindow -Wait
-}
-
-if ($Fonts -eq $true -or $GoogleFonts -eq $true -or $NerdFonts -eq $true) {
-  Write-Host "Downloading fonts to $FontsFolder/files..."
+function Get-FontSets {
+  param (
+    [Parameter(Mandatory = $true)]
+    [string]$FontsFolder,
+    [Parameter(Mandatory = $false)]
+    [bool]$GoogleFonts = $false,
+    [Parameter(Mandatory = $false)]
+    [bool]$NerdFonts = $false
+  )
+  $FontFilesFolder = Join-Path $FontsFolder 'files'
 
   if ($GoogleFonts -eq $false -and $NerdFonts -eq $false) {
     $GoogleFonts = $true
     $NerdFonts = $true
   }
 
-  if (!(Test-Path $FontsFolder)) {
-    mkdir "$FontsFolder"
+  Write-Host "Downloading fonts to $FontFilesFolder..."
+
+  if (!(Test-Path $FontFilesFolder)) {
+    New-Item -Type Directory -Force $FontFilesFolder
   }
 
-  if (!(Test-Path "$FontsFolder/files")) {
-    mkdir "$FontsFolder/files"
+  if ($GoogleFonts -eq $true) {
+    Get-FontSet -RepoUrl 'https://github.com/google/fonts.git' -FolderName 'google-fonts' -FontsFolder $FontsFolder -Filter { $_ -match '^apache\\' -or $_ -match '^ofl\\' -or $_ -match '^ufl\\' }
   }
 
-  if ($GoogleFonts -eq $true -and !(Test-Path "$FontsFolder/google-fonts")) {
-    Remove-Item -Recurse -Force "$FontsFolder/google-fonts" -ErrorAction SilentlyContinue
-    git clone --depth 1 https://github.com/google/fonts.git "$FontsFolder/google-fonts"
-    Get-ChildItem -Path "$FontsFolder/google-fonts" -Include '*.ttf' -Recurse | Where-Object { $_ -match '^apache\\' -or $_ -match '^ofl\\' -or $_ -match '^ufl\\' } | Move-Item -Destination "$FontsFolder/files"
-    Remove-Item -Recurse -Force "$FontsFolder/google-fonts"
+  if ($NerdFonts -eq $true) {
+    Get-FontSet -RepoUrl 'https://github.com/ryanoasis/nerd-fonts.git' -FolderName 'nerd-fonts' -FontsFolder $FontsFolder -Filter { $_ -match '^patched-fonts\\' }
+  }
+}
+
+$DownloadsFolder = "$env:USERPROFILE\Downloads"
+$FontsFolder = "$env:USERPROFILE\fonts"
+
+if ($TurboRdpHw -eq $true -or $TurboRdpSw -eq $true) {
+  Set-RdpOptimizations -AvcHardwareEncodePreferred ($TurboRdpHw -eq $true -and $TurboRdpSw -eq $false)
+}
+
+if ($Cfg -eq $true) {
+  $Script = {
+    Set-ExecutionPolicyUnrestricted
+
+    Enable-RemoteDesktop
+
+    Enable-FileSharing
+
+    Add-WindowsDefenderExclusions
+
+    Set-UACLevel1
+
+    Enable-DeveloperMode
   }
 
-  if ($NerdFonts -eq $true -and !(Test-Path "$FontsFolder/nerd-fonts")) {
-    Remove-Item -Recurse -Force "$FontsFolder/nerd-fonts" -ErrorAction SilentlyContinue
-    git clone --depth 1 https://github.com/ryanoasis/nerd-fonts.git "$FontsFolder/nerd-fonts"
-    Get-ChildItem -Path '$FontsFolder/nerd-fonts' -Include '*.otf' -Recurse | Where-Object { $_ -match 'Windows Compatible' -and $_ -match 'patched-fonts' } | Move-Item -Destination "$FontsFolder/files"
-    Remove-Item -Recurse -Force "$FontsFolder/nerd-fonts"
-  }
+  Invoke-BlockElevated -NotifyText 'Elevation required to apply cfg. Attempting to elevate...' -ScriptBlock $Script
+}
+
+if ($Winget -eq $true) {
+  Install-Winget
+}
+
+if ($WingetPkgs -eq $true) {
+  Install-WingetPackages
+}
+
+if ($NodeJs -eq $true) {
+  Install-NodeTools
+}
+
+if ($Scoop -eq $true) {
+  Install-Scoop
+  Install-ScoopApps
+}
+
+if ($Cfg -eq $true) {
+  Set-GitConfiguration
+}
+
+if ($VsRelease -eq $true -or $VsPreview -eq $true -or $VsBldTool -eq $true) {
+  Install-VisualStudio -InstallVsRelease $VsRelease -InstallVsPreview $VsPreview -InstallVsBldTool $VsBldTool -DownloadsFolder $DownloadsFolder
+}
+
+if ($Fonts -eq $true -or $GoogleFonts -eq $true -or $NerdFonts -eq $true) {
+  Get-FontSets -FontsFolder $FontsFolder -GoogleFonts $GoogleFonts -NerdFonts $NerdFonts
 }

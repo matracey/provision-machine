@@ -1,21 +1,14 @@
 {
   "$help": "https://aka.ms/terminal-documentation",
-  "$schema": "https://aka.ms/terminal-profiles-schema",
+  "$schema": "https://aka.ms/terminal-profiles-schema-preview",
   "actions": [
     {
-      "command": "paste",
-      "keys": "ctrl+v"
-    },
-    {
-      "command": "duplicateTab",
-      "keys": "ctrl+t"
-    },
-    {
       "command": {
-        "action": "copy",
-        "singleLine": false
+        "action": "splitPane",
+        "split": "auto",
+        "splitMode": "duplicate"
       },
-      "keys": "ctrl+c"
+      "keys": "alt+shift+d"
     },
     {
       "command": "find",
@@ -27,20 +20,114 @@
     },
     {
       "command": {
-        "action": "splitPane",
-        "split": "auto",
-        "splitMode": "duplicate"
+        "action": "copy",
+        "singleLine": false
       },
-      "keys": "alt+shift+d"
+      "keys": "ctrl+c"
+    },
+    {
+      "command": "paste",
+      "keys": "ctrl+v"
+    },
+    {
+      "command": "duplicateTab",
+      "keys": "ctrl+t"
     }
   ],
   "copyFormatting": "none",
   "copyOnSelect": false,
-  "defaultProfile": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
+  "defaultProfile": "{a3a2e83a-884a-5379-baa8-16f193a13b21}",
+  "newTabMenu": [
+    {
+      "profile": "{a3a2e83a-884a-5379-baa8-16f193a13b21}",
+      "type": "profile"
+    },
+    {
+      "profile": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
+      "type": "profile"
+    },
+    {
+      "profile": "{51855cb2-8cce-5362-8f54-464b92b32386}",
+      "type": "profile"
+    },
+    {
+      "profile": "{0caa0dad-35be-5f56-a8ff-afceeeaa6101}",
+      "type": "profile"
+    },
+    {
+      "profile": "{28e5367f-061e-42d6-93b0-b1a93c8353ac}",
+      "type": "profile"
+    },
+    {
+      "profile": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
+      "type": "profile"
+    },
+    {
+      "type": "remainingProfiles"
+    },
+    {
+      "type": "separator"
+    },
+    {
+      "allowEmpty": false,
+      "entries": [
+        {
+          "profile": "{51855cb2-8cce-5362-8f54-464b92b32386}",
+          "type": "profile"
+        },
+        {
+          "profile": "{c6eaf9f4-32a7-5fdc-b5cf-066e8a4b1e40}",
+          "type": "profile"
+        },
+        {
+          "profile": "{24a0533e-913b-5f8c-a5cb-6be85a4c9e70}",
+          "type": "profile"
+        },
+        {
+          "profile": "{2c4de342-38b7-51cf-b940-2309a097f518}",
+          "type": "profile"
+        }
+      ],
+      "icon": null,
+      "inline": "never",
+      "name": "WSL",
+      "type": "folder"
+    },
+    {
+      "allowEmpty": false,
+      "entries": [
+        {
+          "profile": "{b453ae62-4e3d-5e58-b989-0a998ec441b8}",
+          "type": "profile"
+        },
+        {
+          "profile": "{a32e9ddb-0572-50d1-8938-f549c44d8dfc}",
+          "type": "profile"
+        },
+        {
+          "profile": "{c9cfa982-77e4-5d07-a1f5-966860941c51}",
+          "type": "profile"
+        },
+        {
+          "profile": "{82394bba-5a77-5049-9e4e-2ab00c35f4b9}",
+          "type": "profile"
+        },
+        {
+          "profile": "{df7587d4-d1f0-5c04-9a9a-ddbaef15b2cf}",
+          "type": "profile"
+        }
+      ],
+      "icon": null,
+      "inline": "never",
+      "name": "Developer",
+      "type": "folder"
+    }
+  ],
   "profiles": {
     "defaults": {
+      "cursorShape": "bar",
       "font": {
-        "face": "CaskaydiaCove NF"
+        "face": "CaskaydiaCove Nerd Font Mono"
       },
       "hidden": false,
       "opacity": 50,
@@ -48,6 +135,14 @@
       "useAcrylic": true
     },
     "list": [
+      {
+        "colorScheme": "Andromeda",
+        "guid": "{a3a2e83a-884a-5379-baa8-16f193a13b21}",
+        "hidden": false,
+        "name": "PowerShell 7 Preview",
+        "opacity": 75,
+        "source": "Windows.Terminal.PowershellCore"
+      },
       {
         "colorScheme": "Andromeda",
         "guid": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
@@ -58,6 +153,9 @@
       },
       {
         "colorScheme": "Campbell",
+        "font": {
+          "face": "MesloLGS Nerd Font"
+        },
         "guid": "{0caa0dad-35be-5f56-a8ff-afceeeaa6101}",
         "hidden": false,
         "name": "Command Prompt",
@@ -70,41 +168,46 @@
         "name": "Windows PowerShell"
       },
       {
+        "colorScheme": "One Half Dark",
+        "commandline": "%PROGRAMFILES%/Git/usr/bin/bash.exe -i -l",
+        "guid": "{28e5367f-061e-42d6-93b0-b1a93c8353ac}",
+        "hidden": false,
+        "icon": "%PROGRAMFILES%/Git/mingw64/share/git/git-for-windows.ico",
+        "name": "Bash",
+        "startingDirectory": "%USERPROFILE%"
+      },
+      {
         "colorScheme": "Solarized Dark",
+        "font": {
+          "face": "SourceCodePro Nerd Font"
+        },
         "guid": "{b453ae62-4e3d-5e58-b989-0a998ec441b8}",
         "hidden": false,
         "name": "Azure Cloud Shell",
         "source": "Windows.Terminal.Azure"
       },
       {
-        "colorScheme": "UbuntuColorScheme",
-        "guid": "{07b52e3e-de2c-5db4-bd2d-ba144ed6c273}",
-        "hidden": false,
-        "name": "Ubuntu-20.04",
-        "source": "Windows.Terminal.Wsl"
-      },
-      {
-        "guid": "{a32e9ddb-0572-50d1-8938-f549c44d8dfc}",
-        "hidden": true,
-        "name": "Developer Command Prompt for VS 2022",
-        "source": "Windows.Terminal.VisualStudio"
-      },
-      {
-        "guid": "{c9cfa982-77e4-5d07-a1f5-966860941c51}",
-        "hidden": true,
-        "name": "Developer PowerShell for VS 2022",
-        "source": "Windows.Terminal.VisualStudio"
-      },
-      {
-        "guid": "{82394bba-5a77-5049-9e4e-2ab00c35f4b9}",
+        "guid": "{aa3240fc-a22b-57db-9b1d-6024dfd47a04}",
         "hidden": false,
         "name": "Developer Command Prompt for VS 2022 [Preview]",
         "source": "Windows.Terminal.VisualStudio"
       },
       {
-        "guid": "{df7587d4-d1f0-5c04-9a9a-ddbaef15b2cf}",
+        "guid": "{922529b4-2f7b-578e-8411-298922bfc17b}",
         "hidden": false,
         "name": "Developer PowerShell for VS 2022 [Preview]",
+        "source": "Windows.Terminal.VisualStudio"
+      },
+      {
+        "guid": "{87b72ba4-4e86-5849-9193-d29df963f98a}",
+        "hidden": false,
+        "name": "Developer Command Prompt for VS 2022",
+        "source": "Windows.Terminal.VisualStudio"
+      },
+      {
+        "guid": "{44deda22-553a-595d-a62d-78835ac970b7}",
+        "hidden": false,
+        "name": "Developer PowerShell for VS 2022",
         "source": "Windows.Terminal.VisualStudio"
       }
     ]
@@ -402,6 +505,52 @@
       "cyan": "#3A96DD",
       "foreground": "#FFFFFF",
       "green": "#26A269",
+      "name": "Ubuntu-18.04-ColorScheme",
+      "purple": "#881798",
+      "red": "#C21A23",
+      "selectionBackground": "#FFFFFF",
+      "white": "#CCCCCC",
+      "yellow": "#A2734C"
+    },
+    {
+      "background": "#300A24",
+      "black": "#171421",
+      "blue": "#0037DA",
+      "brightBlack": "#767676",
+      "brightBlue": "#08458F",
+      "brightCyan": "#2C9FB3",
+      "brightGreen": "#26A269",
+      "brightPurple": "#A347BA",
+      "brightRed": "#C01C28",
+      "brightWhite": "#F2F2F2",
+      "brightYellow": "#A2734C",
+      "cursorColor": "#FFFFFF",
+      "cyan": "#3A96DD",
+      "foreground": "#FFFFFF",
+      "green": "#26A269",
+      "name": "Ubuntu-ColorScheme",
+      "purple": "#881798",
+      "red": "#C21A23",
+      "selectionBackground": "#FFFFFF",
+      "white": "#CCCCCC",
+      "yellow": "#A2734C"
+    },
+    {
+      "background": "#300A24",
+      "black": "#171421",
+      "blue": "#0037DA",
+      "brightBlack": "#767676",
+      "brightBlue": "#08458F",
+      "brightCyan": "#2C9FB3",
+      "brightGreen": "#26A269",
+      "brightPurple": "#A347BA",
+      "brightRed": "#C01C28",
+      "brightWhite": "#F2F2F2",
+      "brightYellow": "#A2734C",
+      "cursorColor": "#FFFFFF",
+      "cyan": "#3A96DD",
+      "foreground": "#FFFFFF",
+      "green": "#26A269",
       "name": "UbuntuColorScheme",
       "purple": "#881798",
       "red": "#C21A23",
@@ -432,5 +581,6 @@
       "white": "#C0C0C0",
       "yellow": "#808000"
     }
-  ]
+  ],
+  "themes": []
 }

@@ -352,5 +352,7 @@
       "yellow": "#A2734C"
     }
   ],
-  "themes": []
+  "theme": "system",
+  "themes": [],
+  "useAcrylicInTabRow": true
 }

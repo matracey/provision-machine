@@ -165,11 +165,11 @@
       },
       {
         "colorScheme": "One Half Dark",
-        "commandline": "%PROGRAMFILES%/Git/usr/bin/bash.exe -i -l",
+        "commandline": "%GIT_INSTALL_ROOT%/usr/bin/bash.exe -i -l",
         "guid": "{28e5367f-061e-42d6-93b0-b1a93c8353ac}",
         "hidden": false,
-        "icon": "%PROGRAMFILES%/Git/mingw64/share/git/git-for-windows.ico",
-        "name": "Bash",
+        "icon": "%GIT_INSTALL_ROOT%/mingw64/share/git/git-for-windows.ico",
+        "name": "Git Bash",
         "startingDirectory": "%USERPROFILE%"
       },
       {

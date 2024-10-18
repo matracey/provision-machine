@@ -1,36 +1,30 @@
 {
   "$help": "https://aka.ms/terminal-documentation",
   "$schema": "https://aka.ms/terminal-profiles-schema-preview",
-  "actions": [
+  "actions": [],
+  "keybindings": [
     {
-      "command": {
-        "action": "splitPane",
-        "split": "auto",
-        "splitMode": "duplicate"
-      },
+      "id": "Terminal.DuplicatePaneAuto",
       "keys": "alt+shift+d"
     },
     {
-      "command": "find",
+      "id": "Terminal.FindText",
       "keys": "ctrl+shift+f"
     },
     {
-      "command": "find",
+      "id": "Terminal.FindText",
       "keys": "ctrl+f"
     },
     {
-      "command": {
-        "action": "copy",
-        "singleLine": false
-      },
+      "id": "Terminal.CopyToClipboard",
       "keys": "ctrl+c"
     },
     {
-      "command": "paste",
+      "id": "Terminal.PasteFromClipboard",
       "keys": "ctrl+v"
     },
     {
-      "command": "duplicateTab",
+      "id": "Terminal.DuplicateTab",
       "keys": "ctrl+t"
     }
   ],
@@ -101,19 +95,19 @@
           "type": "profile"
         },
         {
-          "profile": "{a32e9ddb-0572-50d1-8938-f549c44d8dfc}",
+          "profile": "{a3a3d2a6-8fa8-5a64-b1f0-05755744a36d}",
           "type": "profile"
         },
         {
-          "profile": "{c9cfa982-77e4-5d07-a1f5-966860941c51}",
+          "profile": "{d416b828-7d52-5e90-9844-cd66a8256979}",
           "type": "profile"
         },
         {
-          "profile": "{82394bba-5a77-5049-9e4e-2ab00c35f4b9}",
+          "profile": "{04ef05c5-f023-5fb4-bfb2-eae325fb0b98}",
           "type": "profile"
         },
         {
-          "profile": "{df7587d4-d1f0-5c04-9a9a-ddbaef15b2cf}",
+          "profile": "{4cb1a507-d76f-5b41-a9f4-2707b1f3663d}",
           "type": "profile"
         }
       ],
@@ -153,6 +147,7 @@
       },
       {
         "colorScheme": "Campbell",
+        "commandline": "%SystemRoot%\\System32\\cmd.exe",
         "font": {
           "face": "MesloLGS Nerd Font"
         },
@@ -163,6 +158,7 @@
       },
       {
         "colorScheme": "Campbell Powershell",
+        "commandline": "%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
         "guid": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
         "hidden": false,
         "name": "Windows PowerShell"
@@ -187,25 +183,25 @@
         "source": "Windows.Terminal.Azure"
       },
       {
-        "guid": "{aa3240fc-a22b-57db-9b1d-6024dfd47a04}",
+        "guid": "{04ef05c5-f023-5fb4-bfb2-eae325fb0b98}",
         "hidden": false,
         "name": "Developer Command Prompt for VS 2022 [Preview]",
         "source": "Windows.Terminal.VisualStudio"
       },
       {
-        "guid": "{922529b4-2f7b-578e-8411-298922bfc17b}",
+        "guid": "{4cb1a507-d76f-5b41-a9f4-2707b1f3663d}",
         "hidden": false,
         "name": "Developer PowerShell for VS 2022 [Preview]",
         "source": "Windows.Terminal.VisualStudio"
       },
       {
-        "guid": "{87b72ba4-4e86-5849-9193-d29df963f98a}",
+        "guid": "{a3a3d2a6-8fa8-5a64-b1f0-05755744a36d}",
         "hidden": false,
         "name": "Developer Command Prompt for VS 2022",
         "source": "Windows.Terminal.VisualStudio"
       },
       {
-        "guid": "{44deda22-553a-595d-a62d-78835ac970b7}",
+        "guid": "{d416b828-7d52-5e90-9844-cd66a8256979}",
         "hidden": false,
         "name": "Developer PowerShell for VS 2022",
         "source": "Windows.Terminal.VisualStudio"

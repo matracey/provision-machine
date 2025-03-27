@@ -395,9 +395,19 @@ if ($Scoop -eq $true) {
 
 if ($WinGet -eq $true) {
   Write-Host 'Installing WinGet...'
-  $WinGetUrl = ((((Invoke-WebRequest 'https://api.github.com/repos/microsoft/winget-cli/releases/latest') | ConvertFrom-Json).assets.browser_download_url) -match 'msix')[0]
-  Invoke-WebRequest -Uri $WinGetUrl -OutFile "$Downloads\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
-  Add-AppPackage -Path "$Downloads\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -ForceUpdateFromAnyVersion
+  $WinGetUri = [uri](Invoke-WebRequest 'https://api.github.com/repos/microsoft/winget-cli/releases/latest' | ConvertFrom-Json | Select-Object -ExpandProperty assets | Select-Object -ExpandProperty browser_download_url | Where-Object { $_ -match 'msix' } | Select-Object -First 1)
+  $DestPath = [IO.Path]::Combine((Resolve-Path -Relative $Downloads),$WinGetUri.Segments[-1])
+
+  if (Get-Command aria2c -ErrorAction:SilentlyContinue) {
+    Write-Host -ForegroundColor DarkYellow 'Using aria2c to download WinGet...'
+    & aria2c -x 16 -s 16 -k 1M $WinGetUri -o $DestPath
+  } else {
+    Write-Host -ForegroundColor DarkYellow 'Using Invoke-WebRequest to download WinGet...'
+    Invoke-WebRequest -Uri $WinGetUri -OutFile $DestPath
+  }
+
+  Write-Host -ForegroundColor DarkYellow 'Installing WinGet...'
+  Add-AppPackage -Path $DestPath -ForceUpdateFromAnyVersion
 }
 
 if ($WinGetPkgs -eq $true) {

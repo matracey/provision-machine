@@ -180,8 +180,8 @@ if ($Cfg -eq $true) {
   Invoke-BlockElevated -NotifyText 'Elevation required to apply cfg. Attempting to elevate...' -ScriptBlock {
     # Execution Policy
     Write-Host 'Setting execution policy to unrestricted.'
-    Set-ExecutionPolicy Unrestricted -Scope CurrentUser
-    Set-ExecutionPolicy Unrestricted
+    Set-ExecutionPolicy Unrestricted -Scope:CurrentUser
+    Set-ExecutionPolicy Unrestricted -Scope:LocalMachine
 
     # Remote Desktop
     Write-Host 'Enabling Remote Desktop.'
@@ -194,26 +194,20 @@ if ($Cfg -eq $true) {
     Set-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' -Name 'LongPathsEnabled' -Value 1
 
     # Windows Defender Exceptions
-    $PathExclusions = (
-      'C:\Program Files (x86)\Microsoft SDKs',
-      'C:\Program Files (x86)\Microsoft SDKs\NuGetPackages',
-      'C:\Program Files (x86)\Microsoft Visual Studio 10.0',
-      'C:\Program Files (x86)\Microsoft Visual Studio 14.0',
-      'C:\Program Files (x86)\Microsoft Visual Studio',
-      'C:\Program Files (x86)\MSBuild',
-      'C:\Program Files\Microsoft Visual Studio\2022\Community',
-      'C:\Program Files\Microsoft Visual Studio\2022\Enterprise',
-      'C:\Program Files\Microsoft Visual Studio\2022\IntPreview',
-      'C:\Program Files\Microsoft Visual Studio\2022\Preview',
-      'C:\Program Files\Microsoft Visual Studio\2022\Professional',
-      'C:\ProgramData\Microsoft\VisualStudio\Packages',
-      'C:\Windows\assembly',
-      'C:\Windows\Microsoft.NET',
-      "$($env:LOCALAPPDATA)\Microsoft\VisualStudio",
-      "$($env:LOCALAPPDATA)\Volta",
-      "$($env:PROGRAMFILES)\Volta",
-      "$($env:USERPROFILE)\scoop"
-    )
+    $PathExclusions = @(
+      (Get-ChildItem -ErrorAction:SilentlyContinue -Path ${env:ProgramFiles(x86)} -Filter '*SDKs*'),
+      (Get-ChildItem -ErrorAction:SilentlyContinue -Path ${env:ProgramFiles(x86)} -Filter '*SDKs*' | Get-ChildItem -ErrorAction:SilentlyContinue -Filter 'NuGetPackages'),
+      (Get-ChildItem -ErrorAction:SilentlyContinue -Path ${env:ProgramFiles(x86)} -Filter '*Visual Studio*'),
+      (Get-ChildItem -ErrorAction:SilentlyContinue -Path ${env:ProgramFiles(x86)} -Filter 'MSBuild'),
+      (Get-ChildItem -ErrorAction:SilentlyContinue -Path "$env:ProgramFiles\Microsoft Visual Studio" -Directory | Get-ChildItem -ErrorAction:SilentlyContinue -Directory),
+      (Get-ChildItem -ErrorAction:SilentlyContinue -Path $env:ProgramData | Get-Item -Filter 'Microsoft' | Get-ChildItem -ErrorAction:SilentlyContinue -Filter 'VisualStudio' | Get-ChildItem -ErrorAction:SilentlyContinue -Filter 'Packages'),
+      (Get-ChildItem -ErrorAction:SilentlyContinue -Path $env:windir -Filter 'assembly'),
+      (Get-ChildItem -ErrorAction:SilentlyContinue -Path $env:windir -Filter 'Microsoft.NET'),
+      (Get-ChildItem -ErrorAction:SilentlyContinue -Path $env:LOCALAPPDATA -Filter 'Microsoft' | Get-ChildItem -ErrorAction:SilentlyContinue -Filter 'VisualStudio'),
+      (Get-ChildItem -ErrorAction:SilentlyContinue -Path $env:LOCALAPPDATA -Filter 'Volta'),
+      (Get-ChildItem -ErrorAction:SilentlyContinue -Path $env:ProgramFiles -Filter 'Volta'),
+      (Get-ChildItem -ErrorAction:SilentlyContinue -Path $env:USERPROFILE -Filter 'scoop')
+    ) | ForEach-Object FullName
 
     $ProcessExclusions = $(
       # VS
@@ -291,11 +285,16 @@ if ($Cfg -eq $true) {
     )
 
     Write-Host 'Creating Windows Defender exclusions for common Visual Studio folders and processes.'
-    $ProjectsFolder = 'C:\source'
 
     Write-Verbose ''
-    Write-Verbose "Adding Path Exclusion: $ProjectsFolder"
-    Add-MpPreference -ExclusionPath $ProjectsFolder
+    (
+      (Get-ChildItem $env:USERPROFILE -Filter 'source' -ErrorAction:SilentlyContinue | ForEach-Object FullName) +
+      (Get-Item 'C:\source' -ErrorAction:SilentlyContinue | ForEach-Object FullName) +
+      ([IO.DriveInfo]::GetDrives() | Where-Object { $_.DriveFormat -eq 'ReFS' } | ForEach-Object RootDirectory | ForEach-Object FullName)
+    ) | ForEach-Object {
+      Write-Verbose "Adding Path Exclusion: $_"
+      Add-MpPreference -ExclusionPath $_
+    }
 
     foreach ($Exclusion in $PathExclusions | Where-Object { Test-Path $_ }) {
       Write-Verbose "Adding Path Exclusion: $Exclusion"
@@ -517,8 +516,8 @@ if ($NodeJs -eq $true) {
 
 if ($Cfg -eq $true -and (Get-Command git -ErrorAction SilentlyContinue)) {
   Write-Host 'Configuring git...'
-  git config --system core.longpaths true
-  git config --global credential.helper manager
+  git config --replace-all --system core.longpaths true
+  git config --replace-all --global credential.helper manager
 }
 
 if ($VsRelease -eq $true -or $VsPreview -eq $true -or $VsIntPrev -eq $true) {

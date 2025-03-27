@@ -109,6 +109,34 @@ function Set-RegistryChanges {
   }
 }
 
+filter Select-NotInstalled {
+<#
+  .SYNOPSIS
+  Filters out installed packages.
+  
+  .DESCRIPTION
+  Filters out installed packages. This filter is used to select packages that are not already installed.
+  
+  .PARAMETER Package
+  The package to check if installed.
+
+  .EXAMPLE
+  Find-WinGetPackage -Source 'winget' -Query 'Microsoft.VisualStudioCode' | Select-NotInstalled | Install-WinGetPackage -Mode Silent
+  #>
+
+  [CmdletBinding()]
+  param(
+    [Parameter(Mandatory = $true,ValueFromPipeline = $true,HelpMessage = 'Package to check if installed.')]
+    [object]$Package
+  )
+
+  if ($null -eq (Get-WinGetPackage $Package.Id -ErrorAction:SilentlyContinue)) {
+    $_
+  } else {
+    Write-Host -ForegroundColor DarkGray "Package $($Package.Id) is already installed."
+  }
+}
+
 $Downloads = "$env:USERPROFILE\Downloads"
 $FontsFolder = "$env:USERPROFILE\fonts"
 

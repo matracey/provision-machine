@@ -114,59 +114,65 @@ $FontsFolder = "$env:USERPROFILE\fonts"
 
 if ($TurboRdpHw -eq $true -or $TurboRdpSw -eq $true) {
   Invoke-BlockElevated -NotifyText 'Elevation required to apply gp. Attempting to elevate...' -ScriptBlock {
-    $LgpoTool = 'https://gist.github.com/matracey/9a4126bb243f4966a6d914c05e1fff6a/raw/5e31fdcf1b6591fb1ea376d41d5a93eca79c05f4/LGPO.zip'
-    $LgpoFile = "$env:USERPROFILE\lgpo.txt"
-    $AvcHardwareEncodePreferred = 0
-    if ($TurboRdpHw -eq $true -and $TurboRdpSw -eq $false) {
-      $AvcHardwareEncodePreferred = 1
+    $RegistryChanges = @{
+      'HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services' = @{
+        'SelectTransport' = 0
+        'bEnumerateHWBeforeSW' = 1
+        'AVC444ModePreferred' = 1
+        'AVCHardwareEncodePreferred' = [int]($TurboRdpHw -eq $true -and $TurboRdpSw -eq $false)
+        'MaxCompressionLevel' = 0
+        'ImageQuality' = 2
+        'fEnableVirtualizedGraphics' = 1
+        'VGOptimization_CaptureFrameRate' = 1
+        'VGOptimization_CompressionRatio' = 1
+        'VisualExperiencePolicy' = 1
+        # Disables the WDDM Drivers and goes back to legacy XDDM drivers (better for performance on Nvidia cards, you might want to change this setting for AMD cards)
+        'fEnableWddmDriver' = 0
+      }
+      'HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services\Client' = @{
+        'fUsbRedirectionEnableMode' = 2
+      }
+      'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations' = @{
+        # Sets 60 FPS limit on RDP
+        'DWMFRAMEINTERVAL' = 15
+      }
+      'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile' = @{
+        # Increase Windows Responsiveness
+        'SystemResponsiveness' = 0
+      }
+      'HKLM:\SYSTEM\CurrentControlSet\Services\TermDD' = @{
+        # Sets the flow control for Display vs Channel Bandwidth (aka RemoteFX devices, including controllers)
+        'FlowControlDisable' = 1
+        'FlowControlDisplayBandwidth' = 16
+        'FlowControlChannelBandwidth' = 144
+        'FlowControlChargePostCompression' = 0
+      }
+      'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' = @{
+        # Removes the artificial latency delay for RDP
+        'InteractiveDelay' = 0
+      }
+      'HKLM:\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters' = @{
+        # Disables Windows Network Throttling
+        'DisableBandwidthThrottling' = 1
+        # Enables large MTU packets
+        'DisableLargeMtu' = 0
+      }
+      'HKLM:\System\CurrentControlSet\Control\Terminal Server' = @{
+        'fDenyTSConnections' = 0
+      }
+      'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' = @{
+        'ConsentPromptBehaviorAdmin' = 5
+        'ConsentPromptBehaviorUser' = 3
+        'EnableInstallerDetection' = 1
+        'EnableLUA' = 1
+        'EnableVirtualization' = 1
+        'PromptOnSecureDesktop' = 0
+        'ValidateAdminCodeSignatures' = 0
+        'FilterAdministratorToken' = 0
+      }
     }
 
-    Remove-Item $LgpoFile -ErrorAction SilentlyContinue
-    @{
-      'Terminal Services|SelectTransport' = 0
-      'Terminal Services|bEnumerateHWBeforeSW' = 1
-      'Terminal Services|AVC444ModePreferred' = 1
-      'Terminal Services|AVCHardwareEncodePreferred' = $AvcHardwareEncodePreferred
-      'Terminal Services|MaxCompressionLevel' = 0
-      'Terminal Services|ImageQuality' = 2
-      'Terminal Services|fEnableVirtualizedGraphics' = 1
-      'Terminal Services|VGOptimization_CaptureFrameRate' = 1
-      'Terminal Services|VGOptimization_CompressionRatio' = 1
-      'Terminal Services|VisualExperiencePolicy' = 1
-      'Terminal Services\Client|fUsbRedirectionEnableMode' = 2
-    }.GetEnumerator() | ForEach-Object { "Computer`nSoftware\Policies\Microsoft\Windows NT\$($_.Name.Split('|')[0])`n$($_.Name.Split('|')[1])`nDWORD:$($_.Value)`n" | Out-File $LgpoFile -Append }
-
-    # Download the LGPO tool
-    Invoke-WebRequest -Uri $LgpoTool -OutFile "$Downloads\LGPO.zip"
-    # Unzip the LGPO tool
-    Expand-Archive -Path "$Downloads\LGPO.zip" -DestinationPath "$Downloads\LGPO" -Force
-
-    # Import the Group Policy
-    & (Get-ChildItem -Path "$Downloads\LGPO" -Recurse -Filter 'LGPO.exe').FullName /t $LgpoFile
-
-    # Sets 60 FPS limit on RDP
-    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations' -Name 'DWMFRAMEINTERVAL' -Value 15 -Type DWord
-
-    # Increase Windows Responsiveness
-    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile' -Name 'SystemResponsiveness' -Value 0 -Type DWord
-
-    # Sets the flow control for Display vs Channel Bandwidth (aka RemoteFX devices, including controllers)
-    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\TermDD' -Name 'FlowControlDisable' -Value 1 -Type DWord
-    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\TermDD' -Name 'FlowControlDisplayBandwidth' -Value 16 -Type DWord
-    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\TermDD' -Name 'FlowControlChannelBandwidth' -Value 144 -Type DWord
-    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\TermDD' -Name 'FlowControlChargePostCompression' -Value 0 -Type DWord
-
-    # Removes the artificial latency delay for RDP
-    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name 'InteractiveDelay' -Value 0 -Type DWord
-
-    # Disables Windows Network Throttling
-    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters' -Name 'DisableBandwidthThrottling' -Value 1 -Type DWord
-
-    # Enables large MTU packets
-    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters' -Name 'DisableLargeMtu' -Value 0 -Type DWord
-
-    # Disables the WDDM Drivers and goes back to legacy XDDM drivers (better for performance on Nvidia cards, you might want to change this setting for AMD cards)
-    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services' -Name 'fEnableWddmDriver' -Value 0 -Type DWord
+    $RegistryChanges | Set-RegistryChanges
   }
 }
 
@@ -310,41 +316,25 @@ if ($Cfg -eq $true) {
     Write-Host ''
     Write-Host ''
 
-
     # UAC Settings to Level 1
     Write-Host 'Setting UAC to Level 1.'
-    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'ConsentPromptBehaviorAdmin' -Value 5
-    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'ConsentPromptBehaviorUser' -Value 3
-    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'EnableInstallerDetection' -Value 1
-    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'EnableLUA' -Value 1
-    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'EnableVirtualization' -Value 1
-    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'PromptOnSecureDesktop' -Value 0
-    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'ValidateAdminCodeSignatures' -Value 0
-    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'FilterAdministratorToken' -Value 0
-
-    # Add 'Delete WVD Shortcuts' Scheduled Task. Use Windows PowerShell as Register-ScheduledJob is not available in PowerShell Core.
-    $Command = @'
-if (-not(Get-ScheduledJob -Name 'Delete WVD Shortcuts' -ErrorAction SilentlyContinue))
-{
-    Write-Host 'Adding Scheduled Task to delete WVD shortcuts.'
-    Register-ScheduledJob -Trigger $(New-JobTrigger -AtStartup -RandomDelay 00:00:30) -Name 'Delete WVD Shortcuts' -ScriptBlock {
-        Remove-Item -Force -Recurse "$($env:AppData)\Microsoft\Windows\Start Menu\Programs\Microsoft Virtual Desktop - EU Data Boundary (RD) (matracey@microsoft.com)";
-        Remove-Item -Force -Recurse "$($env:AppData)\Microsoft\Windows\Start Menu\Programs\Microsoft WVD Region 2 - East US (RD) (matracey@microsoft.com)";
-        Remove-Item -Force -Recurse "$($env:AppData)\Microsoft\Windows\Start Menu\Programs\Microsoft WVD Region 3 - Asia (RD) (matracey@microsoft.com)";
-        Remove-Item -Force -Recurse "$($env:AppData)\Microsoft\Windows\Start Menu\Programs\Microsoft WVD Region 4 - Europe (RD) (matracey@microsoft.com";
-    }
-}
-'@
-    & powershell.exe -NoProfile -ExecutionPolicy Bypass -Command $Command
+    @{
+      'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' = @{
+        'ConsentPromptBehaviorAdmin' = 5
+        'ConsentPromptBehaviorUser' = 3
+        'EnableInstallerDetection' = 1
+        'EnableLUA' = 1
+        'EnableVirtualization' = 1
+        'PromptOnSecureDesktop' = 0
+        'ValidateAdminCodeSignatures' = 0
+        'FilterAdministratorToken' = 0
+      }
+    } | Set-RegistryChanges
 
     # Developer Mode
     Write-Host 'Enabling Developer Mode.'
-    $DeveloperModeRegistryKeyPath = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock'
-    if (-not (Test-Path -Path $DeveloperModeRegistryKeyPath)) {
-      New-Item -Path $DeveloperModeRegistryKeyPath -ItemType Directory -Force
-    }
 
-    Set-ItemProperty -Path $DeveloperModeRegistryKeyPath -Name AllowDevelopmentWithoutDevLicense -Type DWord -Value 1
+    @{ 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock' = @{ 'AllowDevelopmentWithoutDevLicense' = 1 } } | Set-RegistryChanges
   }
 }
 

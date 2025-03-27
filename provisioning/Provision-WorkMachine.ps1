@@ -64,6 +64,51 @@ function Invoke-BlockElevated {
   }
 }
 
+function Set-RegistryChanges {
+<#
+  .SYNOPSIS
+  Sets registry keys and values based on a hashtable.
+
+  .DESCRIPTION
+  Sets registry keys and values based on a hashtable. The hashtable should have the registry key paths as keys and another hashtable as values, where the inner hashtable contains the names and values of the registry entries to set.
+
+  .PARAMETER RegistryChanges
+  A hashtable containing the registry key paths and their corresponding values. The keys of the outer hashtable are the registry key paths, and the values are hashtables containing the names and values of the registry entries to set.
+
+  .EXAMPLE
+  Set-RegistryChanges -RegistryChanges @{
+    'HKLM:\SOFTWARE\MyApp' = @{
+      'Setting1' = 1
+      'Setting2' = 0
+    }
+    'HKLM:\SOFTWARE\AnotherApp' = @{
+      'SettingA' = 'ValueA'
+      'SettingB' = 'ValueB'
+    }
+  }
+  #>
+
+  [CmdletBinding()]
+  param(
+    [Parameter(Mandatory = $true,ValueFromPipeline = $true,HelpMessage = 'Hashtable of registry keys and values to set.')]
+    [hashtable]$RegistryChanges
+  )
+
+  process {
+    foreach ($Path in $RegistryChanges.Keys) {
+      if (-not (Test-Path -Path $Path)) {
+        New-Item -Path $Path -Force | Out-Null
+      }
+
+      foreach ($Name in $RegistryChanges[$Path].Keys) {
+        $Value = $RegistryChanges[$Path][$Name]
+        Write-Host -ForegroundColor DarkYellow "Setting $Name to $Value in $Path"
+        Set-ItemProperty -Path $Path -Name $Name -Value $Value -Type DWord -Force
+      }
+    }
+  }
+}
+
 $Downloads = "$env:USERPROFILE\Downloads"
 $FontsFolder = "$env:USERPROFILE\fonts"
 

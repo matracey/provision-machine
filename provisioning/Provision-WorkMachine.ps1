@@ -371,52 +371,125 @@ if ($Scoop -eq $true) {
   .\install.ps1 -RunAsAdmin
   Remove-Item 'install.ps1'
 
-  $ScoopPrereqs = (
-    '7zip',
-    'git',
-    'innounp',
-    'wixtoolset',
-    'lessmsi',
-    'dark'
-  )
+  $ShimsPath = [IO.Path]::Combine($env:USERPROFILE,'scoop','shims')
+  $ModulesPath = [IO.Path]::Combine($env:USERPROFILE,'scoop','modules')
 
-  $ScoopApps = $(
-    'azure-functions-core-tools',
-    'php',
-    'servicebusexplorer',
-    'cacert',
-    'chromedriver',
-    'cru',
-    'curl',
-    'edgedriver',
-    'ffmpeg',
-    'geckodriver',
-    'git-filter-repo',
-    'nuget',
-    'pyenv',
-    'resharper-clt',
-    'sudo',
-    'sysinternals',
-    'vim',
-    'wget',
-    'yt-dlp'
-  )
+  # Manually update path for this session so that scoop can be used immediately
+  $env:Path = "$ShimsPath;$env:Path"
+  $env:PSModulePath = "$ModulesPath;$env:PSModulePath"
+
+  $ScoopPrereqs = '7zip',
+  'git',
+  'innounp',
+  'wixtoolset',
+  'lessmsi',
+  'dark',
+  'aria2'
 
   scoop install @ScoopPrereqs
+  scoop update
+  scoop status
+  scoop checkup
 
-  & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" config SCOOP_REPO 'https://github.com/Ash258/Scoop-Core'
-  & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" update
-  & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" status
-  & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" checkup
+  $Aliases = @{
+    'upgrade' = @('scoop update; scoop update *;','Updates Scoop and all installed apps')
+    'reinstall' = @('scoop uninstall ; scoop install ;','Uninstall and then reinstall an app')
+    'clean' = @('scoop cleanup *; scoop cache rm *;','Clean up all the caches and remove all the old versions of the installed apps')
+  }
 
-  & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" install aria2
+  $Aliases.GetEnumerator() | ForEach-Object { scoop alias add $_.Key $_.Value[0] $_.Value[1] }
 
-  & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" bucket add extras
+  $Buckets = @{
+    'sysinternals' = 'https://github.com/niheaven/scoop-sysinternals'
+    'knox-scoop' = 'https://github.com/KNOXDEV/knox-scoop'
+    'matracey' = 'https://github.com/matracey/scoop-bucket'
+    'main' = 'https://github.com/ScoopInstaller/Main.git'
+    'extras' = 'https://github.com/ScoopInstaller/Extras'
+  }
 
-  # Optional buckets, disabled for now.
-  # & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" bucket add games
-  # & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" bucket add 'ash258.ash258' 'https://github.com/Ash258/Shovel-Ash258.git'
-  # & "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1" bucket add emulators 'https://github.com/hermanjustnu/scoop-emulators.git'
+  $Buckets.GetEnumerator() | ForEach-Object { scoop bucket add $_.Key $_.Value }
+
+  $ScoopApps = @(
+    'main/1password-cli',
+    'main/7zip',
+    'main/aria2',
+    'main/azure-functions-core-tools',
+    'main/cacert',
+    'main/chromedriver',
+    'main/coreutils',
+    'main/curl',
+    'main/dark',
+    'main/edgedriver',
+    'main/ffmpeg',
+    'main/fzf',
+    'main/geckodriver',
+    'main/gig',
+    'main/git',
+    'main/go',
+    'main/grep',
+    'main/gsudo',
+    'main/innounp',
+    'main/lessmsi',
+    'main/pester',
+    'main/php',
+    'main/pipx',
+    'main/powershell-beautifier',
+    'main/pyenv',
+    'main/resharper-clt',
+    'main/rustup-msvc',
+    'main/scoop-search',
+    'main/vim',
+    'main/vimtutor',
+    'main/wget',
+    'main/winget-ps',
+    'main/wixtoolset',
+    'main/yt-dlp',
+    'extras/cru',
+    'extras/git-credential-manager',
+    'extras/scoop-completion',
+    'extras/servicebusexplorer',
+    'extras/sysinternals',
+    'matracey/clickpaste',
+    'matracey/microsoft-graph-applications',
+    'matracey/microsoft-graph-authentication',
+    'matracey/microsoft-graph-backuprestore',
+    'matracey/microsoft-graph-bookings',
+    'matracey/microsoft-graph-calendar',
+    'matracey/microsoft-graph-changenotifications',
+    'matracey/microsoft-graph-cloudcommunications',
+    'matracey/microsoft-graph-compliance',
+    'matracey/microsoft-graph-crossdeviceexperiences',
+    'matracey/microsoft-graph-devicemanagement-administration',
+    'matracey/microsoft-graph-devicemanagement-enrollment',
+    'matracey/microsoft-graph-devicemanagement-functions',
+    'matracey/microsoft-graph-devicemanagement',
+    'matracey/microsoft-graph-devices-cloudprint',
+    'matracey/microsoft-graph-devices-corporatemanagement',
+    'matracey/microsoft-graph-devices-serviceannouncement',
+    'matracey/microsoft-graph-directoryobjects',
+    'matracey/microsoft-graph-education',
+    'matracey/microsoft-graph-files',
+    'matracey/microsoft-graph-groups',
+    'matracey/microsoft-graph-identity-directorymanagement',
+    'matracey/microsoft-graph-identity-governance',
+    'matracey/microsoft-graph-identity-partner',
+    'matracey/microsoft-graph-identity-signins',
+    'matracey/microsoft-graph-mail',
+    'matracey/microsoft-graph-notes',
+    'matracey/microsoft-graph-people',
+    'matracey/microsoft-graph-personalcontacts',
+    'matracey/microsoft-graph-planner',
+    'matracey/microsoft-graph-reports',
+    'matracey/microsoft-graph-schemaextensions',
+    'matracey/microsoft-graph-search',
+    'matracey/microsoft-graph-security',
+    'matracey/microsoft-graph-sites',
+    'matracey/microsoft-graph-teams',
+    'matracey/microsoft-graph-users-actions',
+    'matracey/microsoft-graph-users-functions',
+    'matracey/microsoft-graph-users',
+    'matracey/microsoft-graph'
+  )
 
   scoop install @ScoopApps
 }

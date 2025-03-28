@@ -691,25 +691,28 @@ if ($Fonts -eq $true -or $GoogleFonts -eq $true -or $NerdFonts -eq $true) {
     $NerdFonts = $true
   }
 
+  $FontBaseDir = [IO.Path]::Combine($env:USERPROFILE,'FontBase')
+  $GoogleFontsDir = "$FontsFolder/google-fonts"
+  $NerdFontsDir = "$FontsFolder/nerd-fonts"
+
   if (!(Test-Path $FontsFolder)) {
-    mkdir "$FontsFolder"
+    New-Item -ItemType Directory $FontsFolder
   }
 
-  if (!(Test-Path "$FontsFolder/files")) {
-    mkdir "$FontsFolder/files"
+  if (!(Test-Path $FontBaseDir)) {
+    New-Item -ItemType Directory $FontBaseDir
   }
 
-  if ($GoogleFonts -eq $true -and !(Test-Path "$FontsFolder/google-fonts")) {
-    Remove-Item -Recurse -Force "$FontsFolder/google-fonts" -ErrorAction SilentlyContinue
-    git clone --depth 1 https://github.com/google/fonts.git "$FontsFolder/google-fonts"
-    Get-ChildItem -Path "$FontsFolder/google-fonts" -Include '*.ttf' -Recurse | Where-Object { $_ -match '^apache\\' -or $_ -match '^ofl\\' -or $_ -match '^ufl\\' } | Move-Item -Destination "$FontsFolder/files"
-    Remove-Item -Recurse -Force "$FontsFolder/google-fonts"
+  if ($GoogleFonts -eq $true -and !(Test-Path $GoogleFontsDir)) {
+    Remove-Item -Recurse -Force $GoogleFontsDir -ErrorAction SilentlyContinue
+    git clone --depth 1 'https://github.com/google/fonts.git' $GoogleFontsDir
+    Get-ChildItem $GoogleFontsDir -Directory | Where-Object { $_.Name -iin 'apache','ofl','ufl' } | Get-ChildItem | ForEach-Object { New-Item -ItemType Junction -Path "$GoogleFontsDir/all" -Name $_.Name -Value $_.FullName -Force }
+    New-Item -ItemType Junction -Path $FontBaseDir -Name 'google-fonts' -Value "$GoogleFontsDir/all"
   }
 
-  if ($NerdFonts -eq $true -and !(Test-Path "$FontsFolder/nerd-fonts")) {
-    Remove-Item -Recurse -Force "$FontsFolder/nerd-fonts" -ErrorAction SilentlyContinue
-    git clone --depth 1 https://github.com/ryanoasis/nerd-fonts.git "$FontsFolder/nerd-fonts"
-    Get-ChildItem -Path '$FontsFolder/nerd-fonts' -Include '*.otf' -Recurse | Where-Object { $_ -match 'Windows Compatible' -and $_ -match 'patched-fonts' } | Move-Item -Destination "$FontsFolder/files"
-    Remove-Item -Recurse -Force "$FontsFolder/nerd-fonts"
+  if ($NerdFonts -eq $true -and !(Test-Path $NerdFontsDir)) {
+    Remove-Item -Recurse -Force $NerdFontsDir -ErrorAction SilentlyContinue
+    git clone --depth 1 'https://github.com/ryanoasis/nerd-fonts.git' $NerdFontsDir
+    New-Item -ItemType Junction -Path $FontBaseDir -Name 'nerd-fonts' -Value "$NerdFontsDir/patched-fonts"
   }
 }

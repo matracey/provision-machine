@@ -439,98 +439,103 @@ if ($WinGet -eq $true) {
 }
 
 if ($WinGetPkgs -eq $true) {
-  Write-Host 'Installing WinGet packages...'
+  $WinGetModuleImported = $null -ne (Get-Module -Name 'Microsoft.WinGet.Client' -ErrorAction SilentlyContinue)
+  $WinGetModuleAvailable = $null -ne (Get-Module -Name 'Microsoft.WinGet.Client' -ListAvailable -ErrorAction SilentlyContinue)
 
-  $Packages = @(
-    [pscustomobject]@{ Id = 'Microsoft.VisualStudioCode'; Override = '/VERYSILENT /MERGETASKS="!runcode,addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath"'; Force = $true },
-    [pscustomobject]@{ Id = 'Microsoft.VisualStudioCode.Insiders'; Override = '/VERYSILENT /MERGETASKS="!runcode,addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath"'; Force = $true },
-    'Adobe.Acrobat.Reader.64-bit',
-    'Audacity.Audacity',
+  if ($WinGetModuleImported -eq $false -and $WinGetModuleAvailable -eq $false) {
+    Write-Host 'Microsoft.WinGet.Client module not found. Please install the ps-winget module to install WinGet packages.'
+  } else {
+    if ($WinGetModuleImported -eq $false) {
+      Import-Module 'Microsoft.WinGet.Client' -Force
+    }
+
+    Write-Host 'Installing WinGet packages...'
+
+    $VisualStudioCodePackages = Find-WinGetPackage -Source:'winget' -Query 'Microsoft.VisualStudioCode' | Where-Object { $_.Id -notmatch '\.CLI' }
+
+    $MicrosoftPackagesForced = (Find-WinGetPackage -Source:'winget' -Query 'Microsoft.DotNet.SDK' | Where-Object { $_.Id -notmatch '\.Preview' } | Select-Object -Last 2) +
+    (Find-WinGetPackage -Source:'winget' -Query 'Microsoft.DotNet.Runtime' | Where-Object { $_.Id -notmatch '\.Preview' } | Sort-Object -Descending -Property Id | Select-Object -Skip 2) +
+    (Find-WinGetPackage -Source:'winget' -Query 'Microsoft.VC' | Where-Object { $_.Id -notmatch '\.(x86|arm64)' } | Sort-Object -Descending -Property Id)
+
+    $MicrosoftPackages = (Find-WinGetPackage -Source:'winget' -Query 'Microsoft.OpenJDK') +
+    (Find-WinGetPackage -Source:'winget' -Query 'Microsoft.UI.Xaml') +
+    (Find-WinGetPackage -Source:'winget' -Query 'Microsoft.WindowsSDK' | Sort-Object -Descending Version | Select-Object -First 1) +
+    ('Microsoft.AppInstaller',
+      'Microsoft.Azure.AZCopy.10',
+      'Microsoft.Azure.FunctionsCoreTools',
+      'Microsoft.Azure.StorageEmulator',
+      'Microsoft.Azure.StorageExplorer',
+      'Microsoft.AzureCLI',
+      'Microsoft.AzureDataStudio',
+      'Microsoft.CLRTypesSQLServer.2019',
+      'Microsoft.DevHome',
+      'Microsoft.Edge.Beta',
+      'Microsoft.Edge.Dev',
+      'Microsoft.Edge',
+      'Microsoft.EdgeWebView2Runtime',
+      'Microsoft.msodbcsql.17',
+      'Microsoft.OneDrive',
+      'Microsoft.PowerAutomateDesktop',
+      'Microsoft.PowerShell',
+      'Microsoft.PowerToys',
+      'Microsoft.RemoteHelp',
+      'Microsoft.SQLServerManagementStudio',
+      'Microsoft.Teams',
+      'Microsoft.WebDeploy',
+      'Microsoft.WindowsApp',
+      'Microsoft.WindowsTerminal.Preview',
+      'Microsoft.WSL' | ForEach-Object { Find-WinGetPackage -Source:'winget' -Id $_ -MatchOption EqualsCaseInsensitive })
+
+    $ThirdPartyPackages = 'Adobe.Acrobat.Reader.64-bit',
+    'AgileBits.1Password',
+    'AntibodySoftware.WizTree',
+    'Bruno.Bruno',
+    'Canonical.Ubuntu',
+    'CodecGuide.K-LiteCodecPack.Mega',
     'DBBrowserForSQLite.DBBrowserForSQLite',
-    'Discord.Discord',
     'File-New-Project.EarTrumpet',
+    'FlorianHeidenreich.Mp3tag',
     'Git.Git',
     'GitHub.cli',
     'GitHub.GitHubDesktop',
     'GitHub.GitLFS',
+    'Git.GCM',
     'GNE.DualMonitorTools',
     'Google.Chrome',
+    'Google.QuickShare',
     'Iterate.Cyberduck',
     'JanDeDobbeleer.OhMyPosh',
+    'Levitsky.FontBase',
     'LLVM.LLVM',
     'M2Team.NanaZip',
-    'Microsoft.AzureCLI',
-    'Microsoft.AzureDataStudio',
-    'Microsoft.AzureFunctionsCoreTools',
-    'Microsoft.AzureStorageEmulator',
-    'Microsoft.AzureStorageExplorer',
-    'Microsoft.Edge',
-    'Microsoft.Edge.Beta',
-    'Microsoft.EdgeWebView2Runtime',
-    'Microsoft.GitCredentialManagerCore',
-    'Microsoft.Office',
-    'Microsoft.OneDrive',
-    'Microsoft.OpenJDK.11',
-    'Microsoft.OpenJDK.16',
-    'Microsoft.OpenJDK.17',
-    'Microsoft.PowerShell',
-    'Microsoft.PowerToys',
-    'Microsoft.RemoteDesktopClient',
-    'Microsoft.SQLServerManagementStudio',
-    'Microsoft.WindowsTerminal.Preview',
     'Mozilla.Firefox',
-    'Mp3tag.Mp3tag',
-    'NordPassTeam.NordPass',
-    'NordVPN.NordVPN',
     'Notepad++.Notepad++',
-    'OpenWhisperSystems.Signal',
-    'PeterPawlowski.foobar2000',
-    'Postman.Postman',
-    'Rufus.Rufus',
-    'SomePythonThings.WinGetUIStore',
+    'Obsidian.Obsidian',
+    'MartiCliment.UniGetUI',
     'Spotify.Spotify',
-    'tailscale.tailscale',
-    'TIDALMusicAS.TIDAL',
+    'SUSE.RancherDesktop',
     'VideoLAN.VLC',
     'Volta.Volta',
-    'WinDirStat.WinDirStat',
-    'WinSCP.WinSCP',
-    [pscustomobject]@{ Id = 'Microsoft.DotNet.SDK.7'; Force = $true },
-    [pscustomobject]@{ Id = 'Microsoft.DotNet.SDK.6'; Force = $true },
-    [pscustomobject]@{ Id = 'Microsoft.VCRedist.2015+.x64'; Force = $true },
-    [pscustomobject]@{ Id = 'Microsoft.VCRedist.2015+.x86'; Force = $true },
-    [pscustomobject]@{ Id = 'Microsoft.VCRedist.2013.x64'; Force = $true },
-    [pscustomobject]@{ Id = 'Microsoft.VCRedist.2013.x86'; Force = $true },
-    [pscustomobject]@{ Id = 'Microsoft.VCRedist.2012.x64'; Force = $true },
-    [pscustomobject]@{ Id = 'Microsoft.VCRedist.2012.x86'; Force = $true },
-    [pscustomobject]@{ Id = 'Microsoft.VCRedist.2010.x64'; Force = $true },
-    [pscustomobject]@{ Id = 'Microsoft.VCRedist.2010.x86'; Force = $true },
-    [pscustomobject]@{ Id = 'Microsoft.VCRedist.2008.x64'; Force = $true },
-    [pscustomobject]@{ Id = 'Microsoft.VCRedist.2008.x86'; Force = $true },
-    [pscustomobject]@{ Id = 'Microsoft.VCRedist.2005.x64'; Force = $true },
-    [pscustomobject]@{ Id = 'Microsoft.VCRedist.2005.x86'; Force = $true },
-    # Affinity Photo 2
-    [pscustomobject]@{ Id = '9P8DVF1XW02V'; Source = 'msstore' },
-    # Affinity Designer 2
-    [pscustomobject]@{ Id = '9N2D0P16C80H'; Source = 'msstore' },
-    # Affinity Publisher 2
-    [pscustomobject]@{ Id = '9NTV2DZ11KD9'; Source = 'msstore' },
-    # WhatsApp Beta
-    [pscustomobject]@{ Id = '9NBDXK71NK08'; Source = 'msstore' }
-  )
+    'WinSCP.WinSCP' | ForEach-Object { Find-WinGetPackage -Source:'winget' -Id $_ -MatchOption EqualsCaseInsensitive }
 
-  foreach ($Package in $Packages) {
-    if ($Package -is [string]) {
-      $Id = $Package
-      $Force = $Source = $Override = ''
-    } else {
-      $Id = $Package.Id
-      $Force = if ([bool]$Package.Force) { '--force' } else { '' }
-      $Source = if ($Package.Source) { $Package.Source } else { 'winget' }
-      $Override = if ($Package.Override) { "--override '$($Package.Override)'" } else { '' }
-    }
+    $StorePackages = @(
+      # Affinity Photo 2
+      '9P8DVF1XW02V',
+      # Affinity Designer 2
+      '9N2D0P16C80H',
+      # Affinity Publisher 2
+      '9NTV2DZ11KD9',
+      # WhatsApp Beta
+      '9NBDXK71NK08',
+      # Apple Music
+      '9PFHDD62MXS1'
+    ) | ForEach-Object { Find-WinGetPackage -Source:'msstore' -Query $_ -MatchOption EqualsCaseInsensitive }
 
-    Invoke-Expression "winget install -s $Source -h --accept-package-agreements --accept-source-agreements --id=$Id -e $Force $Override"
+    $VisualStudioCodePackages | Select-NotInstalled | Install-WinGetPackage -Mode Silent -Override '/VERYSILENT /MERGETASKS="!runcode,addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath"' -Force
+    $MicrosoftPackagesForced | Select-NotInstalled | Install-WinGetPackage -Force -Mode Silent
+    $MicrosoftPackages | Select-NotInstalled | Install-WinGetPackage -Mode Silent
+    $ThirdPartyPackages | Select-NotInstalled | Install-WinGetPackage -Mode Silent
+    $StorePackages | Select-NotInstalled | Install-WinGetPackage -Mode Silent
   }
 }
 

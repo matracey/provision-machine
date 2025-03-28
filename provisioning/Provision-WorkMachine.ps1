@@ -543,9 +543,9 @@ if ($NodeJs -eq $true) {
   Write-Host 'Installing nodejs...'
 
   $NodeTools = (
-    'node@18',
-    'node@19',
-    'npm@8',
+    'node@lts',
+    'node@latest',
+    'npm@latest',
     '@angular/cli',
     'eslint',
     'playwright',

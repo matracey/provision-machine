@@ -638,9 +638,6 @@ if ($Cfg -eq $true -and (Get-Command git -ErrorAction SilentlyContinue)) {
 
 if ($VsRelease -eq $true -or $VsPreview -eq $true -or $VsIntPrev -eq $true) {
   Write-Host 'Installing Visual Studio Enterprise...'
-  $Vs2022ReleaseUrl = 'https://c2rsetup.officeapps.live.com/c2r/downloadVS.aspx?sku=enterprise&channel=Release&version=VS2022'
-  $Vs2022PreviewUrl = 'https://c2rsetup.officeapps.live.com/c2r/downloadVS.aspx?sku=enterprise&channel=Preview&version=VS2022'
-  $Vs2022IntPrevUrl = 'https://aka.ms/vs/17/intpreview/vs_enterprise.exe'
 
   $VsWorkloads = @(
     'Microsoft.VisualStudio.Workload.CoreEditor',
@@ -663,21 +660,27 @@ if ($VsRelease -eq $true -or $VsPreview -eq $true -or $VsIntPrev -eq $true) {
   )
 
   @{ version = '1.0'; components = $VsWorkloads } | ConvertTo-Json | Out-File "$env:USERPROFILE\.vsconfig"
-}
 
-if ($VsRelease -eq $true) {
-  Invoke-WebRequest -Uri $Vs2022ReleaseUrl -OutFile "$Downloads\vs_enterprise.exe"
-  Start-Process "$Downloads\vs_enterprise.exe" -ArgumentList '--norestart','-p',"--config $env:USERPROFILE\.vsconfig" -NoNewWindow -Wait
-}
+  $VsPackages = Find-WinGetPackage -Source:'winget' -Query 'Microsoft.VisualStudio.'
 
-if ($VsPreview -eq $true) {
-  Invoke-WebRequest -Uri $Vs2022PreviewUrl -OutFile "$Downloads\vs_enterprise_preview.exe"
-  Start-Process "$Downloads\vs_enterprise_preview.exe" -ArgumentList '--norestart','-p',"--config $env:USERPROFILE\.vsconfig" -NoNewWindow -Wait
-}
+  $VsPackages | Where-Object { $_.Id -match 'ConfigFinder|Locator$' } | Install-WinGetPackage -Force
 
-if ($VsIntPrev -eq $true) {
-  Invoke-WebRequest -Uri $Vs2022IntPrevUrl -OutFile "$Downloads\vs_enterprise_intpreview.exe"
-  Start-Process "$Downloads\vs_enterprise_intpreview.exe" -ArgumentList '--norestart','-p',"--config $env:USERPROFILE\.vsconfig" -NoNewWindow -Wait
+  if ($VsRelease -eq $true) {
+    $VsPackages | Where-Object { $_.Name -match 'Enterprise' -and $_.Name -notmatch 'Preview$' } `
+       | Sort-Object -Descending Version -Top 1 `
+       | Install-WinGetPackage -Custom "--norestart --config $env:USERPROFILE\.vsconfig" -Force
+  }
+
+  if ($VsPreview -eq $true) {
+    $VsPackages | Where-Object { $_.Name -match 'Enterprise' -and $_.Name -match 'Preview$' } `
+       | Sort-Object -Descending Version -Top 1 `
+       | Install-WinGetPackage -Custom "--norestart --config $env:USERPROFILE\.vsconfig" -Force
+  }
+
+  if ($VsIntPrev -eq $true) {
+    Invoke-WebRequest -Uri 'https://aka.ms/vs/17/intpreview/vs_enterprise.exe' -OutFile "$Downloads\vs_enterprise_intpreview.exe"
+    Start-Process "$Downloads\vs_enterprise_intpreview.exe" -ArgumentList '--norestart','-p',"--config $env:USERPROFILE\.vsconfig" -NoNewWindow -Wait
+  }
 }
 
 if ($Fonts -eq $true -or $GoogleFonts -eq $true -or $NerdFonts -eq $true) {

@@ -109,6 +109,42 @@ function Set-RegistryChanges {
   }
 }
 
+function Import-ModuleIfAvailable {
+<#
+  .SYNOPSIS
+  Imports a module if it is available and not already imported.
+
+  .DESCRIPTION
+  Imports a module if it is available and not already imported. If the module is not available, it returns $false. If the module is already imported, it returns $true.
+
+  .PARAMETER Name
+  The name of the module to import.
+
+  .EXAMPLE
+  Import-ModuleIfAvailable -Name 'MyModule'
+  #>
+
+  [CmdletBinding()]
+  param(
+    [ValidateNotNullOrEmpty()]
+    [Parameter(Mandatory = $true,ValueFromPipeline = $true,HelpMessage = 'Name of the module to import.')]
+    [string]$Name
+  )
+
+  if ($null -ne (Get-Module -Name $Name -ErrorAction SilentlyContinue)) {
+    return $true
+  }
+
+  $AvailableModule = Get-Module -Name $Name -ListAvailable -ErrorAction SilentlyContinue | Select-Object -First 1
+
+  if ($null -eq $AvailableModule) {
+    return $false
+  }
+
+  $AvailableModule | Import-Module -Force
+  return $true
+}
+
 filter Select-NotInstalled {
 <#
   .SYNOPSIS
@@ -512,16 +548,9 @@ if ($WinGet -eq $true) {
 }
 
 if ($WinGetPkgs -eq $true) {
-  $WinGetModuleImported = $null -ne (Get-Module -Name 'Microsoft.WinGet.Client' -ErrorAction SilentlyContinue)
-  $WinGetModuleAvailable = $null -ne (Get-Module -Name 'Microsoft.WinGet.Client' -ListAvailable -ErrorAction SilentlyContinue)
-
-  if ($WinGetModuleImported -eq $false -and $WinGetModuleAvailable -eq $false) {
+  if (-not (Import-ModuleIfAvailable -Name 'Microsoft.WinGet.Client')) {
     Write-Host 'Microsoft.WinGet.Client module not found. Please install the ps-winget module to install WinGet packages.'
   } else {
-    if ($WinGetModuleImported -eq $false) {
-      Import-Module 'Microsoft.WinGet.Client' -Force
-    }
-
     Write-Host 'Installing WinGet packages...'
 
     $VisualStudioCodePackages = Find-WinGetPackage -Source:'winget' -Query 'Microsoft.VisualStudioCode' | Where-Object { $_.Id -notmatch '\.CLI' }

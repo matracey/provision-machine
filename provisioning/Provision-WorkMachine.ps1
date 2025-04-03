@@ -531,20 +531,17 @@ if ($Scoop -eq $true) {
 }
 
 if ($WinGet -eq $true) {
-  Write-Host 'Installing WinGet...'
-  $WinGetUri = [uri](Invoke-WebRequest 'https://api.github.com/repos/microsoft/winget-cli/releases/latest' | ConvertFrom-Json | Select-Object -ExpandProperty assets | Select-Object -ExpandProperty browser_download_url | Where-Object { $_ -match 'msix' } | Select-Object -First 1)
-  $DestPath = [IO.Path]::Combine((Resolve-Path -Relative $Downloads),$WinGetUri.Segments[-1])
-
-  if (Get-Command aria2c -ErrorAction:SilentlyContinue) {
-    Write-Host -ForegroundColor DarkYellow 'Using aria2c to download WinGet...'
-    & aria2c -x 16 -s 16 -k 1M $WinGetUri -o $DestPath
+  if (-not (Import-ModuleIfAvailable -Name 'Microsoft.WinGet.Client')) {
+    Write-Host 'WinGet module not found. Please install the ps-winget module to install WinGet.'
   } else {
-    Write-Host -ForegroundColor DarkYellow 'Using Invoke-WebRequest to download WinGet...'
-    Invoke-WebRequest -Uri $WinGetUri -OutFile $DestPath
+    Assert-WinGetPackageManager -ErrorVariable WinGetError -ErrorAction SilentlyContinue
+    if ($WinGetError) {
+      Write-Host 'WinGet package manager not found. Installing...'
+      Repair-WinGetPackageManager -Latest -Force
+    } else {
+      Write-Host -ForegroundColor Green 'WinGet package manager is already installed.'
+    }
   }
-
-  Write-Host -ForegroundColor DarkYellow 'Installing WinGet...'
-  Add-AppPackage -Path $DestPath -ForceUpdateFromAnyVersion
 }
 
 if ($WinGetPkgs -eq $true) {

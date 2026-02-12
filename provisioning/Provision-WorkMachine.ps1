@@ -545,11 +545,22 @@ if ($WinGet -eq $true) {
 }
 
 if ($WinGetPkgs -eq $true) {
-  if (-not (Import-ModuleIfAvailable -Name 'Microsoft.WinGet.Client')) {
-    Write-Host 'Microsoft.WinGet.Client module not found. Please install the ps-winget module to install WinGet packages.'
+  # Static packages (Microsoft, third-party, Store) are declared in configuration.dsc.yaml
+  $DscConfigPath = Join-Path $PSScriptRoot 'configuration.dsc.yaml'
+  if (Test-Path $DscConfigPath) {
+    Write-Host 'Applying WinGet DSC configuration for static packages...'
+    winget configure --file $DscConfigPath --accept-configuration-agreements --disable-interactivity
   } else {
-    Write-Host 'Installing WinGet packages...'
+    Write-Host -ForegroundColor Yellow "WinGet DSC configuration not found at $DscConfigPath. Skipping static packages."
+  }
 
+  # Dynamic packages require version filtering or search-based resolution and cannot be expressed in DSC
+  if (-not (Import-ModuleIfAvailable -Name 'Microsoft.WinGet.Client')) {
+    Write-Host 'Microsoft.WinGet.Client module not found. Skipping dynamic WinGet packages.'
+  } else {
+    Write-Host 'Installing dynamic WinGet packages...'
+
+    # VS Code needs custom installer override args not supported by WinGet DSC
     $VisualStudioCodePackages = Find-WinGetPackage -Source:'winget' -Query 'Microsoft.VisualStudioCode' | Where-Object { $_.Id -notmatch '\.CLI' }
 
     $MicrosoftPackagesForced = (Find-WinGetPackage -Source:'winget' -Query 'Microsoft.DotNet.SDK' | Where-Object { $_.Id -notmatch '\.Preview' } | Select-Object -Last 2) +
@@ -558,83 +569,11 @@ if ($WinGetPkgs -eq $true) {
 
     $MicrosoftPackages = (Find-WinGetPackage -Source:'winget' -Query 'Microsoft.OpenJDK') +
     (Find-WinGetPackage -Source:'winget' -Query 'Microsoft.UI.Xaml') +
-    (Find-WinGetPackage -Source:'winget' -Query 'Microsoft.WindowsSDK' | Sort-Object -Descending Version | Select-Object -First 1) +
-    ('Microsoft.AppInstaller',
-      'Microsoft.Azure.AZCopy.10',
-      'Microsoft.Azure.FunctionsCoreTools',
-      'Microsoft.Azure.StorageEmulator',
-      'Microsoft.Azure.StorageExplorer',
-      'Microsoft.AzureCLI',
-      'Microsoft.AzureDataStudio',
-      'Microsoft.CLRTypesSQLServer.2019',
-      'Microsoft.DevHome',
-      'Microsoft.Edge.Beta',
-      'Microsoft.Edge.Dev',
-      'Microsoft.Edge',
-      'Microsoft.EdgeWebView2Runtime',
-      'Microsoft.msodbcsql.17',
-      'Microsoft.OneDrive',
-      'Microsoft.PowerAutomateDesktop',
-      'Microsoft.PowerShell',
-      'Microsoft.PowerToys',
-      'Microsoft.RemoteHelp',
-      'Microsoft.SQLServerManagementStudio',
-      'Microsoft.Teams',
-      'Microsoft.WebDeploy',
-      'Microsoft.WindowsApp',
-      'Microsoft.WindowsTerminal.Preview',
-      'Microsoft.WSL' | ForEach-Object { Find-WinGetPackage -Source:'winget' -Id $_ -MatchOption EqualsCaseInsensitive })
-
-    $ThirdPartyPackages = 'Adobe.Acrobat.Reader.64-bit',
-    'AgileBits.1Password',
-    'AntibodySoftware.WizTree',
-    'Bruno.Bruno',
-    'Canonical.Ubuntu',
-    'CodecGuide.K-LiteCodecPack.Mega',
-    'DBBrowserForSQLite.DBBrowserForSQLite',
-    'File-New-Project.EarTrumpet',
-    'FlorianHeidenreich.Mp3tag',
-    'Git.Git',
-    'GitHub.cli',
-    'GitHub.GitHubDesktop',
-    'GitHub.GitLFS',
-    'Git.GCM',
-    'GNE.DualMonitorTools',
-    'Google.Chrome',
-    'Google.QuickShare',
-    'Iterate.Cyberduck',
-    'JanDeDobbeleer.OhMyPosh',
-    'Levitsky.FontBase',
-    'LLVM.LLVM',
-    'M2Team.NanaZip',
-    'Mozilla.Firefox',
-    'Notepad++.Notepad++',
-    'Obsidian.Obsidian',
-    'MartiCliment.UniGetUI',
-    'Spotify.Spotify',
-    'SUSE.RancherDesktop',
-    'VideoLAN.VLC',
-    'Volta.Volta',
-    'WinSCP.WinSCP' | ForEach-Object { Find-WinGetPackage -Source:'winget' -Id $_ -MatchOption EqualsCaseInsensitive }
-
-    $StorePackages = @(
-      # Affinity Photo 2
-      '9P8DVF1XW02V',
-      # Affinity Designer 2
-      '9N2D0P16C80H',
-      # Affinity Publisher 2
-      '9NTV2DZ11KD9',
-      # WhatsApp Beta
-      '9NBDXK71NK08',
-      # Apple Music
-      '9PFHDD62MXS1'
-    ) | ForEach-Object { Find-WinGetPackage -Source:'msstore' -Query $_ -MatchOption EqualsCaseInsensitive }
+    (Find-WinGetPackage -Source:'winget' -Query 'Microsoft.WindowsSDK' | Sort-Object -Descending Version | Select-Object -First 1)
 
     $VisualStudioCodePackages | Select-NotInstalled | Install-WinGetPackage -Mode Silent -Override '/VERYSILENT /MERGETASKS="!runcode,addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath"' -Force
     $MicrosoftPackagesForced | Select-NotInstalled | Install-WinGetPackage -Force -Mode Silent
     $MicrosoftPackages | Select-NotInstalled | Install-WinGetPackage -Mode Silent
-    $ThirdPartyPackages | Select-NotInstalled | Install-WinGetPackage -Mode Silent
-    $StorePackages | Select-NotInstalled | Install-WinGetPackage -Mode Silent
   }
 }
 

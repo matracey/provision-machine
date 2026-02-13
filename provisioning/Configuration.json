@@ -10,33 +10,37 @@
     },
     "Scoop": {
       "Prereqs": [
-        "aria2",
         "7zip",
+        "aria2",
+        "dark",
         "git",
         "innounp",
-        "wixtoolset",
         "lessmsi",
-        "dark"
+        "wixtoolset"
       ],
       "Buckets": [
-        {
-          "name": "main",
-          "url": "https://github.com/ScoopInstaller/Main.git"
-        },
         {
           "name": "extras",
           "url": "https://github.com/ScoopInstaller/Extras"
         },
         {
-          "name": "sysinternals",
-          "url": "https://github.com/niheaven/scoop-sysinternals"
+          "name": "main",
+          "url": "https://github.com/ScoopInstaller/Main.git"
         },
         {
           "name": "matracey",
           "url": "https://github.com/matracey/scoop-bucket"
+        },
+        {
+          "name": "sysinternals",
+          "url": "https://github.com/niheaven/scoop-sysinternals"
         }
       ],
       "Packages": [
+        "extras/cru",
+        "extras/git-credential-manager",
+        "extras/scoop-completion",
+        "extras/sysinternals",
         "main/7zip",
         "main/aria2",
         "main/azure-functions-core-tools",
@@ -61,30 +65,27 @@
         "main/wget",
         "main/winget-ps",
         "main/wixtoolset",
-        "extras/cru",
-        "extras/git-credential-manager",
-        "extras/scoop-completion",
-        "extras/sysinternals"
+        "matracey/pswindowsupdate"
       ],
       "Aliases": {
-        "upgrade": [
-          "scoop update; scoop update *;",
-          "Updates Scoop and all installed apps"
+        "clean": [
+          "scoop cleanup *; scoop cache rm *;",
+          "Clean up all the caches and remove all the old versions"
         ],
         "reinstall": [
           "scoop uninstall ; scoop install ;",
           "Uninstall and then reinstall an app"
         ],
-        "clean": [
-          "scoop cleanup *; scoop cache rm *;",
-          "Clean up all the caches and remove all the old versions"
+        "upgrade": [
+          "scoop update; scoop update *;",
+          "Updates Scoop and all installed apps"
         ]
       }
     },
     "VisualStudio": {
       "Workloads": [
-        "Microsoft.VisualStudio.Workload.CoreEditor",
         "Microsoft.VisualStudio.Workload.Azure",
+        "Microsoft.VisualStudio.Workload.CoreEditor",
         "Microsoft.VisualStudio.Workload.Data",
         "Microsoft.VisualStudio.Workload.ManagedDesktop",
         "Microsoft.VisualStudio.Workload.NativeDesktop",
@@ -95,32 +96,41 @@
     },
     "WindowsDefender": {
       "ProcessExclusions": [
-        "vshost-clr2.exe",
-        "VSInitializer.exe",
-        "VSIXInstaller.exe",
-        "VSLaunchBrowser.exe",
-        "vsn.exe",
-        "VsRegEdit.exe",
-        "VSWebHandler.exe",
-        "VSWebLauncher.exe",
-        "XDesProc.exe",
+        "bash.exe",
         "Blend.exe",
+        "Code - Insiders.exe",
+        "Code.exe",
         "DDConfigCA.exe",
         "devenv.exe",
+        "dotnet.exe",
         "FeedbackCollector.exe",
+        "git-bash.exe",
+        "git.exe",
+        "java.exe",
+        "java64.exe",
         "Microsoft.VisualStudio.Web.Host.exe",
+        "mono-sgen.exe",
+        "mono.exe",
+        "msbuild.exe",
         "mspdbsrv.exe",
         "MSTest.exe",
+        "node.exe",
+        "node.js",
+        "nuget.exe",
         "PerfWatson2.exe",
+        "perfwatson2.exe",
+        "powershell.exe",
         "Publicize.exe",
-        "QTAgent.exe",
+        "pwsh.exe",
         "QTAgent_35.exe",
         "QTAgent_40.exe",
-        "QTAgent32.exe",
+        "QTAgent.exe",
         "QTAgent32_35.exe",
         "QTAgent32_40.exe",
+        "QTAgent32.exe",
         "QTDCAgent.exe",
         "QTDCAgent32.exe",
+        "ServiceHub.Host.Node.x86.exe",
         "StorePID.exe",
         "T4VSHostProcess.exe",
         "TailoredDeploy.exe",
@@ -129,34 +139,25 @@
         "TfsLabConfig.exe",
         "UserControlTestContainer.exe",
         "vb7to8.exe",
+        "vbcscompiler.exe",
         "VcxprojReader.exe",
         "VsDebugWERHelper.exe",
         "VSFinalizer.exe",
         "VsGa.exe",
         "VSHiveStub.exe",
+        "vshost-clr2.exe",
         "vshost.exe",
-        "vshost32.exe",
         "vshost32-clr2.exe",
-        "Code - Insiders.exe",
-        "Code.exe",
-        "dotnet.exe",
-        "mono.exe",
-        "mono-sgen.exe",
-        "java.exe",
-        "java64.exe",
-        "msbuild.exe",
-        "node.exe",
-        "node.js",
-        "perfwatson2.exe",
-        "ServiceHub.Host.Node.x86.exe",
-        "vbcscompiler.exe",
-        "nuget.exe",
-        "git.exe",
-        "git-bash.exe",
-        "bash.exe",
-        "powershell.exe",
-        "pwsh.exe",
-        "wsl.exe"
+        "vshost32.exe",
+        "VSInitializer.exe",
+        "VSIXInstaller.exe",
+        "VSLaunchBrowser.exe",
+        "vsn.exe",
+        "VsRegEdit.exe",
+        "VSWebHandler.exe",
+        "VSWebLauncher.exe",
+        "wsl.exe",
+        "XDesProc.exe"
       ]
     }
   },
@@ -170,34 +171,34 @@
     "Scoop": {
       "Buckets": [
         {
-          "name": "games",
-          "url": "https://github.com/Calinou/scoop-games"
-        },
-        {
           "name": "ash258",
           "url": "https://github.com/Ash258/Shovel-Ash258.git"
         },
         {
           "name": "emulators",
           "url": "https://github.com/hermanjustnu/scoop-emulators.git"
+        },
+        {
+          "name": "games",
+          "url": "https://github.com/Calinou/scoop-games"
         }
       ],
       "Packages": [
-        "GameSaveManager",
         "adb",
         "android-clt",
         "dnsjumper",
         "duckstation",
+        "GameSaveManager",
+        "git-filter-repo",
         "gog-galaxy-plugin-downloader",
         "mediainfo",
         "msiafterburner",
         "msikombustor",
+        "nuget",
         "pcsx2",
         "potrace",
         "sqlite",
-        "xemu",
-        "git-filter-repo",
-        "nuget"
+        "xemu"
       ]
     },
     "WindowsDefender": {
@@ -206,16 +207,11 @@
   },
   "Work": {
     "Scoop": {
-      "Buckets": [
-        {
-          "name": "knox-scoop",
-          "url": "https://github.com/KNOXDEV/knox-scoop"
-        }
-      ],
+      "Buckets": [],
       "Packages": [
-        "main/php",
         "extras/servicebusexplorer",
         "matracey/clickpaste",
+        "matracey/microsoft-graph",
         "matracey/microsoft-graph-applications",
         "matracey/microsoft-graph-authentication",
         "matracey/microsoft-graph-backuprestore",
@@ -225,10 +221,10 @@
         "matracey/microsoft-graph-cloudcommunications",
         "matracey/microsoft-graph-compliance",
         "matracey/microsoft-graph-crossdeviceexperiences",
+        "matracey/microsoft-graph-devicemanagement",
         "matracey/microsoft-graph-devicemanagement-administration",
         "matracey/microsoft-graph-devicemanagement-enrollment",
         "matracey/microsoft-graph-devicemanagement-functions",
-        "matracey/microsoft-graph-devicemanagement",
         "matracey/microsoft-graph-devices-cloudprint",
         "matracey/microsoft-graph-devices-corporatemanagement",
         "matracey/microsoft-graph-devices-serviceannouncement",
@@ -251,10 +247,10 @@
         "matracey/microsoft-graph-security",
         "matracey/microsoft-graph-sites",
         "matracey/microsoft-graph-teams",
+        "matracey/microsoft-graph-users",
         "matracey/microsoft-graph-users-actions",
         "matracey/microsoft-graph-users-functions",
-        "matracey/microsoft-graph-users",
-        "matracey/microsoft-graph"
+        "matracey/setuserfta"
       ]
     }
   }

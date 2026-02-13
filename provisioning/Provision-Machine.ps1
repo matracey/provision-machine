@@ -17,29 +17,145 @@ param(
   [Parameter()][switch]$DryRun
 )
 
-#region Validation
+#region Interactive Menu Functions
+
+function Show-SingleSelectMenu {
+  param(
+    [string]$Title,
+    [string[]]$Options,
+    [int]$Default = 0
+  )
+  
+  $selectedIndex = $Default
+  $cursorTop = [Console]::CursorTop
+  
+  function Render {
+    [Console]::SetCursorPosition(0, $cursorTop)
+    for ($i = 0; $i -lt $Options.Count; $i++) {
+      if ($i -eq $selectedIndex) {
+        Write-Host -ForegroundColor Cyan "  > $($Options[$i])  " -NoNewline
+        Write-Host ""
+      } else {
+        Write-Host "    $($Options[$i])  "
+      }
+    }
+    Write-Host -ForegroundColor DarkGray "  (↑/↓ to move, Enter to select)"
+  }
+  
+  Write-Host -ForegroundColor Yellow $Title
+  Write-Host ""
+  Render
+  
+  while ($true) {
+    $key = $host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
+    switch ($key.VirtualKeyCode) {
+      38 { $selectedIndex = [Math]::Max(0, $selectedIndex - 1) }  # Up
+      40 { $selectedIndex = [Math]::Min($Options.Count - 1, $selectedIndex + 1) }  # Down
+      13 { # Enter
+        [Console]::SetCursorPosition(0, $cursorTop + $Options.Count + 1)
+        Write-Host ""
+        return $selectedIndex
+      }
+    }
+    Render
+  }
+}
+
+function Show-MultiSelectMenu {
+  param(
+    [string]$Title,
+    [hashtable[]]$Options,  # @{ Name = ''; Selected = $false }
+    [string]$HelpText = '(↑/↓ to move, Space to toggle, Enter to confirm)'
+  )
+  
+  $selectedIndex = 0
+  $cursorTop = [Console]::CursorTop
+  
+  function Render {
+    [Console]::SetCursorPosition(0, $cursorTop)
+    for ($i = 0; $i -lt $Options.Count; $i++) {
+      $checkbox = if ($Options[$i].Selected) { '[■]' } else { '[ ]' }
+      $color = if ($Options[$i].Selected) { 'Green' } else { 'White' }
+      if ($i -eq $selectedIndex) {
+        Write-Host -ForegroundColor Cyan -NoNewline "  > "
+        Write-Host -ForegroundColor $color "$checkbox $($Options[$i].Name)  "
+      } else {
+        Write-Host -ForegroundColor $color "    $checkbox $($Options[$i].Name)  "
+      }
+    }
+    Write-Host -ForegroundColor DarkGray "  $HelpText"
+  }
+  
+  Write-Host -ForegroundColor Yellow $Title
+  Write-Host ""
+  Render
+  
+  while ($true) {
+    $key = $host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
+    switch ($key.VirtualKeyCode) {
+      38 { $selectedIndex = [Math]::Max(0, $selectedIndex - 1) }  # Up
+      40 { $selectedIndex = [Math]::Min($Options.Count - 1, $selectedIndex + 1) }  # Down
+      32 { $Options[$selectedIndex].Selected = -not $Options[$selectedIndex].Selected }  # Space
+      13 { # Enter
+        [Console]::SetCursorPosition(0, $cursorTop + $Options.Count + 1)
+        Write-Host ""
+        return $Options
+      }
+    }
+    Render
+  }
+}
+
+#endregion
+
+#region Validation and Interactive Setup
 if ($Personal -and $Work) {
   Write-Error 'Cannot specify both -Personal and -Work switches. Please choose one.'
   exit 1
 }
 
+# Interactive mode when no context specified
 if (-not $Personal -and -not $Work) {
-  Write-Error 'Must specify either -Personal or -Work switch.'
-  exit 1
+  Write-Host ''
+  Write-Host -ForegroundColor Cyan '╔══════════════════════════════════════════════════════════════╗'
+  Write-Host -ForegroundColor Cyan '║                    QuickInit Provisioning                    ║'
+  Write-Host -ForegroundColor Cyan '╚══════════════════════════════════════════════════════════════╝'
+  Write-Host ''
+  
+  $contextChoice = Show-SingleSelectMenu -Title 'Select context:' -Options @('Personal', 'Work')
+  if ($contextChoice -eq 0) { $Personal = $true } else { $Work = $true }
 }
 
 $Context = if ($Personal) { 'Personal' } else { 'Work' }
+Write-Host -ForegroundColor Green "Context: $Context"
+Write-Host ''
 #endregion
 
 #region Defaults
 $AllSwitchesFalse = -not ($Cfg -or $TurboRdpHw -or $TurboRdpSw -or $Winget -or $WingetPkgs -or $Scoop -or $VsRelease -or $VsPreview -or $VsIntPrev -or $VsBldTool -or $Fonts -or $GoogleFonts -or $NerdFonts)
 
 if ($AllSwitchesFalse) {
-  Write-Host -ForegroundColor Cyan "No feature switches passed. Using defaults for $Context context: -Scoop, -WingetPkgs, -VsPreview, -Fonts."
-  $Scoop = $true
-  $WingetPkgs = $true
-  $VsPreview = $true
-  $Fonts = $true
+  $featureOptions = @(
+    @{ Name = 'Scoop packages'; Selected = $true; Variable = 'Scoop' }
+    @{ Name = 'WinGet packages (DSC)'; Selected = $true; Variable = 'WingetPkgs' }
+    @{ Name = 'Visual Studio Preview'; Selected = $true; Variable = 'VsPreview' }
+    @{ Name = 'Fonts (Google + Nerd)'; Selected = $true; Variable = 'Fonts' }
+    @{ Name = 'System configuration'; Selected = $false; Variable = 'Cfg' }
+  )
+  
+  $results = Show-MultiSelectMenu -Title 'Select features to install:' -Options $featureOptions
+  
+  foreach ($opt in $results) {
+    Set-Variable -Name $opt.Variable -Value $opt.Selected
+  }
+  
+  $selected = ($results | Where-Object { $_.Selected } | ForEach-Object { $_.Name }) -join ', '
+  if ($selected) {
+    Write-Host -ForegroundColor Green "Features: $selected"
+  } else {
+    Write-Host -ForegroundColor Yellow "No features selected. Exiting."
+    exit 0
+  }
 }
 #endregion
 

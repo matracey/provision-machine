@@ -45,6 +45,78 @@ if ($AllSwitchesFalse) {
 
 #region Helper Functions
 
+# Gist ID for remote configuration files
+$script:GistId = 'f4c3a9194cd190a3b3de423aad5dc7e1'
+$script:GistBaseUrl = "https://gist.githubusercontent.com/matracey/$script:GistId/raw"
+
+<#
+.SYNOPSIS
+Gets file content from the GitHub Gist or local file.
+
+.DESCRIPTION
+Attempts to fetch a file from the configured GitHub Gist. Falls back to local file if available.
+
+.PARAMETER FileName
+The name of the file to fetch.
+
+.PARAMETER LocalPath
+Optional local path to use as fallback.
+
+.RETURNS
+The content of the file as a string.
+#>
+function Get-ConfigFile {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$FileName,
+    [string]$LocalPath
+  )
+
+  # Try to fetch from gist first
+  $GistUrl = "$script:GistBaseUrl/$FileName"
+  try {
+    Write-Verbose "Fetching $FileName from gist..."
+    $Response = Invoke-WebRequest -Uri $GistUrl -UseBasicParsing -ErrorAction Stop
+    return $Response.Content
+  } catch {
+    Write-Verbose "Failed to fetch from gist: $_"
+  }
+
+  # Fall back to local file
+  if ($LocalPath -and (Test-Path $LocalPath)) {
+    Write-Verbose "Using local file: $LocalPath"
+    return Get-Content -Path $LocalPath -Raw
+  }
+
+  throw "Could not load $FileName from gist or local path"
+}
+
+<#
+.SYNOPSIS
+Saves content to a temporary file and returns the path.
+
+.PARAMETER Content
+The content to save.
+
+.PARAMETER FileName
+The name of the file (used for extension).
+
+.RETURNS
+The path to the temporary file.
+#>
+function Save-TempFile {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$Content,
+    [Parameter(Mandatory = $true)]
+    [string]$FileName
+  )
+
+  $TempPath = Join-Path $env:TEMP "QuickInit_$FileName"
+  $Content | Set-Content -Path $TempPath -Encoding UTF8
+  return $TempPath
+}
+
 <#
 .SYNOPSIS
 Tries to run a script block with elevated permissions.
@@ -187,11 +259,11 @@ function Import-Configuration {
   param(
     [Parameter(Mandatory = $true)]
     [ValidateSet('Personal', 'Work')]
-    [string]$Context,
-    [string]$Path = "$PSScriptRoot\Configuration.json"
+    [string]$Context
   )
 
-  $Config = Get-Content -Path $Path -Raw | ConvertFrom-Json
+  $ConfigContent = Get-ConfigFile -FileName 'Configuration.json' -LocalPath "$PSScriptRoot\Configuration.json"
+  $Config = $ConfigContent | ConvertFrom-Json
 
   # Build merged configuration
   $Merged = @{
@@ -491,14 +563,17 @@ if ($Winget) {
 if ($WingetPkgs) {
   Write-Host -ForegroundColor Cyan 'Installing WinGet packages...'
 
-  $DscConfigPath = Join-Path $PSScriptRoot "configuration.$($Context.ToLower()).dsc.yaml"
+  $DscFileName = "configuration.$($Context.ToLower()).dsc.yaml"
+  $LocalDscPath = Join-Path $PSScriptRoot $DscFileName
 
   if (-not $DryRun) {
-    if (Test-Path $DscConfigPath) {
-      Write-Host "Applying WinGet DSC configuration from $DscConfigPath..."
+    try {
+      $DscContent = Get-ConfigFile -FileName $DscFileName -LocalPath $LocalDscPath
+      $DscConfigPath = Save-TempFile -Content $DscContent -FileName $DscFileName
+      Write-Host "Applying WinGet DSC configuration..."
       winget configure --file $DscConfigPath --accept-configuration-agreements --disable-interactivity
-    } else {
-      Write-Host -ForegroundColor Yellow "WinGet DSC configuration not found at $DscConfigPath"
+    } catch {
+      Write-Host -ForegroundColor Yellow "Could not load WinGet DSC configuration: $_"
     }
 
     # Dynamic packages (VS Code with custom install args)
@@ -515,7 +590,7 @@ if ($WingetPkgs) {
       $VcRedistPackages | Select-NotInstalled | Install-WinGetPackage -Force -Mode Silent
     }
   } else {
-    Write-Host "[DryRun] Would apply DSC config from $DscConfigPath"
+    Write-Host "[DryRun] Would apply DSC config: $DscFileName"
     Write-Host '[DryRun] Would install VS Code, .NET SDKs, and VC Redistributables'
   }
 }

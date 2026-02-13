@@ -1,0 +1,598 @@
+# yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema/0.2
+properties:
+  configurationVersion: 0.2.0
+
+  resources:
+    # ==========================================================================
+    # Microsoft Packages (winget source)
+    # ==========================================================================
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Microsoft App Installer
+      settings:
+        id: Microsoft.AppInstaller
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Microsoft Edge
+      settings:
+        id: Microsoft.Edge
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Microsoft Edge Beta
+      settings:
+        id: Microsoft.Edge.Beta
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Edge WebView2 Runtime
+      settings:
+        id: Microsoft.EdgeWebView2Runtime
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Microsoft Office
+      settings:
+        id: Microsoft.Office
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Microsoft OneDrive
+      settings:
+        id: Microsoft.OneDrive
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install PowerShell
+      settings:
+        id: Microsoft.PowerShell
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install PowerToys
+      settings:
+        id: Microsoft.PowerToys
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Microsoft Remote Desktop Client
+      settings:
+        id: Microsoft.RemoteDesktopClient
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Windows Terminal Preview
+      settings:
+        id: Microsoft.WindowsTerminal.Preview
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Windows Subsystem for Linux
+      settings:
+        id: Microsoft.WSL
+        source: winget
+
+    # ==========================================================================
+    # Third-Party Packages (winget source)
+    # ==========================================================================
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Adobe Acrobat Reader 64-bit
+      settings:
+        id: Adobe.Acrobat.Reader.64-bit
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install 1Password
+      settings:
+        id: AgileBits.1Password
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Amazon Games
+      settings:
+        id: Amazon.Games
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install WizTree
+      settings:
+        id: AntibodySoftware.WizTree
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install ATLauncher
+      settings:
+        id: ATLauncher.ATLauncher
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Audacity
+      settings:
+        id: Audacity.Audacity
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Avidemux
+      settings:
+        id: Avidemux.Avidemux
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install calibre
+      settings:
+        id: calibre.calibre
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Ubuntu
+      settings:
+        id: Canonical.Ubuntu
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Universal ADB Driver
+      settings:
+        id: ClockworkMod.UniversalADBDriver
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install K-Lite Codec Pack Full
+      settings:
+        id: CodecGuide.K-LiteCodecPack.Full
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Borderless Gaming
+      settings:
+        id: Codeusa.BorderlessGaming
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install CPU-Z MSI
+      settings:
+        id: CPUID.CPU-Z.MSI
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install HWMonitor
+      settings:
+        id: CPUID.HWMonitor
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install CrystalDiskInfo
+      settings:
+        id: CrystalDewWorld.CrystalDiskInfo
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Das Keyboard
+      settings:
+        id: DasKeyboard.DasKeyboard
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install DB Browser for SQLite
+      settings:
+        id: DBBrowserForSQLite.DBBrowserForSQLite
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Discord
+      settings:
+        id: Discord.Discord
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Discord PTB
+      settings:
+        id: Discord.Discord.PTB
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Docker Desktop
+      settings:
+        id: Docker.DockerDesktop
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Dolphin Emulator
+      settings:
+        id: DolphinEmulator.Dolphin
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install EA Desktop
+      settings:
+        id: ElectronicArts.EADesktop
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Remote Mouse
+      settings:
+        id: EmoteInteractive.RemoteMouse
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Epic Games Launcher
+      settings:
+        id: EpicGames.EpicGamesLauncher
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Macintosh.js
+      settings:
+        id: FelixRieseberg.MacintoshJS
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Windows95
+      settings:
+        id: FelixRieseberg.Windows95
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install EarTrumpet
+      settings:
+        id: File-New-Project.EarTrumpet
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Mp3tag
+      settings:
+        id: FlorianHeidenreich.Mp3tag
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Git
+      settings:
+        id: Git.Git
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install GitHub CLI
+      settings:
+        id: GitHub.cli
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install GitHub Desktop
+      settings:
+        id: GitHub.GitHubDesktop
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Git LFS
+      settings:
+        id: GitHub.GitLFS
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Git Credential Manager
+      settings:
+        id: Git.GCM
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Dual Monitor Tools
+      settings:
+        id: GNE.DualMonitorTools
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install GOG Galaxy
+      settings:
+        id: GOG.Galaxy
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Android Studio
+      settings:
+        id: Google.AndroidStudio
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Google Chrome
+      settings:
+        id: Google.Chrome
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Google Quick Share
+      settings:
+        id: Google.QuickShare
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install HandBrake
+      settings:
+        id: HandBrake.HandBrake
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Cyberduck
+      settings:
+        id: Iterate.Cyberduck
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Oh My Posh
+      settings:
+        id: JanDeDobbeleer.OhMyPosh
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install FontBase
+      settings:
+        id: Levitsky.FontBase
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install AutoHotkey
+      settings:
+        id: Lexikos.AutoHotkey
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install RetroArch
+      settings:
+        id: Libretro.RetroArch
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install LLVM
+      settings:
+        id: LLVM.LLVM
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Logitech G HUB
+      settings:
+        id: Logitech.GHUB
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install NanaZip
+      settings:
+        id: M2Team.NanaZip
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install UniGetUI
+      settings:
+        id: MartiCliment.UniGetUI
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install MediaInfo GUI
+      settings:
+        id: MediaArea.MediaInfo.GUI
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install MKVToolNix
+      settings:
+        id: MoritzBunkus.MKVToolNix
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Mozilla Firefox
+      settings:
+        id: Mozilla.Firefox
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install NordPass
+      settings:
+        id: NordPassTeam.NordPass
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install NordVPN
+      settings:
+        id: NordVPN.NordVPN
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Notepad++
+      settings:
+        id: Notepad++.Notepad++
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install NVIDIA Broadcast
+      settings:
+        id: Nvidia.Broadcast
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install GeForce Experience
+      settings:
+        id: Nvidia.GeForceExperience
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install NVIDIA PhysX
+      settings:
+        id: Nvidia.PhysX
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install NZXT CAM
+      settings:
+        id: NZXT.CAM
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install OBS Studio
+      settings:
+        id: OBSProject.OBSStudio
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Obsidian
+      settings:
+        id: Obsidian.Obsidian
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Signal
+      settings:
+        id: OpenWhisperSystems.Signal
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install foobar2000
+      settings:
+        id: PeterPawlowski.foobar2000
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Plex
+      settings:
+        id: Plex.Plex
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Plex Media Server
+      settings:
+        id: Plex.PlexMediaServer
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Postman
+      settings:
+        id: Postman.Postman
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install qBittorrent
+      settings:
+        id: qBittorrent.qBittorrent
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install HWiNFO
+      settings:
+        id: REALiX.HWiNFO
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Rufus
+      settings:
+        id: Rufus.Rufus
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install SABnzbd
+      settings:
+        id: SABnzbdTeam.SABnzbd
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install ElevenClock
+      settings:
+        id: SomePythonThings.ElevenClock
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Spotify
+      settings:
+        id: Spotify.Spotify
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Tailscale
+      settings:
+        id: tailscale.tailscale
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Prowlarr
+      settings:
+        id: TeamProwlarr.Prowlarr
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Radarr
+      settings:
+        id: TeamRadarr.Radarr
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Sonarr
+      settings:
+        id: TeamSonarr.Sonarr
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install TIDAL
+      settings:
+        id: TIDALMusicAS.TIDAL
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Ubisoft Connect
+      settings:
+        id: Ubisoft.Connect
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Steam
+      settings:
+        id: Valve.Steam
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install VLC
+      settings:
+        id: VideoLAN.VLC
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Volta
+      settings:
+        id: Volta.Volta
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install WinSCP
+      settings:
+        id: WinSCP.WinSCP
+        source: winget
+
+    # ==========================================================================
+    # Microsoft Store Packages (msstore source)
+    # ==========================================================================
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Affinity Photo 2
+      settings:
+        id: "9P8DVF1XW02V"
+        source: msstore
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Affinity Designer 2
+      settings:
+        id: "9N2D0P16C80H"
+        source: msstore
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Affinity Publisher 2
+      settings:
+        id: "9NTV2DZ11KD9"
+        source: msstore
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install WhatsApp Beta
+      settings:
+        id: "9NBDXK71NK08"
+        source: msstore
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Apple Music
+      settings:
+        id: "9PFHDD62MXS1"
+        source: msstore

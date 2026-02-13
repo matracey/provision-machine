@@ -7,6 +7,7 @@ param(
   [Parameter()][switch]$Winget,
   [Parameter()][switch]$WingetPkgs,
   [Parameter()][switch]$Scoop,
+  [Parameter()][switch]$Mise,
   [Parameter()][switch]$VsRelease,
   [Parameter()][switch]$VsPreview,
   [Parameter()][switch]$VsIntPrev,
@@ -132,12 +133,13 @@ Write-Host ''
 #endregion
 
 #region Defaults
-$AllSwitchesFalse = -not ($Cfg -or $TurboRdpHw -or $TurboRdpSw -or $Winget -or $WingetPkgs -or $Scoop -or $VsRelease -or $VsPreview -or $VsIntPrev -or $VsBldTool -or $Fonts -or $GoogleFonts -or $NerdFonts)
+$AllSwitchesFalse = -not ($Cfg -or $TurboRdpHw -or $TurboRdpSw -or $Winget -or $WingetPkgs -or $Scoop -or $Mise -or $VsRelease -or $VsPreview -or $VsIntPrev -or $VsBldTool -or $Fonts -or $GoogleFonts -or $NerdFonts)
 
 if ($AllSwitchesFalse) {
   $featureOptions = @(
     @{ Name = 'Scoop packages'; Selected = $true; Variable = 'Scoop' }
     @{ Name = 'WinGet packages (DSC)'; Selected = $true; Variable = 'WingetPkgs' }
+    @{ Name = 'Mise tools'; Selected = $true; Variable = 'Mise' }
     @{ Name = 'Visual Studio Preview'; Selected = $true; Variable = 'VsPreview' }
     @{ Name = 'Fonts (Google + Nerd)'; Selected = $true; Variable = 'Fonts' }
     @{ Name = 'System configuration'; Selected = $false; Variable = 'Cfg' }
@@ -708,6 +710,45 @@ if ($WingetPkgs) {
   } else {
     Write-Host "[DryRun] Would apply DSC config: $DscFileName"
     Write-Host '[DryRun] Would install VS Code, .NET SDKs, and VC Redistributables'
+  }
+}
+#endregion
+
+#region Mise
+if ($Mise) {
+  Write-Host -ForegroundColor Cyan 'Installing Mise tools...'
+  
+  $MiseGistUrl = 'https://gist.githubusercontent.com/matracey/e3febf8a83d05ae2d7ade96fd147cd20/raw/mise.toml'
+  $MiseConfigDir = Join-Path $env:USERPROFILE '.config\mise'
+  $MiseConfigPath = Join-Path $MiseConfigDir 'config.toml'
+  
+  if (-not $DryRun) {
+    # Create config directory if it doesn't exist
+    if (-not (Test-Path $MiseConfigDir)) {
+      New-Item -ItemType Directory -Path $MiseConfigDir -Force | Out-Null
+      Write-Host "Created directory: $MiseConfigDir"
+    }
+    
+    # Download mise.toml
+    try {
+      Write-Host "Downloading mise config from gist..."
+      Invoke-WebRequest -Uri $MiseGistUrl -OutFile $MiseConfigPath -UseBasicParsing
+      Write-Host "Saved to: $MiseConfigPath"
+    } catch {
+      Write-Host -ForegroundColor Yellow "Failed to download mise config: $_"
+    }
+    
+    # Run mise install
+    $MisePath = Get-Command mise -ErrorAction SilentlyContinue
+    if ($MisePath) {
+      Write-Host "Running mise install..."
+      & mise install
+    } else {
+      Write-Host -ForegroundColor Yellow "Mise not found. Install it first via WinGet (jdx.mise) and restart your shell."
+    }
+  } else {
+    Write-Host "[DryRun] Would download mise config to: $MiseConfigPath"
+    Write-Host "[DryRun] Would run: mise install"
   }
 }
 #endregion

@@ -31,7 +31,6 @@
         }
       ],
       "Packages": [
-        "main/1password-cli",
         "main/7zip",
         "main/aria2",
         "main/azure-functions-core-tools",
@@ -42,21 +41,14 @@
         "main/dark",
         "main/edgedriver",
         "main/ffmpeg",
-        "main/fzf",
         "main/geckodriver",
-        "main/gig",
         "main/git",
-        "main/go",
         "main/grep",
         "main/gsudo",
         "main/innounp",
         "main/lessmsi",
         "main/pester",
-        "main/pipx",
         "main/powershell-beautifier",
-        "main/pyenv",
-        "main/resharper-clt",
-        "main/rustup-msvc",
         "main/scoop-search",
         "main/vim",
         "main/vimtutor",
@@ -196,8 +188,7 @@
         "sqlite",
         "xemu",
         "git-filter-repo",
-        "nuget",
-        "yt-dlp"
+        "nuget"
       ]
     },
     "WindowsDefender": {

@@ -1,11 +1,6 @@
-# yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema/0.2
 properties:
   configurationVersion: 0.2.0
-
   resources:
-    # ==========================================================================
-    # Microsoft Packages (winget source)
-    # ==========================================================================
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
         description: Install Microsoft App Installer
@@ -72,10 +67,6 @@ properties:
       settings:
         id: Microsoft.WSL
         source: winget
-
-    # ==========================================================================
-    # Third-Party Packages (winget source)
-    # ==========================================================================
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
         description: Install Adobe Acrobat Reader 64-bit
@@ -556,37 +547,33 @@ properties:
       settings:
         id: jdx.mise
         source: winget
-
-    # ==========================================================================
-    # Microsoft Store Packages (msstore source)
-    # ==========================================================================
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
         description: Install Affinity Photo 2
       settings:
-        id: "9P8DVF1XW02V"
+        id: 9P8DVF1XW02V
         source: msstore
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
         description: Install Affinity Designer 2
       settings:
-        id: "9N2D0P16C80H"
+        id: 9N2D0P16C80H
         source: msstore
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
         description: Install Affinity Publisher 2
       settings:
-        id: "9NTV2DZ11KD9"
+        id: 9NTV2DZ11KD9
         source: msstore
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
         description: Install WhatsApp Beta
       settings:
-        id: "9NBDXK71NK08"
+        id: 9NBDXK71NK08
         source: msstore
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
         description: Install Apple Music
       settings:
-        id: "9PFHDD62MXS1"
+        id: 9PFHDD62MXS1
         source: msstore

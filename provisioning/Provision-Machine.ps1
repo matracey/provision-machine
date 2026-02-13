@@ -6,7 +6,6 @@ param(
   [Parameter()][switch]$TurboRdpSw,
   [Parameter()][switch]$Winget,
   [Parameter()][switch]$WingetPkgs,
-  [Parameter()][switch]$NodeJs,
   [Parameter()][switch]$Scoop,
   [Parameter()][switch]$VsRelease,
   [Parameter()][switch]$VsPreview,
@@ -33,13 +32,12 @@ $Context = if ($Personal) { 'Personal' } else { 'Work' }
 #endregion
 
 #region Defaults
-$AllSwitchesFalse = -not ($Cfg -or $TurboRdpHw -or $TurboRdpSw -or $Winget -or $WingetPkgs -or $NodeJs -or $Scoop -or $VsRelease -or $VsPreview -or $VsIntPrev -or $VsBldTool -or $Fonts -or $GoogleFonts -or $NerdFonts)
+$AllSwitchesFalse = -not ($Cfg -or $TurboRdpHw -or $TurboRdpSw -or $Winget -or $WingetPkgs -or $Scoop -or $VsRelease -or $VsPreview -or $VsIntPrev -or $VsBldTool -or $Fonts -or $GoogleFonts -or $NerdFonts)
 
 if ($AllSwitchesFalse) {
-  Write-Host -ForegroundColor Cyan "No feature switches passed. Using defaults for $Context context: -Scoop, -WingetPkgs, -NodeJs, -VsPreview, -Fonts."
+  Write-Host -ForegroundColor Cyan "No feature switches passed. Using defaults for $Context context: -Scoop, -WingetPkgs, -VsPreview, -Fonts."
   $Scoop = $true
   $WingetPkgs = $true
-  $NodeJs = $true
   $VsPreview = $true
   $Fonts = $true
 }
@@ -207,9 +205,6 @@ function Import-Configuration {
       Packages = @()
       Aliases = @{}
     }
-    Volta = @{
-      Packages = @()
-    }
     VisualStudio = @{
       Workloads = @()
     }
@@ -237,9 +232,6 @@ function Import-Configuration {
         $Config.Common.Scoop.Aliases.PSObject.Properties | ForEach-Object { $Merged.Scoop.Aliases[$_.Name] = $_.Value }
       }
     }
-    if ($Config.Common.Volta) {
-      $Merged.Volta.Packages = @($Config.Common.Volta.Packages)
-    }
     if ($Config.Common.VisualStudio) {
       $Merged.VisualStudio.Workloads = @($Config.Common.VisualStudio.Workloads)
     }
@@ -265,11 +257,6 @@ function Import-Configuration {
       }
       if ($ContextConfig.Scoop.Packages) {
         $Merged.Scoop.Packages += @($ContextConfig.Scoop.Packages)
-      }
-    }
-    if ($ContextConfig.Volta) {
-      if ($ContextConfig.Volta.Packages) {
-        $Merged.Volta.Packages += @($ContextConfig.Volta.Packages)
       }
     }
     if ($ContextConfig.WindowsDefender) {
@@ -380,8 +367,6 @@ if ($Cfg) {
       (Get-ChildItem -ErrorAction:SilentlyContinue -Path $env:windir -Filter 'assembly'),
       (Get-ChildItem -ErrorAction:SilentlyContinue -Path $env:windir -Filter 'Microsoft.NET'),
       (Get-ChildItem -ErrorAction:SilentlyContinue -Path $env:LOCALAPPDATA -Filter 'Microsoft' | Get-ChildItem -ErrorAction:SilentlyContinue -Filter 'VisualStudio'),
-      (Get-ChildItem -ErrorAction:SilentlyContinue -Path $env:LOCALAPPDATA -Filter 'Volta'),
-      (Get-ChildItem -ErrorAction:SilentlyContinue -Path $env:ProgramFiles -Filter 'Volta'),
       (Get-ChildItem -ErrorAction:SilentlyContinue -Path $env:USERPROFILE -Filter 'scoop')
     ) | ForEach-Object FullName | Where-Object { $_ }
 
@@ -532,23 +517,6 @@ if ($WingetPkgs) {
   } else {
     Write-Host "[DryRun] Would apply DSC config from $DscConfigPath"
     Write-Host '[DryRun] Would install VS Code, .NET SDKs, and VC Redistributables'
-  }
-}
-#endregion
-
-#region NodeJS
-if ($NodeJs) {
-  Write-Host -ForegroundColor Cyan 'Installing Node.js tools via Volta...'
-
-  if (-not $DryRun) {
-    $VoltaPath = "$env:PROGRAMFILES\Volta\volta.exe"
-    if (Test-Path $VoltaPath) {
-      & $VoltaPath install @($Configuration.Volta.Packages)
-    } else {
-      Write-Host -ForegroundColor Yellow 'Volta not found. Please install Volta first.'
-    }
-  } else {
-    Write-Host "[DryRun] Would install via Volta: $($Configuration.Volta.Packages -join ', ')"
   }
 }
 #endregion

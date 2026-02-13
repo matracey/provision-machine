@@ -552,12 +552,6 @@ properties:
         source: winget
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
-        description: Install Volta
-      settings:
-        id: Volta.Volta
-        source: winget
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
         description: Install WinSCP
       settings:
         id: WinSCP.WinSCP

@@ -83,18 +83,6 @@
         ]
       }
     },
-    "Volta": {
-      "Packages": [
-        "node@latest",
-        "node@lts",
-        "npm@latest",
-        "@angular/cli",
-        "eslint",
-        "playwright",
-        "prettier",
-        "typescript"
-      ]
-    },
     "VisualStudio": {
       "Workloads": [
         "Microsoft.VisualStudio.Workload.CoreEditor",
@@ -159,7 +147,6 @@
         "java.exe",
         "java64.exe",
         "msbuild.exe",
-        "volta.exe",
         "node.exe",
         "node.js",
         "perfwatson2.exe",
@@ -266,9 +253,6 @@
         "matracey/microsoft-graph-users",
         "matracey/microsoft-graph"
       ]
-    },
-    "Volta": {
-      "Packages": ["vsts-npm-auth"]
     }
   }
 }

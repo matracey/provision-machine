@@ -19,10 +19,22 @@
         "dark"
       ],
       "Buckets": [
-        { "name": "main", "url": "https://github.com/ScoopInstaller/Main.git" },
-        { "name": "extras", "url": "https://github.com/ScoopInstaller/Extras" },
-        { "name": "sysinternals", "url": "https://github.com/niheaven/scoop-sysinternals" },
-        { "name": "matracey", "url": "https://github.com/matracey/scoop-bucket" }
+        {
+          "name": "main",
+          "url": "https://github.com/ScoopInstaller/Main.git"
+        },
+        {
+          "name": "extras",
+          "url": "https://github.com/ScoopInstaller/Extras"
+        },
+        {
+          "name": "sysinternals",
+          "url": "https://github.com/niheaven/scoop-sysinternals"
+        },
+        {
+          "name": "matracey",
+          "url": "https://github.com/matracey/scoop-bucket"
+        }
       ],
       "Packages": [
         "main/7zip",
@@ -55,9 +67,18 @@
         "extras/sysinternals"
       ],
       "Aliases": {
-        "upgrade": ["scoop update; scoop update *;", "Updates Scoop and all installed apps"],
-        "reinstall": ["scoop uninstall ; scoop install ;", "Uninstall and then reinstall an app"],
-        "clean": ["scoop cleanup *; scoop cache rm *;", "Clean up all the caches and remove all the old versions"]
+        "upgrade": [
+          "scoop update; scoop update *;",
+          "Updates Scoop and all installed apps"
+        ],
+        "reinstall": [
+          "scoop uninstall ; scoop install ;",
+          "Uninstall and then reinstall an app"
+        ],
+        "clean": [
+          "scoop cleanup *; scoop cache rm *;",
+          "Clean up all the caches and remove all the old versions"
+        ]
       }
     },
     "VisualStudio": {
@@ -148,9 +169,18 @@
     },
     "Scoop": {
       "Buckets": [
-        { "name": "games", "url": "https://github.com/Calinou/scoop-games" },
-        { "name": "ash258", "url": "https://github.com/Ash258/Shovel-Ash258.git" },
-        { "name": "emulators", "url": "https://github.com/hermanjustnu/scoop-emulators.git" }
+        {
+          "name": "games",
+          "url": "https://github.com/Calinou/scoop-games"
+        },
+        {
+          "name": "ash258",
+          "url": "https://github.com/Ash258/Shovel-Ash258.git"
+        },
+        {
+          "name": "emulators",
+          "url": "https://github.com/hermanjustnu/scoop-emulators.git"
+        }
       ],
       "Packages": [
         "GameSaveManager",
@@ -177,7 +207,10 @@
   "Work": {
     "Scoop": {
       "Buckets": [
-        { "name": "knox-scoop", "url": "https://github.com/KNOXDEV/knox-scoop" }
+        {
+          "name": "knox-scoop",
+          "url": "https://github.com/KNOXDEV/knox-scoop"
+        }
       ],
       "Packages": [
         "main/php",

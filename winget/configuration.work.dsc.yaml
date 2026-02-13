@@ -3,9 +3,21 @@ properties:
   resources:
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
-        description: Install Microsoft App Installer
+        description: Install Affinity Designer 2
       settings:
-        id: Microsoft.AppInstaller
+        id: 9N2D0P16C80H
+        source: msstore
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Bruno
+      settings:
+        id: Bruno.Bruno
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install K-Lite Codec Pack Mega
+      settings:
+        id: CodecGuide.K-LiteCodecPack.Mega
         source: winget
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
@@ -45,10 +57,28 @@ properties:
         source: winget
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
+        description: Install WhatsApp Beta
+      settings:
+        id: 9NBDXK71NK08
+        source: msstore
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
         description: Install CLR Types for SQL Server 2019
       settings:
         id: Microsoft.CLRTypesSQLServer.2019
         source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Affinity Publisher 2
+      settings:
+        id: 9NTV2DZ11KD9
+        source: msstore
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Affinity Photo 2
+      settings:
+        id: 9P8DVF1XW02V
+        source: msstore
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
         description: Install Dev Home
@@ -57,10 +87,10 @@ properties:
         source: winget
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
-        description: Install Microsoft Edge Beta
+        description: Install Apple Music
       settings:
-        id: Microsoft.Edge.Beta
-        source: winget
+        id: 9PFHDD62MXS1
+        source: msstore
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
         description: Install Microsoft Edge Dev
@@ -69,15 +99,15 @@ properties:
         source: winget
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
-        description: Install Microsoft Edge
+        description: Install Adobe Acrobat Reader 64-bit
       settings:
-        id: Microsoft.Edge
+        id: Adobe.Acrobat.Reader.64-bit
         source: winget
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
-        description: Install Edge WebView2 Runtime
+        description: Install 1Password
       settings:
-        id: Microsoft.EdgeWebView2Runtime
+        id: AgileBits.1Password
         source: winget
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
@@ -87,27 +117,9 @@ properties:
         source: winget
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
-        description: Install Microsoft OneDrive
-      settings:
-        id: Microsoft.OneDrive
-        source: winget
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
         description: Install Power Automate Desktop
       settings:
         id: Microsoft.PowerAutomateDesktop
-        source: winget
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
-        description: Install PowerShell
-      settings:
-        id: Microsoft.PowerShell
-        source: winget
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
-        description: Install PowerToys
-      settings:
-        id: Microsoft.PowerToys
         source: winget
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
@@ -129,63 +141,15 @@ properties:
         source: winget
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
-        description: Install Web Deploy
-      settings:
-        id: Microsoft.WebDeploy
-        source: winget
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
-        description: Install Windows App
-      settings:
-        id: Microsoft.WindowsApp
-        source: winget
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
-        description: Install Windows Terminal Preview
-      settings:
-        id: Microsoft.WindowsTerminal.Preview
-        source: winget
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
-        description: Install Windows Subsystem for Linux
-      settings:
-        id: Microsoft.WSL
-        source: winget
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
-        description: Install Adobe Acrobat Reader 64-bit
-      settings:
-        id: Adobe.Acrobat.Reader.64-bit
-        source: winget
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
-        description: Install 1Password
-      settings:
-        id: AgileBits.1Password
-        source: winget
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
         description: Install WizTree
       settings:
         id: AntibodySoftware.WizTree
         source: winget
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
-        description: Install Bruno
-      settings:
-        id: Bruno.Bruno
-        source: winget
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
         description: Install Ubuntu
       settings:
         id: Canonical.Ubuntu
-        source: winget
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
-        description: Install K-Lite Codec Pack Mega
-      settings:
-        id: CodecGuide.K-LiteCodecPack.Mega
         source: winget
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
@@ -207,6 +171,24 @@ properties:
         source: winget
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
+        description: Install Web Deploy
+      settings:
+        id: Microsoft.WebDeploy
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Git Credential Manager
+      settings:
+        id: Git.GCM
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Windows App
+      settings:
+        id: Microsoft.WindowsApp
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
         description: Install Git
       settings:
         id: Git.Git
@@ -222,12 +204,6 @@ properties:
         description: Install Git LFS
       settings:
         id: GitHub.GitLFS
-        source: winget
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
-        description: Install Git Credential Manager
-      settings:
-        id: Git.GCM
         source: winget
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
@@ -261,6 +237,12 @@ properties:
         source: winget
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
+        description: Install mise
+      settings:
+        id: jdx.mise
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
         description: Install FontBase
       settings:
         id: Levitsky.FontBase
@@ -276,6 +258,72 @@ properties:
         description: Install NanaZip
       settings:
         id: M2Team.NanaZip
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install UniGetUI
+      settings:
+        id: MartiCliment.UniGetUI
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Microsoft App Installer
+      settings:
+        id: Microsoft.AppInstaller
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Microsoft Edge
+      settings:
+        id: Microsoft.Edge
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Microsoft Edge Beta
+      settings:
+        id: Microsoft.Edge.Beta
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Edge WebView2 Runtime
+      settings:
+        id: Microsoft.EdgeWebView2Runtime
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Microsoft OneDrive
+      settings:
+        id: Microsoft.OneDrive
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install PowerShell
+      settings:
+        id: Microsoft.PowerShell
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install PowerToys
+      settings:
+        id: Microsoft.PowerToys
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Rancher Desktop
+      settings:
+        id: SUSE.RancherDesktop
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Windows Terminal Preview
+      settings:
+        id: Microsoft.WindowsTerminal.Preview
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Windows Subsystem for Linux
+      settings:
+        id: Microsoft.WSL
         source: winget
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
@@ -297,21 +345,9 @@ properties:
         source: winget
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
-        description: Install UniGetUI
-      settings:
-        id: MartiCliment.UniGetUI
-        source: winget
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
         description: Install Spotify
       settings:
         id: Spotify.Spotify
-        source: winget
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
-        description: Install Rancher Desktop
-      settings:
-        id: SUSE.RancherDesktop
         source: winget
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
@@ -325,39 +361,3 @@ properties:
       settings:
         id: WinSCP.WinSCP
         source: winget
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
-        description: Install mise
-      settings:
-        id: jdx.mise
-        source: winget
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
-        description: Install Affinity Photo 2
-      settings:
-        id: 9P8DVF1XW02V
-        source: msstore
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
-        description: Install Affinity Designer 2
-      settings:
-        id: 9N2D0P16C80H
-        source: msstore
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
-        description: Install Affinity Publisher 2
-      settings:
-        id: 9NTV2DZ11KD9
-        source: msstore
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
-        description: Install WhatsApp Beta
-      settings:
-        id: 9NBDXK71NK08
-        source: msstore
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
-        description: Install Apple Music
-      settings:
-        id: 9PFHDD62MXS1
-        source: msstore

@@ -556,6 +556,12 @@ properties:
       settings:
         id: WinSCP.WinSCP
         source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install mise
+      settings:
+        id: jdx.mise
+        source: winget
 
     # ==========================================================================
     # Microsoft Store Packages (msstore source)

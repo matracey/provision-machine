@@ -15,6 +15,7 @@ param(
   [Parameter()][switch]$Fonts,
   [Parameter()][switch]$GoogleFonts,
   [Parameter()][switch]$NerdFonts,
+  [Parameter()][switch]$WinTerminal,
   [Parameter()][switch]$DryRun
 )
 
@@ -133,7 +134,7 @@ Write-Host ''
 #endregion
 
 #region Defaults
-$AllSwitchesFalse = -not ($Cfg -or $TurboRdpHw -or $TurboRdpSw -or $Winget -or $WingetPkgs -or $Scoop -or $Mise -or $VsRelease -or $VsPreview -or $VsIntPrev -or $VsBldTool -or $Fonts -or $GoogleFonts -or $NerdFonts)
+$AllSwitchesFalse = -not ($Cfg -or $TurboRdpHw -or $TurboRdpSw -or $Winget -or $WingetPkgs -or $Scoop -or $Mise -or $VsRelease -or $VsPreview -or $VsIntPrev -or $VsBldTool -or $Fonts -or $GoogleFonts -or $NerdFonts -or $WinTerminal)
 
 if ($AllSwitchesFalse) {
   $featureOptions = @(
@@ -142,6 +143,7 @@ if ($AllSwitchesFalse) {
     @{ Name = 'Mise tools'; Selected = $true; Variable = 'Mise' }
     @{ Name = 'Visual Studio Preview'; Selected = $true; Variable = 'VsPreview' }
     @{ Name = 'Fonts (Google + Nerd)'; Selected = $true; Variable = 'Fonts' }
+    @{ Name = 'Windows Terminal settings'; Selected = $true; Variable = 'WinTerminal' }
     @{ Name = 'System configuration'; Selected = $false; Variable = 'Cfg' }
   )
   
@@ -855,6 +857,46 @@ if ($Fonts -or $GoogleFonts -or $NerdFonts) {
 }
 #endregion
 
+#endregion
+
+#region Windows Terminal Configuration
+if ($WinTerminal) {
+  Write-Host -ForegroundColor Cyan 'Applying Windows Terminal settings...'
+
+  $WtSettingsFileName = "windowsterminal.$($Context.ToLower()).json"
+  $WtLocalPath = Join-Path $PSScriptRoot $WtSettingsFileName
+
+  $WtSettingsContent = $null
+  try {
+    $WtSettingsContent = Get-ConfigFile -FileName $WtSettingsFileName -LocalPath $WtLocalPath
+  } catch {
+    Write-Host -ForegroundColor Yellow "Could not load Windows Terminal settings: $_"
+  }
+
+  if ($WtSettingsContent) {
+    $WtPackageDirs = Get-ChildItem -Path "$env:LOCALAPPDATA\Packages" -Directory -Filter 'Microsoft.WindowsTerminal*' -ErrorAction SilentlyContinue
+
+    if ($WtPackageDirs) {
+      foreach ($Dir in $WtPackageDirs) {
+        $LocalStateDir = Join-Path $Dir.FullName 'LocalState'
+        $SettingsPath = Join-Path $LocalStateDir 'settings.json'
+
+        if (-not (Test-Path $LocalStateDir)) {
+          New-Item -ItemType Directory -Path $LocalStateDir -Force | Out-Null
+        }
+
+        if ($DryRun) {
+          Write-Host -ForegroundColor DarkYellow "[DryRun] Would apply $WtSettingsFileName to $SettingsPath"
+        } else {
+          Write-Host "Applying $WtSettingsFileName to $($Dir.Name)..."
+          $WtSettingsContent | Set-Content -Path $SettingsPath -Encoding UTF8 -Force
+        }
+      }
+    } else {
+      Write-Host -ForegroundColor Yellow 'No Windows Terminal installations detected.'
+    }
+  }
+}
 #endregion
 
 Write-Host -ForegroundColor Green "`nProvisioning complete for $Context context!"

@@ -16,6 +16,7 @@ param(
   [Parameter()][switch]$GoogleFonts,
   [Parameter()][switch]$NerdFonts,
   [Parameter()][switch]$WinTerminal,
+  [Parameter()][switch]$OhMyPosh,
   [Parameter()][switch]$DryRun
 )
 
@@ -134,7 +135,7 @@ Write-Host ''
 #endregion
 
 #region Defaults
-$AllSwitchesFalse = -not ($Cfg -or $TurboRdpHw -or $TurboRdpSw -or $Winget -or $WingetPkgs -or $Scoop -or $Mise -or $VsRelease -or $VsPreview -or $VsIntPrev -or $VsBldTool -or $Fonts -or $GoogleFonts -or $NerdFonts -or $WinTerminal)
+$AllSwitchesFalse = -not ($Cfg -or $TurboRdpHw -or $TurboRdpSw -or $Winget -or $WingetPkgs -or $Scoop -or $Mise -or $VsRelease -or $VsPreview -or $VsIntPrev -or $VsBldTool -or $Fonts -or $GoogleFonts -or $NerdFonts -or $WinTerminal -or $OhMyPosh)
 
 if ($AllSwitchesFalse) {
   $featureOptions = @(
@@ -144,6 +145,7 @@ if ($AllSwitchesFalse) {
     @{ Name = 'Visual Studio Preview'; Selected = $true; Variable = 'VsPreview' }
     @{ Name = 'Fonts (Google + Nerd)'; Selected = $true; Variable = 'Fonts' }
     @{ Name = 'Windows Terminal settings'; Selected = $true; Variable = 'WinTerminal' }
+    @{ Name = 'Oh My Posh config'; Selected = $true; Variable = 'OhMyPosh' }
     @{ Name = 'System configuration'; Selected = $false; Variable = 'Cfg' }
   )
   
@@ -894,6 +896,34 @@ if ($WinTerminal) {
       }
     } else {
       Write-Host -ForegroundColor Yellow 'No Windows Terminal installations detected.'
+    }
+  }
+}
+#endregion
+
+#region Oh My Posh Configuration
+if ($OhMyPosh) {
+  $OmpFileName = "mojada.$($Context.ToLower()).omp.json"
+  $OmpLocalPath = Join-Path $PSScriptRoot $OmpFileName
+  $OmpTargetDir = Join-Path $env:USERPROFILE '.config\oh-my-posh'
+  $OmpTargetPath = Join-Path $OmpTargetDir 'mojada.omp.json'
+
+  $OmpContent = $null
+  try {
+    $OmpContent = Get-ConfigFile -FileName $OmpFileName -LocalPath $OmpLocalPath
+  } catch {
+    Write-Verbose "No Oh My Posh config for $Context context."
+  }
+
+  if ($OmpContent) {
+    if ($DryRun) {
+      Write-Host -ForegroundColor DarkYellow "[DryRun] Would deploy $OmpFileName to $OmpTargetPath"
+    } else {
+      if (-not (Test-Path $OmpTargetDir)) {
+        New-Item -ItemType Directory -Path $OmpTargetDir -Force | Out-Null
+      }
+      Write-Host "Deploying Oh My Posh config ($OmpFileName)..."
+      $OmpContent | Set-Content -Path $OmpTargetPath -Encoding UTF8 -Force
     }
   }
 }

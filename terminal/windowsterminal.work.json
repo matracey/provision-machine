@@ -146,48 +146,6 @@
         "source": "Windows.Terminal.Azure"
       },
       {
-        "backgroundImage": "%OneDriveCommercial%\\Pictures\\MS_Symbol_Social_FB_TWTR_LNKD_INSTA.png",
-        "backgroundImageAlignment": "bottomRight",
-        "backgroundImageOpacity": 0.65,
-        "backgroundImageStretchMode": "none",
-        "colorScheme": "Campbell",
-        "commandline": "pwsh.exe",
-        "guid": "{2dcf2cf7-65d5-490d-8b8b-1356f7db4359}",
-        "icon": "%OneDriveCommercial%\\Pictures\\MS_Symbol_Social_FB_TWTR_LNKD_INSTA.png",
-        "name": "SourceVNext",
-        "opacity": 75,
-        "startingDirectory": "%USERPROFILE%\\Source\\Repos\\SC-SRC-SCEMSS-SourceWebsite\\Source\\Web\\SourceWebsite\\ClientApp",
-        "tabTitle": "SourceVNext Angular"
-      },
-      {
-        "backgroundImage": "%OneDriveCommercial%\\Pictures\\MS_Symbol_Social_FB_TWTR_LNKD_INSTA.png",
-        "backgroundImageAlignment": "bottomRight",
-        "backgroundImageOpacity": 0.65,
-        "backgroundImageStretchMode": "none",
-        "colorScheme": "Campbell",
-        "commandline": "pwsh.exe",
-        "guid": "{46d65db8-df07-436d-a99e-3fbc10f3810a}",
-        "icon": "%OneDriveCommercial%\\Pictures\\MS_Symbol_Social_FB_TWTR_LNKD_INSTA.png",
-        "name": "SourceVNextAlt",
-        "opacity": 75,
-        "startingDirectory": "%USERPROFILE%\\Source\\Repos\\SC-SRC-SCEMSS-SourceWebsite_Alt\\Source\\Web\\SourceWebsite\\ClientApp",
-        "tabTitle": "SourceVNext Angular Upgrade"
-      },
-      {
-        "backgroundImage": "%OneDriveCommercial%\\Pictures\\MS_Symbol_Social_FB_TWTR_LNKD_INSTA.png",
-        "backgroundImageAlignment": "bottomRight",
-        "backgroundImageOpacity": 0.65,
-        "backgroundImageStretchMode": "none",
-        "colorScheme": "Campbell",
-        "commandline": "pwsh.exe",
-        "guid": "{d324646b-6d76-4746-a952-d32bf96666af}",
-        "icon": "%OneDriveCommercial%\\Pictures\\MS_Symbol_Social_FB_TWTR_LNKD_INSTA.png",
-        "name": "PCS",
-        "opacity": 75,
-        "startingDirectory": "%USERPROFILE%\\Source\\Repos\\SC-SRC-SCEMSS-PCS",
-        "tabTitle": "Part Catalog Service"
-      },
-      {
         "guid": "{2c4de342-38b7-51cf-b940-2309a097f518}",
         "hidden": false,
         "name": "Ubuntu",

@@ -54,10 +54,44 @@
   "copyFormatting": "none",
   "copyOnSelect": false,
   "defaultProfile": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
+  "initialCols": 180,
+  "initialRows": 50,
+  "newTabMenu": [
+    {
+      "icon": null,
+      "profile": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
+      "type": "profile"
+    },
+    {
+      "icon": null,
+      "profile": "{28e5367f-061e-42d6-93b0-b1a93c8353ac}",
+      "type": "profile"
+    },
+    {
+      "type": "separator"
+    },
+    {
+      "type": "remainingProfiles"
+    },
+    {
+      "type": "separator"
+    },
+    {
+      "icon": null,
+      "profile": "{a428f58c-1c50-5556-8768-ced59feaf612}",
+      "type": "profile"
+    },
+    {
+      "icon": null,
+      "profile": "{a07d0097-c196-56bf-9d68-97ae7c54e576}",
+      "type": "profile"
+    }
+  ],
   "profiles": {
     "defaults": {
+      "cursorShape": "bar",
       "font": {
-        "face": "CaskaydiaCove Nerd Font Mono"
+        "face": "JetBrainsMono Nerd Font"
       },
       "hidden": false,
       "opacity": 50,
@@ -79,14 +113,27 @@
           "face": "MesloLGS Nerd Font"
         },
         "guid": "{0caa0dad-35be-5f56-a8ff-afceeeaa6101}",
+        "hidden": false,
         "name": "Command Prompt",
         "opacity": 75
       },
       {
-        "background": "#012456",
-        "colorScheme": "Campbell",
+        "colorScheme": "Campbell Powershell",
         "guid": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
+        "hidden": false,
         "name": "Windows PowerShell"
+      },
+      {
+        "colorScheme": "One Half Dark",
+        "commandline": "%GIT_INSTALL_ROOT%/usr/bin/bash.exe -i -l",
+        "font": {
+          "face": "UbuntuMono Nerd Font"
+        },
+        "guid": "{28e5367f-061e-42d6-93b0-b1a93c8353ac}",
+        "hidden": false,
+        "icon": "%GIT_INSTALL_ROOT%/git-bash.exe",
+        "name": "Git Bash",
+        "startingDirectory": "%USERPROFILE%"
       },
       {
         "colorScheme": "Solarized Dark",
@@ -147,15 +194,53 @@
         "source": "Windows.Terminal.Wsl"
       },
       {
-        "guid": "{54d62284-d633-53d0-b698-ffbbe8409988}",
+        "backgroundImage": "ms-appx:///ProfileIcons/vs-powershell.png",
+        "backgroundImageAlignment": "bottomRight",
+        "backgroundImageOpacity": 0.75,
+        "backgroundImageStretchMode": "none",
+        "colorScheme": "Visual Studio 2026",
+        "guid": "{117b2afe-1d9c-5c16-b759-7976ab1ebdd5}",
         "hidden": false,
-        "name": "Developer Command Prompt for VS 2022 [Preview]",
+        "name": "Developer PowerShell for VS 18",
         "source": "Windows.Terminal.VisualStudio"
       },
       {
-        "guid": "{b355410d-6e32-5921-bb72-4e839ed7f0e7}",
+        "backgroundImage": "ms-appx:///ProfileIcons/vs-cmd.png",
+        "backgroundImageAlignment": "bottomRight",
+        "backgroundImageOpacity": 0.75,
+        "backgroundImageStretchMode": "none",
+        "colorScheme": "Visual Studio 2026",
+        "font": {
+          "face": "MesloLGS Nerd Font"
+        },
+        "guid": "{6cb12773-e9a5-594d-9150-3897431e19d2}",
         "hidden": false,
-        "name": "Developer PowerShell for VS 2022 [Preview]",
+        "name": "Developer Command Prompt for VS 18",
+        "source": "Windows.Terminal.VisualStudio"
+      },
+      {
+        "backgroundImage": "ms-appx:///ProfileIcons/vs-powershell.png",
+        "backgroundImageAlignment": "bottomRight",
+        "backgroundImageOpacity": 0.75,
+        "backgroundImageStretchMode": "none",
+        "colorScheme": "Visual Studio 2026",
+        "guid": "{2c73e116-d5c4-5ea9-8f09-178f54059a18}",
+        "hidden": false,
+        "name": "Developer PowerShell for VS 18 [IntPreview]",
+        "source": "Windows.Terminal.VisualStudio"
+      },
+      {
+        "backgroundImage": "ms-appx:///ProfileIcons/vs-cmd.png",
+        "backgroundImageAlignment": "bottomRight",
+        "backgroundImageOpacity": 0.75,
+        "backgroundImageStretchMode": "none",
+        "colorScheme": "Visual Studio 2026",
+        "font": {
+          "face": "MesloLGS Nerd Font"
+        },
+        "guid": "{c29adc8f-d2f4-5e99-bcc5-73e60338a302}",
+        "hidden": false,
+        "name": "Developer Command Prompt for VS 18 [IntPreview]",
         "source": "Windows.Terminal.VisualStudio"
       }
     ]
@@ -252,6 +337,31 @@
       "selectionBackground": "#FFFFFF",
       "white": "#C4C4C4",
       "yellow": "#999973"
+    },
+    {
+      "background": "#120E1B",
+      "black": "#2A2433",
+      "blue": "#5C6CE8",
+      "brightBlack": "#4E4268",
+      "brightBlue": "#8592FF",
+      "brightCyan": "#78E2FF",
+      "brightGreen": "#5CE896",
+      "brightPurple": "#C48AFF",
+      "brightRed": "#FF7885",
+      "brightWhite": "#FFFFFF",
+      "brightYellow": "#FFE680",
+      "cursorColor": "#D69DFF",
+      "cyan": "#45CDE8",
+      "foreground": "#EAEAEA",
+      "green": "#26D876",
+      "name": "Visual Studio 2026",
+      "purple": "#9E55FF",
+      "red": "#FF4E5D",
+      "selectionBackground": "#453668",
+      "white": "#D0D0D0",
+      "yellow": "#FFD645"
     }
-  ]
+  ],
+  "themes": [],
+  "useAcrylicInTabRow": true
 }

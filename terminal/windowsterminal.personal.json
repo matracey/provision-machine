@@ -32,6 +32,8 @@
   "copyFormatting": "none",
   "copyOnSelect": false,
   "defaultProfile": "{a3a2e83a-884a-5379-baa8-16f193a13b21}",
+  "initialCols": 180,
+  "initialRows": 50,
   "newTabMenu": [
     {
       "profile": "{a3a2e83a-884a-5379-baa8-16f193a13b21}",
@@ -88,19 +90,19 @@
           "type": "profile"
         },
         {
-          "profile": "{a3a3d2a6-8fa8-5a64-b1f0-05755744a36d}",
+          "profile": "{117b2afe-1d9c-5c16-b759-7976ab1ebdd5}",
           "type": "profile"
         },
         {
-          "profile": "{d416b828-7d52-5e90-9844-cd66a8256979}",
+          "profile": "{6cb12773-e9a5-594d-9150-3897431e19d2}",
           "type": "profile"
         },
         {
-          "profile": "{04ef05c5-f023-5fb4-bfb2-eae325fb0b98}",
+          "profile": "{2c73e116-d5c4-5ea9-8f09-178f54059a18}",
           "type": "profile"
         },
         {
-          "profile": "{4cb1a507-d76f-5b41-a9f4-2707b1f3663d}",
+          "profile": "{c29adc8f-d2f4-5e99-bcc5-73e60338a302}",
           "type": "profile"
         }
       ],
@@ -188,27 +190,53 @@
         "source": "Windows.Terminal.Azure"
       },
       {
-        "guid": "{04ef05c5-f023-5fb4-bfb2-eae325fb0b98}",
+        "backgroundImage": "ms-appx:///ProfileIcons/vs-powershell.png",
+        "backgroundImageAlignment": "bottomRight",
+        "backgroundImageOpacity": 0.75,
+        "backgroundImageStretchMode": "none",
+        "colorScheme": "Visual Studio 2026",
+        "guid": "{117b2afe-1d9c-5c16-b759-7976ab1ebdd5}",
         "hidden": false,
-        "name": "Developer Command Prompt for VS 2022 [Preview]",
+        "name": "Developer PowerShell for VS 18",
         "source": "Windows.Terminal.VisualStudio"
       },
       {
-        "guid": "{4cb1a507-d76f-5b41-a9f4-2707b1f3663d}",
+        "backgroundImage": "ms-appx:///ProfileIcons/vs-cmd.png",
+        "backgroundImageAlignment": "bottomRight",
+        "backgroundImageOpacity": 0.75,
+        "backgroundImageStretchMode": "none",
+        "colorScheme": "Visual Studio 2026",
+        "font": {
+          "face": "MesloLGS Nerd Font"
+        },
+        "guid": "{6cb12773-e9a5-594d-9150-3897431e19d2}",
         "hidden": false,
-        "name": "Developer PowerShell for VS 2022 [Preview]",
+        "name": "Developer Command Prompt for VS 18",
         "source": "Windows.Terminal.VisualStudio"
       },
       {
-        "guid": "{a3a3d2a6-8fa8-5a64-b1f0-05755744a36d}",
-        "hidden": true,
-        "name": "Developer Command Prompt for VS 2022",
+        "backgroundImage": "ms-appx:///ProfileIcons/vs-powershell.png",
+        "backgroundImageAlignment": "bottomRight",
+        "backgroundImageOpacity": 0.75,
+        "backgroundImageStretchMode": "none",
+        "colorScheme": "Visual Studio 2026",
+        "guid": "{2c73e116-d5c4-5ea9-8f09-178f54059a18}",
+        "hidden": false,
+        "name": "Developer PowerShell for VS 18 [IntPreview]",
         "source": "Windows.Terminal.VisualStudio"
       },
       {
-        "guid": "{d416b828-7d52-5e90-9844-cd66a8256979}",
-        "hidden": true,
-        "name": "Developer PowerShell for VS 2022",
+        "backgroundImage": "ms-appx:///ProfileIcons/vs-cmd.png",
+        "backgroundImageAlignment": "bottomRight",
+        "backgroundImageOpacity": 0.75,
+        "backgroundImageStretchMode": "none",
+        "colorScheme": "Visual Studio 2026",
+        "font": {
+          "face": "MesloLGS Nerd Font"
+        },
+        "guid": "{c29adc8f-d2f4-5e99-bcc5-73e60338a302}",
+        "hidden": false,
+        "name": "Developer Command Prompt for VS 18 [IntPreview]",
         "source": "Windows.Terminal.VisualStudio"
       }
     ]
@@ -305,9 +333,31 @@
       "selectionBackground": "#FFFFFF",
       "white": "#C4C4C4",
       "yellow": "#999973"
+    },
+    {
+      "background": "#120E1B",
+      "black": "#2A2433",
+      "blue": "#5C6CE8",
+      "brightBlack": "#4E4268",
+      "brightBlue": "#8592FF",
+      "brightCyan": "#78E2FF",
+      "brightGreen": "#5CE896",
+      "brightPurple": "#C48AFF",
+      "brightRed": "#FF7885",
+      "brightWhite": "#FFFFFF",
+      "brightYellow": "#FFE680",
+      "cursorColor": "#D69DFF",
+      "cyan": "#45CDE8",
+      "foreground": "#EAEAEA",
+      "green": "#26D876",
+      "name": "Visual Studio 2026",
+      "purple": "#9E55FF",
+      "red": "#FF4E5D",
+      "selectionBackground": "#453668",
+      "white": "#D0D0D0",
+      "yellow": "#FFD645"
     }
   ],
-  "theme": "system",
   "themes": [],
   "useAcrylicInTabRow": true
 }

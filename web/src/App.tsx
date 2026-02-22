@@ -8,6 +8,7 @@ import { Toast } from "./components/Toast";
 import { showToast } from "./utils/toast";
 import { DropZone } from "./components/DropZone";
 import { AddItemModal } from "./components/AddItemModal";
+import { PatModal } from "./components/PatModal";
 import { JsonEditor } from "./components/json-editor/JsonEditor";
 import { YamlEditor } from "./components/yaml-editor/YamlEditor";
 import {
@@ -17,6 +18,7 @@ import {
   parseJsonConfig,
   parseYamlConfig,
 } from "./utils/fileIO";
+import { saveToRepo } from "./utils/gist";
 import { REPO_RAW_BASE_URL, REPO_FILES } from "./utils/constants";
 import type { ContextType } from "./types";
 
@@ -24,6 +26,29 @@ function AppContent() {
   const { state, dispatch } = useAppState();
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [addModalContext, setAddModalContext] = useState<ContextType>("Common");
+  const [patModalOpen, setPatModalOpen] = useState(false);
+
+  const handleSaveToRepo = useCallback(
+    async (pat: string) => {
+      setPatModalOpen(false);
+      dispatch({ type: "SET_STATUS", payload: "Saving to repository..." });
+      try {
+        await saveToRepo({
+          pat,
+          json: state.json,
+          yamlWork: state.yamlWork,
+          yamlPersonal: state.yamlPersonal,
+        });
+        showToast("Saved to repository successfully!");
+        dispatch({ type: "SET_STATUS", payload: "Saved to repository" });
+      } catch (error) {
+        const msg = error instanceof Error ? error.message : "Unknown error";
+        showToast(`Failed to save: ${msg}`, "error");
+        dispatch({ type: "SET_STATUS", payload: "Save failed" });
+      }
+    },
+    [state.json, state.yamlWork, state.yamlPersonal, dispatch],
+  );
 
   const exportJson = useCallback(() => {
     if (!state.json) {
@@ -138,6 +163,7 @@ function AppContent() {
         onLoadYaml={() => document.getElementById("yaml-file-input")?.click()}
         onExportJson={exportJson}
         onExportYaml={exportYaml}
+        onSave={() => setPatModalOpen(true)}
       />
       <TabBar />
 
@@ -156,6 +182,11 @@ function AppContent() {
         open={addModalOpen}
         defaultContext={addModalContext}
         onClose={() => setAddModalOpen(false)}
+      />
+      <PatModal
+        open={patModalOpen}
+        onClose={() => setPatModalOpen(false)}
+        onConfirm={handleSaveToRepo}
       />
     </div>
   );

@@ -17,8 +17,10 @@ describe("App", () => {
     expect(screen.getByText(/Drag & drop/)).toBeInTheDocument();
   });
 
-  it("shows json editor placeholder by default", () => {
+  it("shows json editor empty state by default", () => {
     render(<App />);
-    expect(screen.getByTestId("json-editor-placeholder")).toBeInTheDocument();
+    expect(
+      screen.getByText("Load a Configuration.json file to begin editing"),
+    ).toBeInTheDocument();
   });
 });

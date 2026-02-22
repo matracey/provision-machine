@@ -1,4 +1,4 @@
-import { Layers, Search, Download, Upload } from "lucide-react";
+import { Layers, Search, Download, Upload, CloudUpload } from "lucide-react";
 import { useAppState } from "../state/useAppState";
 
 interface HeaderProps {
@@ -6,6 +6,7 @@ interface HeaderProps {
   onLoadYaml: () => void;
   onExportJson: () => void;
   onExportYaml: () => void;
+  onSave: () => void;
 }
 
 export function Header({
@@ -13,6 +14,7 @@ export function Header({
   onLoadYaml,
   onExportJson,
   onExportYaml,
+  onSave,
 }: HeaderProps) {
   const { state, dispatch } = useAppState();
 
@@ -46,6 +48,9 @@ export function Header({
         </button>
         <button className="btn btn-ghost btn-sm" onClick={onExportYaml}>
           <Upload className="w-4 h-4" /> Export YAML
+        </button>
+        <button className="btn btn-success btn-sm" onClick={onSave}>
+          <CloudUpload className="w-4 h-4" /> Save
         </button>
       </div>
     </header>

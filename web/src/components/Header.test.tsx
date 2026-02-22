@@ -12,6 +12,7 @@ function renderHeader(props = {}) {
         onLoadYaml={noop}
         onExportJson={noop}
         onExportYaml={noop}
+        onSave={noop}
         {...props}
       />
     </AppProvider>,
@@ -35,6 +36,7 @@ describe("Header", () => {
     expect(screen.getByText("Load YAML")).toBeInTheDocument();
     expect(screen.getByText("Export JSON")).toBeInTheDocument();
     expect(screen.getByText("Export YAML")).toBeInTheDocument();
+    expect(screen.getByText("Save")).toBeInTheDocument();
   });
 
   it("calls onLoadJson when Load JSON clicked", () => {

@@ -1,2 +1,17 @@
 @import "tailwindcss";
-@plugin "daisyui";
+@plugin "daisyui" {
+  themes: dark --default;
+}
+
+@theme {
+  --color-common: #4fc3f7;
+  --color-work: #81c784;
+  --color-personal: #ffb74d;
+}
+
+.sortable-ghost {
+  opacity: 0.4;
+}
+.sortable-chosen {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}

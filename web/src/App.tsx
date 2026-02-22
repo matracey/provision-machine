@@ -11,6 +11,7 @@ import { AddItemModal } from "./components/AddItemModal";
 import { PatModal } from "./components/PatModal";
 import { JsonEditor } from "./components/json-editor/JsonEditor";
 import { YamlEditor } from "./components/yaml-editor/YamlEditor";
+import { MiseEditor } from "./components/mise-editor/MiseEditor";
 import {
   downloadFile,
   serializeJson,
@@ -174,6 +175,7 @@ function AppContent() {
           <JsonEditor onAddItem={handleAddItem} />
         )}
         {state.currentTab === "yaml" && <YamlEditor />}
+        {state.currentTab === "mise" && <MiseEditor />}
       </main>
 
       <Footer />

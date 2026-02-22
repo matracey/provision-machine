@@ -1,4 +1,4 @@
-import { Braces, Package } from "lucide-react";
+import { Braces, Package, Box } from "lucide-react";
 import { useAppState } from "../state/useAppState";
 import type { TabId } from "../types";
 
@@ -9,6 +9,7 @@ const TABS: { id: TabId; label: string; icon: React.ReactNode }[] = [
     icon: <Braces className="w-4 h-4" />,
   },
   { id: "yaml", label: "WinGet DSC", icon: <Package className="w-4 h-4" /> },
+  { id: "mise", label: "Mise", icon: <Box className="w-4 h-4" /> },
 ];
 
 export function TabBar() {

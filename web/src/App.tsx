@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { AppProvider } from "./state/AppContext";
 import { useAppState } from "./state/useAppState";
 import { Header } from "./components/Header";
@@ -8,15 +8,22 @@ import { Toast } from "./components/Toast";
 import { showToast } from "./utils/toast";
 import { DropZone } from "./components/DropZone";
 import { AddItemModal } from "./components/AddItemModal";
-import { downloadFile, serializeJson, serializeYaml } from "./utils/fileIO";
+import { JsonEditor } from "./components/json-editor/JsonEditor";
+import { YamlEditor } from "./components/yaml-editor/YamlEditor";
+import {
+  downloadFile,
+  serializeJson,
+  serializeYaml,
+  parseJsonConfig,
+  parseYamlConfig,
+} from "./utils/fileIO";
+import { REPO_RAW_BASE_URL, REPO_FILES } from "./utils/constants";
 import type { ContextType } from "./types";
 
 function AppContent() {
-  const { state } = useAppState();
+  const { state, dispatch } = useAppState();
   const [addModalOpen, setAddModalOpen] = useState(false);
-  const [addModalContext] = useState<ContextType>("Common");
-  const jsonInputRef = useRef<HTMLInputElement>(null);
-  const yamlInputRef = useRef<HTMLInputElement>(null);
+  const [addModalContext, setAddModalContext] = useState<ContextType>("Common");
 
   const exportJson = useCallback(() => {
     if (!state.json) {
@@ -53,11 +60,82 @@ function AppContent() {
     else showToast(`Exported ${exported} YAML file(s)`);
   }, [state.yamlWork, state.yamlPersonal]);
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === "s") {
+        e.preventDefault();
+        if (state.currentTab === "json") exportJson();
+        else exportYaml();
+      }
+      if (e.key === "Escape") {
+        setAddModalOpen(false);
+      }
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [state.currentTab, exportJson, exportYaml]);
+
+  // Auto-load configuration files from repository
+  useEffect(() => {
+    const autoLoad = async () => {
+      const files = [
+        { path: REPO_FILES.json, type: "json" },
+        { path: REPO_FILES.yamlWork, type: "yaml-work" },
+        { path: REPO_FILES.yamlPersonal, type: "yaml-personal" },
+      ];
+
+      let loadedCount = 0;
+      for (const file of files) {
+        try {
+          const response = await fetch(
+            `${REPO_RAW_BASE_URL}/${file.path}?t=${Date.now()}`,
+          );
+          if (!response.ok) continue;
+          const text = await response.text();
+          if (file.type === "json") {
+            dispatch({ type: "SET_JSON", payload: parseJsonConfig(text) });
+            loadedCount++;
+          } else if (file.type === "yaml-work") {
+            dispatch({ type: "SET_YAML_WORK", payload: parseYamlConfig(text) });
+            loadedCount++;
+          } else if (file.type === "yaml-personal") {
+            dispatch({
+              type: "SET_YAML_PERSONAL",
+              payload: parseYamlConfig(text),
+            });
+            loadedCount++;
+          }
+        } catch {
+          // Silently skip files that can't be loaded
+        }
+      }
+
+      if (loadedCount > 0) {
+        dispatch({
+          type: "SET_STATUS",
+          payload: `Auto-loaded ${loadedCount} configuration file(s)`,
+        });
+        dispatch({
+          type: "SET_LAST_MODIFIED",
+          payload: `Last updated: ${new Date().toLocaleTimeString()}`,
+        });
+        showToast(`Loaded ${loadedCount} configuration file(s)`);
+      }
+    };
+    autoLoad();
+  }, [dispatch]);
+
+  const handleAddItem = (context: ContextType) => {
+    setAddModalContext(context);
+    setAddModalOpen(true);
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-base-100 text-base-content font-sans">
       <Header
-        onLoadJson={() => jsonInputRef.current?.click()}
-        onLoadYaml={() => yamlInputRef.current?.click()}
+        onLoadJson={() => document.getElementById("json-file-input")?.click()}
+        onLoadYaml={() => document.getElementById("yaml-file-input")?.click()}
         onExportJson={exportJson}
         onExportYaml={exportYaml}
       />
@@ -67,21 +145,9 @@ function AppContent() {
         <DropZone />
 
         {state.currentTab === "json" && (
-          <div
-            data-testid="json-editor-placeholder"
-            className="text-base-content/50 text-center py-16"
-          >
-            JSON Editor (coming soon)
-          </div>
+          <JsonEditor onAddItem={handleAddItem} />
         )}
-        {state.currentTab === "yaml" && (
-          <div
-            data-testid="yaml-editor-placeholder"
-            className="text-base-content/50 text-center py-16"
-          >
-            YAML Editor (coming soon)
-          </div>
-        )}
+        {state.currentTab === "yaml" && <YamlEditor />}
       </main>
 
       <Footer />
@@ -90,15 +156,6 @@ function AppContent() {
         open={addModalOpen}
         defaultContext={addModalContext}
         onClose={() => setAddModalOpen(false)}
-      />
-
-      {/* Hidden file inputs for Header load buttons */}
-      <input ref={jsonInputRef} type="file" accept=".json" className="hidden" />
-      <input
-        ref={yamlInputRef}
-        type="file"
-        accept=".yaml,.yml"
-        className="hidden"
       />
     </div>
   );

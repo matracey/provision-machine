@@ -1,0 +1,98 @@
+name: Publish Gist
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "**/*.omp.json"
+      - "**/Configuration.json"
+      - "**/*.dsc.yaml"
+      - "**/windowsterminal.*.json"
+  workflow_dispatch:
+
+# Required repository configuration:
+#   Secrets:
+#     GIST_TOKEN - A GitHub PAT with the "gist" scope
+#   Variables:
+#     GIST_ID - The ID of the target gist to update
+
+jobs:
+  validate-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install validation tools
+        run: pip install check-jsonschema
+
+      - name: Validate JSON files
+        run: |
+          status=0
+          while IFS= read -r -d '' f; do
+            echo "::group::$f"
+            if ! jq empty "$f"; then
+              echo "::error file=$f::Invalid JSON syntax"
+              status=1
+            else
+              schema=$(jq -r '.["$schema"] // empty' "$f")
+              if [ -n "$schema" ]; then
+                echo "Validating against schema: $schema"
+                if ! check-jsonschema --schemafile "$schema" "$f"; then
+                  echo "::error file=$f::Schema validation failed"
+                  status=1
+                fi
+              fi
+            fi
+            echo "::endgroup::"
+          done < <(find . -type f \( -name '*.omp.json' -o -name 'Configuration.json' -o -name 'windowsterminal.*.json' \) -print0)
+          exit $status
+
+      - name: Validate YAML files
+        run: |
+          status=0
+          while IFS= read -r -d '' f; do
+            echo "::group::$f"
+            if ! python3 -c "import yaml, sys; yaml.safe_load(open(sys.argv[1]))" "$f"; then
+              echo "::error file=$f::Invalid YAML"
+              status=1
+            fi
+            echo "::endgroup::"
+          done < <(find . -type f -name '*.dsc.yaml' -print0)
+          exit $status
+
+      - name: Check for changes
+        id: diff
+        env:
+          GH_TOKEN: ${{ secrets.GIST_TOKEN }}
+        run: |
+          # Clone the gist repo for reliable content comparison
+          git clone "https://x-access-token:${GH_TOKEN}@gist.github.com/${{ vars.GIST_ID }}.git" /tmp/gist
+
+          changed=false
+          while IFS= read -r -d '' f; do
+            name=$(basename "$f")
+            if [ ! -f "/tmp/gist/$name" ] || ! diff -q "$f" "/tmp/gist/$name" > /dev/null 2>&1; then
+              echo "Changed: $name"
+              changed=true
+            fi
+          done < <(find . -type f \( -name '*.omp.json' -o -name 'Configuration.json' -o -name '*.dsc.yaml' -o -name 'windowsterminal.*.json' \) -print0)
+
+          echo "changed=$changed" >> "$GITHUB_OUTPUT"
+          if [ "$changed" = "false" ]; then
+            echo "No changes detected, skipping gist update."
+          fi
+
+      - name: Update Gist
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GIST_TOKEN }}
+        run: |
+          files_json='{}'
+          while IFS= read -r -d '' f; do
+            name=$(basename "$f")
+            echo "Adding $name"
+            files_json=$(jq --rawfile content "$f" --arg name "$name" \
+              '. + {($name): {content: $content}}' <<< "$files_json")
+          done < <(find . -type f \( -name '*.omp.json' -o -name 'Configuration.json' -o -name '*.dsc.yaml' -o -name 'windowsterminal.*.json' \) -print0)
+          jq -n --argjson files "$files_json" '{files: $files}' |
+            gh api --method PATCH "/gists/${{ vars.GIST_ID }}" --input -

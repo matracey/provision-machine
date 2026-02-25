@@ -35,7 +35,7 @@ export const JSON_SECTIONS: JsonSection[] = [
     key: "Scoop.Aliases",
     label: "Scoop Aliases",
     icon: "terminal",
-    type: "object",
+    type: "alias-object",
   },
   {
     key: "VisualStudio.Workloads",

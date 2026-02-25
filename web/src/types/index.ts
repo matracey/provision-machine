@@ -66,6 +66,14 @@ export interface MiseData {
   rawContent: string;
   tools: MiseTool[];
   settings: Record<string, string>;
+  env: Record<string, string>;
+}
+
+export interface RegistryEntry {
+  name: string;
+  description?: string;
+  backends?: string[];
+  aliases?: string[];
 }
 
 export type TabId = "json" | "yaml" | "mise";

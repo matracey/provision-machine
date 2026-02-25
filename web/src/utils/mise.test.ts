@@ -3,6 +3,8 @@ import {
   parseMiseToml,
   miseToolsToToml,
   formatMiseValue,
+  parseMiseToolValue,
+  serializeMiseToolValue,
   categorize,
 } from "./mise";
 
@@ -198,5 +200,112 @@ describe("miseToolsToToml", () => {
     expect(result).toContain('"npm:prettier" = "latest"');
     expect(result).toContain("[settings]");
     expect(result).toContain("experimental = true");
+  });
+});
+
+describe("parseMiseToolValue", () => {
+  it("parses simple quoted string", () => {
+    const opts = parseMiseToolValue('"20"');
+    expect(opts.version).toBe("20");
+    expect(opts.os).toEqual([]);
+    expect(opts.postinstall).toBe("");
+    expect(opts.isComplex).toBe(false);
+  });
+
+  it("parses inline table with version only", () => {
+    const opts = parseMiseToolValue('{ version = "22" }');
+    expect(opts.version).toBe("22");
+    expect(opts.os).toEqual([]);
+  });
+
+  it("parses inline table with os", () => {
+    const opts = parseMiseToolValue(
+      '{ version = "22", os = ["linux", "macos"] }',
+    );
+    expect(opts.version).toBe("22");
+    expect(opts.os).toEqual(["linux", "macos"]);
+  });
+
+  it("parses inline table with postinstall", () => {
+    const opts = parseMiseToolValue(
+      '{ version = "22", postinstall = "corepack enable" }',
+    );
+    expect(opts.version).toBe("22");
+    expect(opts.postinstall).toBe("corepack enable");
+  });
+
+  it("parses inline table with install_env", () => {
+    const opts = parseMiseToolValue(
+      '{ version = "3.12", install_env = { CONFIGURE_OPTS = "--enable-shared" } }',
+    );
+    expect(opts.version).toBe("3.12");
+    expect(opts.installEnv).toEqual({ CONFIGURE_OPTS: "--enable-shared" });
+  });
+
+  it("marks arrays as complex", () => {
+    const opts = parseMiseToolValue('["3.11", "3.12"]');
+    expect(opts.isComplex).toBe(true);
+  });
+});
+
+describe("serializeMiseToolValue", () => {
+  it("serializes simple version", () => {
+    const result = serializeMiseToolValue({
+      version: "20",
+      os: [],
+      postinstall: "",
+      installEnv: {},
+      isComplex: false,
+    });
+    expect(result).toBe('"20"');
+  });
+
+  it("serializes with os", () => {
+    const result = serializeMiseToolValue({
+      version: "22",
+      os: ["linux", "macos"],
+      postinstall: "",
+      installEnv: {},
+      isComplex: false,
+    });
+    expect(result).toBe(
+      '{ version = "22", os = ["linux", "macos"] }',
+    );
+  });
+
+  it("serializes with all options", () => {
+    const result = serializeMiseToolValue({
+      version: "22",
+      os: ["linux"],
+      postinstall: "corepack enable",
+      installEnv: { NODE_ENV: "production" },
+      isComplex: false,
+    });
+    expect(result).toContain('version = "22"');
+    expect(result).toContain('os = ["linux"]');
+    expect(result).toContain('postinstall = "corepack enable"');
+    expect(result).toContain('install_env = { NODE_ENV = "production" }');
+  });
+
+  it("passes through complex values", () => {
+    const result = serializeMiseToolValue({
+      version: '["3.11", "3.12"]',
+      os: [],
+      postinstall: "",
+      installEnv: {},
+      isComplex: true,
+    });
+    expect(result).toBe('["3.11", "3.12"]');
+  });
+
+  it("roundtrips a simple value", () => {
+    const parsed = parseMiseToolValue('"latest"');
+    expect(serializeMiseToolValue(parsed)).toBe('"latest"');
+  });
+
+  it("roundtrips an inline table", () => {
+    const raw = '{ version = "22", os = ["linux", "macos"] }';
+    const parsed = parseMiseToolValue(raw);
+    expect(serializeMiseToolValue(parsed)).toBe(raw);
   });
 });

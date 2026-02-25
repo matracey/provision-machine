@@ -149,4 +149,61 @@ describe("AddToolModal", () => {
     expect(windowsCheckbox.checked).toBe(false);
     expect(screen.getByDisplayValue("corepack enable")).toBeInTheDocument();
   });
+
+  it("shows Add version entry button", () => {
+    render(<AddToolModal {...defaultProps} />);
+    expect(screen.getByText("Add version entry")).toBeInTheDocument();
+  });
+
+  it("adds a second version entry when Add version entry is clicked", async () => {
+    const user = userEvent.setup();
+    render(<AddToolModal {...defaultProps} />);
+
+    await user.click(screen.getByText("Add version entry"));
+
+    const versionInputs = screen.getAllByPlaceholderText(/latest/);
+    expect(versionInputs).toHaveLength(2);
+  });
+
+  it("submits multiple entries as array", async () => {
+    const user = userEvent.setup();
+    render(<AddToolModal {...defaultProps} />);
+
+    const combobox = screen.getByTestId("tool-combobox");
+    await user.clear(combobox);
+    await user.type(combobox, "python");
+
+    const versionInput = screen.getByPlaceholderText(/latest/);
+    await user.clear(versionInput);
+    await user.type(versionInput, "3.11");
+
+    await user.click(screen.getByText("Add version entry"));
+    const versionInputs = screen.getAllByPlaceholderText(/latest/);
+    await user.clear(versionInputs[1]);
+    await user.type(versionInputs[1], "3.12");
+
+    await user.click(screen.getByText("Add"));
+    expect(defaultProps.onSubmit).toHaveBeenCalledWith(
+      "python",
+      '["3.11", "3.12"]',
+    );
+  });
+
+  it("pre-fills multiple entries in edit mode", () => {
+    render(
+      <AddToolModal
+        {...defaultProps}
+        editTool={{
+          name: "python",
+          rawValue: '["3.11", { version = "3.12", os = ["linux"] }]',
+          displayValue: "3.11, 3.12",
+          category: "Core",
+        }}
+      />,
+    );
+    expect(screen.getByDisplayValue("3.11")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("3.12")).toBeInTheDocument();
+    expect(screen.getByText("Version 1")).toBeInTheDocument();
+    expect(screen.getByText("Version 2")).toBeInTheDocument();
+  });
 });

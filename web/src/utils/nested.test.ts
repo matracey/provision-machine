@@ -25,6 +25,16 @@ describe("getNestedValue", () => {
     const obj = { items: { list: [1, 2, 3] } };
     expect(getNestedValue(obj, "items.list")).toEqual([1, 2, 3]);
   });
+
+  it("returns undefined for partially invalid path", () => {
+    expect(getNestedValue({ a: { b: 42 } }, "a.b.c")).toBeUndefined();
+  });
+
+  it("returns undefined when intermediate is null", () => {
+    expect(
+      getNestedValue({ a: null } as Record<string, unknown>, "a.b"),
+    ).toBeUndefined();
+  });
 });
 
 describe("setNestedValue", () => {
@@ -44,6 +54,12 @@ describe("setNestedValue", () => {
     const obj: Record<string, unknown> = { a: { b: "old" } };
     setNestedValue(obj, "a.b", "new");
     expect((obj as { a: { b: string } }).a.b).toBe("new");
+  });
+
+  it("overwrites non-object intermediate with object", () => {
+    const obj: Record<string, unknown> = { a: "primitive" };
+    setNestedValue(obj, "a.b", "value");
+    expect((obj as { a: { b: string } }).a.b).toBe("value");
   });
 });
 

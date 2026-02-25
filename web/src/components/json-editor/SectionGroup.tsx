@@ -3,6 +3,7 @@ import { DynamicIcon, type IconName } from "lucide-react/dynamic";
 import { useAppState } from "../../state/useAppState";
 import { getNestedValue } from "../../utils/nested";
 import { getItemType } from "../../utils/fileIO";
+import { AliasItem } from "./AliasItem";
 import { DraggableItem } from "./DraggableItem";
 import { EditableItem } from "./EditableItem";
 import { KvpItem } from "./KvpItem";
@@ -43,7 +44,7 @@ export function SectionGroup({
   if (!value) return null;
   if (Array.isArray(value) && value.length === 0) return null;
   if (
-    type === "object" &&
+    (type === "object" || type === "alias-object") &&
     typeof value === "object" &&
     Object.keys(value as object).length === 0
   )
@@ -71,7 +72,10 @@ export function SectionGroup({
 
   let itemCount = 0;
   if (Array.isArray(value)) itemCount = value.length;
-  else if (type === "object" && typeof value === "object")
+  else if (
+    (type === "object" || type === "alias-object") &&
+    typeof value === "object"
+  )
     itemCount = Object.keys(value as object).length;
   else if (value) itemCount = 1;
 
@@ -140,6 +144,47 @@ export function SectionGroup({
           />
         );
       });
+    }
+
+    if (
+      type === "alias-object" &&
+      typeof value === "object" &&
+      value !== null
+    ) {
+      return Object.entries(value as Record<string, unknown>).map(
+        ([k, v], i) => {
+          const arr = Array.isArray(v) ? v : [String(v), ""];
+          const command = String(arr[0] ?? "");
+          const description = String(arr[1] ?? "");
+          return (
+            <AliasItem
+              key={`${k}-${i}`}
+              aliasName={k}
+              command={command}
+              description={description}
+              context={context}
+              section={sectionKey}
+              index={i}
+              filter={state.filter}
+              isEditing={isEditingItem(i, true)}
+              onStartEdit={() => startEdit(i, { isKvp: true })}
+              onSave={(newName, newCmd, newDesc) => {
+                const obj = value as Record<string, unknown>;
+                if (newName !== k) delete obj[k];
+                obj[newName] = [newCmd, newDesc];
+                cancelEdit();
+                onJsonChanged();
+              }}
+              onCancel={cancelEdit}
+              onDelete={() => {
+                delete (value as Record<string, unknown>)[k];
+                onJsonChanged();
+              }}
+              onContextMenu={(e) => onContextMenu(e, context, sectionKey, k)}
+            />
+          );
+        },
+      );
     }
 
     if (type === "object" && typeof value === "object" && value !== null) {

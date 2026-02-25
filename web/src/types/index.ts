@@ -2,7 +2,12 @@ import type { IconName } from "lucide-react/dynamic";
 
 export type ContextType = "Common" | "Work" | "Personal";
 
-export type SectionType = "array" | "object" | "name-url-array" | "string";
+export type SectionType =
+  | "array"
+  | "object"
+  | "name-url-array"
+  | "alias-object"
+  | "string";
 
 export interface JsonSection {
   key: string;

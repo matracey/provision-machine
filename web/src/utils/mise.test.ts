@@ -188,6 +188,7 @@ describe("miseToolsToToml", () => {
         },
       ],
       settings: { experimental: "true" },
+      env: {},
     };
     const result = miseToolsToToml(data);
     expect(result).toContain("[tools]");

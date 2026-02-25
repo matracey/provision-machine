@@ -111,7 +111,12 @@ function findSeparator(line: string): number {
 
 // Parse a mise.toml file into structured data
 export function parseMiseToml(content: string): MiseData {
-  const result: MiseData = { rawContent: content, tools: [], settings: {} };
+  const result: MiseData = {
+    rawContent: content,
+    tools: [],
+    settings: {},
+    env: {},
+  };
   const lines = content.split("\n");
   let currentSection = "";
   let currentCategory = "Core";
@@ -175,6 +180,8 @@ export function parseMiseToml(content: string): MiseData {
       });
     } else if (currentSection === "settings") {
       result.settings[key] = value;
+    } else if (currentSection === "env") {
+      result.env[key] = value;
     }
   }
 
@@ -197,6 +204,13 @@ export function miseToolsToToml(data: MiseData): string {
     for (const tool of categories[cat]) {
       const name = tool.name.includes(":") ? `"${tool.name}"` : tool.name;
       content += `${name} = ${tool.rawValue}\n`;
+    }
+  }
+
+  if (data.env && Object.keys(data.env).length > 0) {
+    content += "\n[env]\n";
+    for (const [key, value] of Object.entries(data.env)) {
+      content += `${key} = ${value}\n`;
     }
   }
 

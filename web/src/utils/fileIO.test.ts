@@ -63,6 +63,18 @@ describe("getItemDisplayText", () => {
   it("returns JSON for other objects", () => {
     expect(getItemDisplayText({ foo: "bar" })).toBe('{"foo":"bar"}');
   });
+
+  it("returns string for null", () => {
+    expect(getItemDisplayText(null)).toBe("null");
+  });
+
+  it("returns string for number", () => {
+    expect(getItemDisplayText(42)).toBe("42");
+  });
+
+  it("returns string for boolean", () => {
+    expect(getItemDisplayText(true)).toBe("true");
+  });
 });
 
 describe("getItemType", () => {
@@ -76,5 +88,17 @@ describe("getItemType", () => {
 
   it("returns object for other objects", () => {
     expect(getItemType({ foo: "bar" })).toBe("object");
+  });
+
+  it("returns string for null", () => {
+    expect(getItemType(null)).toBe("string");
+  });
+
+  it("returns string for undefined", () => {
+    expect(getItemType(undefined)).toBe("string");
+  });
+
+  it("returns string for numbers", () => {
+    expect(getItemType(42)).toBe("string");
   });
 });

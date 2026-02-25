@@ -32,6 +32,26 @@ describe("fuzzyScore", () => {
     expect(fuzzyScore("NODE", "node")).toBe(10000);
     expect(fuzzyScore("node", "Node")).toBe(10000);
   });
+
+  it("scores empty query as prefix match", () => {
+    // empty string is always a prefix, but fuzzySearch handles empty queries separately
+    expect(fuzzyScore("", "node")).toBeGreaterThan(0);
+  });
+
+  it("handles single character query", () => {
+    const score = fuzzyScore("n", "node");
+    expect(score).toBeGreaterThan(0);
+  });
+
+  it("returns -1 when query is longer than target", () => {
+    expect(fuzzyScore("nodejsruntime", "node")).toBe(-1);
+  });
+
+  it("scores word-boundary matches higher", () => {
+    const boundaryMatch = fuzzyScore("rg", "rip-grep");
+    const midMatch = fuzzyScore("ig", "rip-grep");
+    expect(boundaryMatch).toBeGreaterThan(midMatch);
+  });
 });
 
 describe("fuzzySearch", () => {
@@ -45,6 +65,11 @@ describe("fuzzySearch", () => {
 
   it("returns all items when query is empty", () => {
     const result = fuzzySearch("", items);
+    expect(result.length).toBe(items.length);
+  });
+
+  it("returns all items when query is whitespace", () => {
+    const result = fuzzySearch("   ", items);
     expect(result.length).toBe(items.length);
   });
 
@@ -67,6 +92,21 @@ describe("fuzzySearch", () => {
   it("returns empty array when nothing matches", () => {
     const result = fuzzySearch("zzzzz", items);
     expect(result.length).toBe(0);
+  });
+
+  it("returns empty array for empty items", () => {
+    const result = fuzzySearch("node", []);
+    expect(result).toEqual([]);
+  });
+
+  it("handles limit of 0", () => {
+    const result = fuzzySearch("", items, 0);
+    expect(result).toEqual([]);
+  });
+
+  it("handles items without aliases", () => {
+    const result = fuzzySearch("py", [{ name: "python" }]);
+    expect(result).toHaveLength(1);
   });
 });
 
@@ -107,6 +147,25 @@ description = "search tool"`;
     expect(entry.description).toBeUndefined();
     expect(entry.aliases).toBeUndefined();
   });
+
+  it("handles empty content", () => {
+    const entry = parseRegistryToml("tool", "");
+    expect(entry.name).toBe("tool");
+    expect(entry.description).toBeUndefined();
+    expect(entry.backends).toBeUndefined();
+    expect(entry.aliases).toBeUndefined();
+  });
+
+  it("handles empty backends array", () => {
+    const entry = parseRegistryToml("tool", "backends = []");
+    expect(entry.backends).toBeUndefined();
+  });
+
+  it("handles multiple aliases", () => {
+    const content = `aliases = ["rg", "ripg", "grep2"]`;
+    const entry = parseRegistryToml("ripgrep", content);
+    expect(entry.aliases).toEqual(["rg", "ripg", "grep2"]);
+  });
 });
 
 describe("hasBackendPrefix", () => {
@@ -120,6 +179,25 @@ describe("hasBackendPrefix", () => {
   it("returns false for registry tool names", () => {
     expect(hasBackendPrefix("node")).toBe(false);
     expect(hasBackendPrefix("python")).toBe(false);
+  });
+
+  it("returns false for empty string", () => {
+    expect(hasBackendPrefix("")).toBe(false);
+  });
+
+  it("returns false for prefix-like but not prefixed", () => {
+    expect(hasBackendPrefix("cargo")).toBe(false);
+    expect(hasBackendPrefix("npm")).toBe(false);
+  });
+
+  it("detects all known prefixes", () => {
+    expect(hasBackendPrefix("core:node")).toBe(true);
+    expect(hasBackendPrefix("asdf:ruby")).toBe(true);
+    expect(hasBackendPrefix("aqua:tool")).toBe(true);
+    expect(hasBackendPrefix("github:owner/repo")).toBe(true);
+    expect(hasBackendPrefix("ubi:sharkdp/bat")).toBe(true);
+    expect(hasBackendPrefix("vfox:tool")).toBe(true);
+    expect(hasBackendPrefix("dotnet:tool")).toBe(true);
   });
 });
 

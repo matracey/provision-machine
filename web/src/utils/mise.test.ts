@@ -16,11 +16,36 @@ describe("categorize", () => {
     expect(categorize("go:github.com/x")).toBe("Go");
     expect(categorize("ubi:sharkdp/bat")).toBe("GitHub");
   });
+
+  it("categorizes github: prefix as GitHub", () => {
+    expect(categorize("github:owner/repo")).toBe("GitHub");
+  });
+
+  it("categorizes dotnet: prefix", () => {
+    expect(categorize("dotnet:some-tool")).toBe("Dotnet");
+  });
+
+  it("categorizes pipx: prefix", () => {
+    expect(categorize("pipx:black")).toBe("Pipx");
+  });
+
+  it("categorizes vfox: prefix", () => {
+    expect(categorize("vfox:some-tool")).toBe("VFox");
+  });
+
+  it("returns Core for unknown prefixes", () => {
+    expect(categorize("xyz:unknown")).toBe("Core");
+    expect(categorize("")).toBe("Core");
+  });
 });
 
 describe("formatMiseValue", () => {
   it("strips quotes from simple strings", () => {
     expect(formatMiseValue('"20.11.0"')).toBe("20.11.0");
+  });
+
+  it("strips single quotes", () => {
+    expect(formatMiseValue("'latest'")).toBe("latest");
   });
 
   it("formats arrays as comma-separated", () => {
@@ -29,6 +54,14 @@ describe("formatMiseValue", () => {
 
   it("returns non-string values as-is", () => {
     expect(formatMiseValue("latest")).toBe("latest");
+  });
+
+  it("returns empty string as-is", () => {
+    expect(formatMiseValue("")).toBe("");
+  });
+
+  it("handles whitespace-only input", () => {
+    expect(formatMiseValue("   ")).toBe("");
   });
 
   it("formats inline tables with version", () => {
@@ -43,6 +76,10 @@ describe("formatMiseValue", () => {
         '{ version = "latest", postinstall = "corepack enable" }',
       ),
     ).toBe("latest");
+  });
+
+  it("formats inline table without version match", () => {
+    expect(formatMiseValue("{ foo = 42 }")).toBe("{ foo = 42 }");
   });
 
   it("formats multi-line arrays of inline tables", () => {
@@ -61,6 +98,10 @@ describe("formatMiseValue", () => {
     expect(formatMiseValue(raw)).toBe(
       "latest (linux, macos), 8 (linux, macos)",
     );
+  });
+
+  it("handles array with no quoted strings", () => {
+    expect(formatMiseValue("[1, 2, 3]")).toBe("[1, 2, 3]");
   });
 });
 
@@ -169,6 +210,52 @@ dotnet = [
     );
     expect(result.tools[0].category).toBe("Plugins");
   });
+
+  it("returns empty tools for empty content", () => {
+    const result = parseMiseToml("");
+    expect(result.tools).toEqual([]);
+    expect(result.settings).toEqual({});
+    expect(result.env).toEqual({});
+  });
+
+  it("returns empty tools when no [tools] section exists", () => {
+    const result = parseMiseToml("[settings]\nexperimental = true\n");
+    expect(result.tools).toEqual([]);
+    expect(result.settings).toEqual({ experimental: "true" });
+  });
+
+  it("skips lines without a separator", () => {
+    const toml = `[tools]
+not-a-valid-line
+node = "20"
+`;
+    const result = parseMiseToml(toml);
+    expect(result.tools).toHaveLength(1);
+    expect(result.tools[0].name).toBe("node");
+  });
+
+  it("parses [env] section", () => {
+    const toml = `[env]
+NODE_ENV = "development"
+PORT = "3000"
+`;
+    const result = parseMiseToml(toml);
+    expect(result.env).toEqual({
+      NODE_ENV: '"development"',
+      PORT: '"3000"',
+    });
+  });
+
+  it("handles quoted keys", () => {
+    const toml = `[tools]
+"npm:prettier" = "latest"
+"cargo:bat" = "latest"
+`;
+    const result = parseMiseToml(toml);
+    expect(result.tools).toHaveLength(2);
+    expect(result.tools[0].name).toBe("npm:prettier");
+    expect(result.tools[1].name).toBe("cargo:bat");
+  });
 });
 
 describe("miseToolsToToml", () => {
@@ -201,6 +288,49 @@ describe("miseToolsToToml", () => {
     expect(result).toContain("[settings]");
     expect(result).toContain("experimental = true");
   });
+
+  it("serializes empty tools list", () => {
+    const data = {
+      rawContent: "",
+      tools: [],
+      settings: {},
+      env: {},
+    };
+    const result = miseToolsToToml(data);
+    expect(result).toContain("[tools]");
+    expect(result).not.toContain("# Core");
+  });
+
+  it("serializes env section", () => {
+    const data = {
+      rawContent: "",
+      tools: [],
+      settings: {},
+      env: { NODE_ENV: '"development"' },
+    };
+    const result = miseToolsToToml(data);
+    expect(result).toContain("[env]");
+    expect(result).toContain('NODE_ENV = "development"');
+  });
+
+  it("omits empty settings and env sections", () => {
+    const data = {
+      rawContent: "",
+      tools: [
+        {
+          name: "node",
+          rawValue: '"20"',
+          displayValue: "20",
+          category: "Core",
+        },
+      ],
+      settings: {},
+      env: {},
+    };
+    const result = miseToolsToToml(data);
+    expect(result).not.toContain("[settings]");
+    expect(result).not.toContain("[env]");
+  });
 });
 
 describe("parseMiseToolValue", () => {
@@ -210,6 +340,24 @@ describe("parseMiseToolValue", () => {
     expect(opts.entries[0].version).toBe("20");
     expect(opts.entries[0].os).toEqual([]);
     expect(opts.entries[0].postinstall).toBe("");
+  });
+
+  it("parses single-quoted string", () => {
+    const opts = parseMiseToolValue("'latest'");
+    expect(opts.entries).toHaveLength(1);
+    expect(opts.entries[0].version).toBe("latest");
+  });
+
+  it("parses bare/unquoted value", () => {
+    const opts = parseMiseToolValue("latest");
+    expect(opts.entries).toHaveLength(1);
+    expect(opts.entries[0].version).toBe("latest");
+  });
+
+  it("handles whitespace around value", () => {
+    const opts = parseMiseToolValue('  "20"  ');
+    expect(opts.entries).toHaveLength(1);
+    expect(opts.entries[0].version).toBe("20");
   });
 
   it("parses inline table with version only", () => {
@@ -248,6 +396,22 @@ describe("parseMiseToolValue", () => {
     });
   });
 
+  it("parses inline table with all fields", () => {
+    const opts = parseMiseToolValue(
+      '{ version = "22", os = ["linux"], postinstall = "corepack enable", install_env = { NODE_ENV = "production" } }',
+    );
+    expect(opts.entries[0].version).toBe("22");
+    expect(opts.entries[0].os).toEqual(["linux"]);
+    expect(opts.entries[0].postinstall).toBe("corepack enable");
+    expect(opts.entries[0].installEnv).toEqual({ NODE_ENV: "production" });
+  });
+
+  it("parses inline table missing version field", () => {
+    const opts = parseMiseToolValue('{ os = ["linux"] }');
+    expect(opts.entries[0].version).toBe("");
+    expect(opts.entries[0].os).toEqual(["linux"]);
+  });
+
   it("parses array of simple strings into multiple entries", () => {
     const opts = parseMiseToolValue('["3.11", "3.12"]');
     expect(opts.entries).toHaveLength(2);
@@ -264,6 +428,18 @@ describe("parseMiseToolValue", () => {
     expect(opts.entries[0].os).toEqual([]);
     expect(opts.entries[1].version).toBe("latest");
     expect(opts.entries[1].os).toEqual(["linux"]);
+  });
+
+  it("parses empty array", () => {
+    const opts = parseMiseToolValue("[]");
+    expect(opts.entries).toEqual([]);
+  });
+
+  it("parses array with multiple install_env entries", () => {
+    const opts = parseMiseToolValue(
+      '{ version = "3.12", install_env = { A = "1", B = "2" } }',
+    );
+    expect(opts.entries[0].installEnv).toEqual({ A: "1", B: "2" });
   });
 });
 
@@ -346,5 +522,36 @@ describe("serializeMiseToolValue", () => {
     const raw = '["lts", { version = "latest", os = ["linux"] }]';
     const parsed = parseMiseToolValue(raw);
     expect(serializeMiseToolValue(parsed)).toBe(raw);
+  });
+
+  it("serializes entry with multiple install_env vars", () => {
+    const result = serializeMiseToolValue({
+      entries: [
+        {
+          version: "3.12",
+          os: [],
+          postinstall: "",
+          installEnv: { A: "1", B: "2" },
+        },
+      ],
+    });
+    expect(result).toContain('A = "1"');
+    expect(result).toContain('B = "2"');
+  });
+
+  it("serializes entry with only postinstall", () => {
+    const result = serializeMiseToolValue({
+      entries: [
+        {
+          version: "latest",
+          os: [],
+          postinstall: "corepack enable",
+          installEnv: {},
+        },
+      ],
+    });
+    expect(result).toBe(
+      '{ version = "latest", postinstall = "corepack enable" }',
+    );
   });
 });

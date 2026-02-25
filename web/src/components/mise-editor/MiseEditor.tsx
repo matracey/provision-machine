@@ -1,10 +1,13 @@
-import { useEffect, useCallback } from "react";
-import { Box, Plus } from "lucide-react";
+import { useEffect, useCallback, useState } from "react";
+import { Box, Plus, Variable, Settings } from "lucide-react";
 import { useAppState } from "../../state/useAppState";
 import { MiseSection } from "./MiseSection";
-import { parseMiseToml, categorize } from "../../utils/mise";
+import { AddToolModal } from "./AddToolModal";
+import { MiseKeyValueSection } from "./MiseKeyValueSection";
+import { parseMiseToml, categorize, formatMiseValue } from "../../utils/mise";
 import { showToast } from "../../utils/toast";
 import { MISE_GIST_RAW_URL } from "../../utils/constants";
+import type { MiseTool } from "../../types";
 
 const CATEGORY_ORDER = [
   "Core",
@@ -20,6 +23,11 @@ const CATEGORY_ORDER = [
 
 export function MiseEditor() {
   const { state, dispatch } = useAppState();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingTool, setEditingTool] = useState<{
+    tool: MiseTool;
+    index: number;
+  } | null>(null);
 
   // Lazy-load from gist on first render
   useEffect(() => {
@@ -45,51 +53,55 @@ export function MiseEditor() {
     load();
   }, [state.miseData, dispatch]);
 
-  const handleAdd = useCallback(() => {
-    const name = prompt("Tool name (e.g. node, cargo:ripgrep):");
-    if (!name) return;
-    const version = prompt('Version (e.g. "latest", "20.11.0"):');
-    if (!version) return;
-    const rawValue =
-      version.startsWith('"') || version.startsWith("[")
-        ? version
-        : `"${version}"`;
-    const tool = {
-      name: name.trim(),
-      rawValue,
-      displayValue: version.replace(/^"|"$/g, ""),
-      category: categorize(name.trim()),
-    };
-    const newData = {
-      ...state.miseData!,
-      tools: [...state.miseData!.tools, tool],
-    };
-    dispatch({ type: "SET_MISE_DATA", payload: newData });
-    showToast(`Added ${name}`);
-  }, [state.miseData, dispatch]);
-
-  const handleEdit = useCallback(
-    (toolIndex: number) => {
+  const handleAddSubmit = useCallback(
+    (name: string, rawValue: string) => {
       if (!state.miseData) return;
-      const tool = state.miseData.tools[toolIndex];
-      const newValue = prompt(`Edit version for ${tool.name}:`, tool.rawValue);
-      if (newValue === null) return;
-      const rawValue =
-        newValue.startsWith('"') || newValue.startsWith("[")
-          ? newValue
-          : `"${newValue}"`;
-      const tools = [...state.miseData.tools];
-      tools[toolIndex] = {
-        ...tool,
+      const tool: MiseTool = {
+        name,
         rawValue,
-        displayValue: newValue.replace(/^"|"$/g, ""),
+        displayValue: formatMiseValue(rawValue),
+        category: categorize(name),
+      };
+      dispatch({
+        type: "SET_MISE_DATA",
+        payload: {
+          ...state.miseData,
+          tools: [...state.miseData.tools, tool],
+        },
+      });
+      showToast(`Added ${name}`);
+    },
+    [state.miseData, dispatch],
+  );
+
+  const handleEditSubmit = useCallback(
+    (name: string, rawValue: string) => {
+      if (!state.miseData || editingTool === null) return;
+      const tools = [...state.miseData.tools];
+      tools[editingTool.index] = {
+        name,
+        rawValue,
+        displayValue: formatMiseValue(rawValue),
+        category: categorize(name),
       };
       dispatch({
         type: "SET_MISE_DATA",
         payload: { ...state.miseData, tools },
       });
+      showToast(`Updated ${name}`);
     },
-    [state.miseData, dispatch],
+    [state.miseData, editingTool, dispatch],
+  );
+
+  const handleEdit = useCallback(
+    (toolIndex: number) => {
+      if (!state.miseData) return;
+      setEditingTool({
+        tool: state.miseData.tools[toolIndex],
+        index: toolIndex,
+      });
+    },
+    [state.miseData],
   );
 
   const handleDelete = useCallback(
@@ -102,6 +114,28 @@ export function MiseEditor() {
         payload: { ...state.miseData, tools },
       });
       showToast(`Deleted ${tool.name}`);
+    },
+    [state.miseData, dispatch],
+  );
+
+  const handleEnvChange = useCallback(
+    (env: Record<string, string>) => {
+      if (!state.miseData) return;
+      dispatch({
+        type: "SET_MISE_DATA",
+        payload: { ...state.miseData, env },
+      });
+    },
+    [state.miseData, dispatch],
+  );
+
+  const handleSettingsChange = useCallback(
+    (settings: Record<string, string>) => {
+      if (!state.miseData) return;
+      dispatch({
+        type: "SET_MISE_DATA",
+        payload: { ...state.miseData, settings },
+      });
     },
     [state.miseData, dispatch],
   );
@@ -126,44 +160,75 @@ export function MiseEditor() {
   });
 
   return (
-    <div className="card bg-base-200 border border-base-300 border-l-4 border-l-primary overflow-hidden">
-      <div className="p-4 border-b border-base-300 flex justify-between items-center">
-        <span className="font-semibold flex items-center gap-2">
-          <Box className="w-4 h-4" /> Mise Tools
-        </span>
-        <div className="flex items-center gap-2">
-          <span className="badge badge-ghost badge-sm">
-            {state.miseData.tools.length}
+    <>
+      <div className="card bg-base-200 border border-base-300 border-l-4 border-l-primary overflow-hidden">
+        <div className="p-4 border-b border-base-300 flex justify-between items-center">
+          <span className="font-semibold flex items-center gap-2">
+            <Box className="w-4 h-4" /> Mise Tools
           </span>
-          <button
-            className="btn btn-ghost btn-xs"
-            onClick={handleAdd}
-            title="Add tool"
-          >
-            <Plus className="w-3 h-3" />
-          </button>
+          <div className="flex items-center gap-2">
+            <span className="badge badge-ghost badge-sm">
+              {state.miseData.tools.length}
+            </span>
+            <button
+              className="btn btn-ghost btn-xs"
+              onClick={() => setModalOpen(true)}
+              title="Add tool"
+            >
+              <Plus className="w-3 h-3" />
+            </button>
+          </div>
+        </div>
+        <div className="p-3 max-h-[60vh] overflow-y-auto">
+          {CATEGORY_ORDER.map((cat) => {
+            const categoryTools = grouped[cat];
+            if (!categoryTools?.length) return null;
+            return (
+              <MiseSection
+                key={cat}
+                category={cat}
+                tools={categoryTools.map((t) => t.tool)}
+                filter={state.filter}
+                onEdit={(localIdx) =>
+                  handleEdit(categoryTools[localIdx].globalIndex)
+                }
+                onDelete={(localIdx) =>
+                  handleDelete(categoryTools[localIdx].globalIndex)
+                }
+              />
+            );
+          })}
+
+          <MiseKeyValueSection
+            title="Environment"
+            icon={<Variable className="w-3 h-3" />}
+            data={state.miseData.env}
+            onChange={handleEnvChange}
+          />
+
+          <MiseKeyValueSection
+            title="Settings"
+            icon={<Settings className="w-3 h-3" />}
+            data={state.miseData.settings}
+            onChange={handleSettingsChange}
+          />
         </div>
       </div>
-      <div className="p-3 max-h-[60vh] overflow-y-auto">
-        {CATEGORY_ORDER.map((cat) => {
-          const categoryTools = grouped[cat];
-          if (!categoryTools?.length) return null;
-          return (
-            <MiseSection
-              key={cat}
-              category={cat}
-              tools={categoryTools.map((t) => t.tool)}
-              filter={state.filter}
-              onEdit={(localIdx) =>
-                handleEdit(categoryTools[localIdx].globalIndex)
-              }
-              onDelete={(localIdx) =>
-                handleDelete(categoryTools[localIdx].globalIndex)
-              }
-            />
-          );
-        })}
-      </div>
-    </div>
+
+      <AddToolModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSubmit={handleAddSubmit}
+        githubPat={state.githubPat}
+      />
+
+      <AddToolModal
+        open={editingTool !== null}
+        onClose={() => setEditingTool(null)}
+        onSubmit={handleEditSubmit}
+        editTool={editingTool?.tool}
+        githubPat={state.githubPat}
+      />
+    </>
   );
 }

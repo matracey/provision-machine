@@ -206,78 +206,99 @@ describe("miseToolsToToml", () => {
 describe("parseMiseToolValue", () => {
   it("parses simple quoted string", () => {
     const opts = parseMiseToolValue('"20"');
-    expect(opts.version).toBe("20");
-    expect(opts.os).toEqual([]);
-    expect(opts.postinstall).toBe("");
-    expect(opts.isComplex).toBe(false);
+    expect(opts.entries).toHaveLength(1);
+    expect(opts.entries[0].version).toBe("20");
+    expect(opts.entries[0].os).toEqual([]);
+    expect(opts.entries[0].postinstall).toBe("");
   });
 
   it("parses inline table with version only", () => {
     const opts = parseMiseToolValue('{ version = "22" }');
-    expect(opts.version).toBe("22");
-    expect(opts.os).toEqual([]);
+    expect(opts.entries).toHaveLength(1);
+    expect(opts.entries[0].version).toBe("22");
+    expect(opts.entries[0].os).toEqual([]);
   });
 
   it("parses inline table with os", () => {
     const opts = parseMiseToolValue(
       '{ version = "22", os = ["linux", "macos"] }',
     );
-    expect(opts.version).toBe("22");
-    expect(opts.os).toEqual(["linux", "macos"]);
+    expect(opts.entries).toHaveLength(1);
+    expect(opts.entries[0].version).toBe("22");
+    expect(opts.entries[0].os).toEqual(["linux", "macos"]);
   });
 
   it("parses inline table with postinstall", () => {
     const opts = parseMiseToolValue(
       '{ version = "22", postinstall = "corepack enable" }',
     );
-    expect(opts.version).toBe("22");
-    expect(opts.postinstall).toBe("corepack enable");
+    expect(opts.entries).toHaveLength(1);
+    expect(opts.entries[0].version).toBe("22");
+    expect(opts.entries[0].postinstall).toBe("corepack enable");
   });
 
   it("parses inline table with install_env", () => {
     const opts = parseMiseToolValue(
       '{ version = "3.12", install_env = { CONFIGURE_OPTS = "--enable-shared" } }',
     );
-    expect(opts.version).toBe("3.12");
-    expect(opts.installEnv).toEqual({ CONFIGURE_OPTS: "--enable-shared" });
+    expect(opts.entries).toHaveLength(1);
+    expect(opts.entries[0].version).toBe("3.12");
+    expect(opts.entries[0].installEnv).toEqual({
+      CONFIGURE_OPTS: "--enable-shared",
+    });
   });
 
-  it("marks arrays as complex", () => {
+  it("parses array of simple strings into multiple entries", () => {
     const opts = parseMiseToolValue('["3.11", "3.12"]');
-    expect(opts.isComplex).toBe(true);
+    expect(opts.entries).toHaveLength(2);
+    expect(opts.entries[0].version).toBe("3.11");
+    expect(opts.entries[1].version).toBe("3.12");
+  });
+
+  it("parses array of mixed entries", () => {
+    const opts = parseMiseToolValue(
+      '["lts", { version = "latest", os = ["linux"] }]',
+    );
+    expect(opts.entries).toHaveLength(2);
+    expect(opts.entries[0].version).toBe("lts");
+    expect(opts.entries[0].os).toEqual([]);
+    expect(opts.entries[1].version).toBe("latest");
+    expect(opts.entries[1].os).toEqual(["linux"]);
   });
 });
 
 describe("serializeMiseToolValue", () => {
-  it("serializes simple version", () => {
+  it("serializes single simple version", () => {
     const result = serializeMiseToolValue({
-      version: "20",
-      os: [],
-      postinstall: "",
-      installEnv: {},
-      isComplex: false,
+      entries: [{ version: "20", os: [], postinstall: "", installEnv: {} }],
     });
     expect(result).toBe('"20"');
   });
 
-  it("serializes with os", () => {
+  it("serializes single entry with os", () => {
     const result = serializeMiseToolValue({
-      version: "22",
-      os: ["linux", "macos"],
-      postinstall: "",
-      installEnv: {},
-      isComplex: false,
+      entries: [
+        {
+          version: "22",
+          os: ["linux", "macos"],
+          postinstall: "",
+          installEnv: {},
+        },
+      ],
     });
     expect(result).toBe('{ version = "22", os = ["linux", "macos"] }');
   });
 
-  it("serializes with all options", () => {
+  it("serializes single entry with all options", () => {
     const result = serializeMiseToolValue({
-      version: "22",
-      os: ["linux"],
-      postinstall: "corepack enable",
-      installEnv: { NODE_ENV: "production" },
-      isComplex: false,
+      entries: [
+        {
+          version: "22",
+          os: ["linux"],
+          postinstall: "corepack enable",
+          installEnv: { NODE_ENV: "production" },
+        },
+      ],
     });
     expect(result).toContain('version = "22"');
     expect(result).toContain('os = ["linux"]');
@@ -285,15 +306,29 @@ describe("serializeMiseToolValue", () => {
     expect(result).toContain('install_env = { NODE_ENV = "production" }');
   });
 
-  it("passes through complex values", () => {
+  it("serializes multiple entries as array", () => {
     const result = serializeMiseToolValue({
-      version: '["3.11", "3.12"]',
-      os: [],
-      postinstall: "",
-      installEnv: {},
-      isComplex: true,
+      entries: [
+        { version: "3.11", os: [], postinstall: "", installEnv: {} },
+        { version: "3.12", os: [], postinstall: "", installEnv: {} },
+      ],
     });
     expect(result).toBe('["3.11", "3.12"]');
+  });
+
+  it("serializes mixed entries as array", () => {
+    const result = serializeMiseToolValue({
+      entries: [
+        { version: "lts", os: [], postinstall: "", installEnv: {} },
+        { version: "latest", os: ["linux"], postinstall: "", installEnv: {} },
+      ],
+    });
+    expect(result).toBe('["lts", { version = "latest", os = ["linux"] }]');
+  });
+
+  it("serializes empty entries as latest", () => {
+    const result = serializeMiseToolValue({ entries: [] });
+    expect(result).toBe('"latest"');
   });
 
   it("roundtrips a simple value", () => {
@@ -303,6 +338,12 @@ describe("serializeMiseToolValue", () => {
 
   it("roundtrips an inline table", () => {
     const raw = '{ version = "22", os = ["linux", "macos"] }';
+    const parsed = parseMiseToolValue(raw);
+    expect(serializeMiseToolValue(parsed)).toBe(raw);
+  });
+
+  it("roundtrips an array of mixed entries", () => {
+    const raw = '["lts", { version = "latest", os = ["linux"] }]';
     const parsed = parseMiseToolValue(raw);
     expect(serializeMiseToolValue(parsed)).toBe(raw);
   });

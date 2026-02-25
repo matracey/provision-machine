@@ -1,5 +1,13 @@
 import type { MiseData, MiseTool } from "../types";
 
+export interface MiseToolOptions {
+  version: string;
+  os: string[];
+  postinstall: string;
+  installEnv: Record<string, string>;
+  isComplex: boolean;
+}
+
 const CATEGORY_ORDER = [
   "Core",
   "Plugins",
@@ -222,4 +230,90 @@ export function miseToolsToToml(data: MiseData): string {
   }
 
   return content;
+}
+
+// Parse a raw TOML tool value into structured options
+export function parseMiseToolValue(rawValue: string): MiseToolOptions {
+  const v = rawValue.trim();
+  const defaults: MiseToolOptions = {
+    version: "",
+    os: [],
+    postinstall: "",
+    installEnv: {},
+    isComplex: false,
+  };
+
+  // Simple quoted string
+  if (/^"[^"]*"$/.test(v) || /^'[^']*'$/.test(v)) {
+    return { ...defaults, version: v.slice(1, -1) };
+  }
+
+  // Array — too complex for structured editing
+  if (v.startsWith("[")) {
+    return { ...defaults, version: v, isComplex: true };
+  }
+
+  // Inline table: { version = "22", os = ["linux"], ... }
+  if (v.startsWith("{") && v.endsWith("}")) {
+    const inner = v.slice(1, -1);
+
+    const versionMatch = inner.match(/version\s*=\s*"([^"]*)"/);
+    if (versionMatch) defaults.version = versionMatch[1];
+
+    const osMatch = inner.match(/os\s*=\s*\[([^\]]*)\]/);
+    if (osMatch) {
+      defaults.os =
+        osMatch[1].match(/"([^"]*)"/g)?.map((s) => s.slice(1, -1)) || [];
+    }
+
+    const postMatch = inner.match(/postinstall\s*=\s*"([^"]*)"/);
+    if (postMatch) defaults.postinstall = postMatch[1];
+
+    // install_env = { KEY = "val", ... }
+    const envMatch = inner.match(/install_env\s*=\s*\{([^}]*)\}/);
+    if (envMatch) {
+      const pairs = envMatch[1].matchAll(/(\w+)\s*=\s*"([^"]*)"/g);
+      for (const m of pairs) {
+        defaults.installEnv[m[1]] = m[2];
+      }
+    }
+
+    return defaults;
+  }
+
+  // Bare value
+  return { ...defaults, version: v };
+}
+
+// Serialize structured options back to a raw TOML value
+export function serializeMiseToolValue(opts: MiseToolOptions): string {
+  if (opts.isComplex) return opts.version;
+
+  const hasExtras =
+    opts.os.length > 0 ||
+    opts.postinstall ||
+    Object.keys(opts.installEnv).length > 0;
+
+  if (!hasExtras) {
+    return `"${opts.version}"`;
+  }
+
+  const parts: string[] = [`version = "${opts.version}"`];
+
+  if (opts.os.length > 0) {
+    parts.push(`os = [${opts.os.map((o) => `"${o}"`).join(", ")}]`);
+  }
+
+  if (opts.postinstall) {
+    parts.push(`postinstall = "${opts.postinstall}"`);
+  }
+
+  if (Object.keys(opts.installEnv).length > 0) {
+    const envParts = Object.entries(opts.installEnv)
+      .map(([k, v]) => `${k} = "${v}"`)
+      .join(", ");
+    parts.push(`install_env = { ${envParts} }`);
+  }
+
+  return `{ ${parts.join(", ")} }`;
 }

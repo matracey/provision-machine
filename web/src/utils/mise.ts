@@ -1,11 +1,14 @@
 import type { MiseData, MiseTool } from "../types";
 
-export interface MiseToolOptions {
+export interface MiseToolEntry {
   version: string;
   os: string[];
   postinstall: string;
   installEnv: Record<string, string>;
-  isComplex: boolean;
+}
+
+export interface MiseToolOptions {
+  entries: MiseToolEntry[];
 }
 
 const CATEGORY_ORDER = [
@@ -232,25 +235,19 @@ export function miseToolsToToml(data: MiseData): string {
   return content;
 }
 
-// Parse a raw TOML tool value into structured options
-export function parseMiseToolValue(rawValue: string): MiseToolOptions {
-  const v = rawValue.trim();
-  const defaults: MiseToolOptions = {
+// Parse a single inline table or quoted string into a MiseToolEntry
+function parseInlineEntry(v: string): MiseToolEntry {
+  const entry: MiseToolEntry = {
     version: "",
     os: [],
     postinstall: "",
     installEnv: {},
-    isComplex: false,
   };
 
   // Simple quoted string
   if (/^"[^"]*"$/.test(v) || /^'[^']*'$/.test(v)) {
-    return { ...defaults, version: v.slice(1, -1) };
-  }
-
-  // Array — too complex for structured editing
-  if (v.startsWith("[")) {
-    return { ...defaults, version: v, isComplex: true };
+    entry.version = v.slice(1, -1);
+    return entry;
   }
 
   // Inline table: { version = "22", os = ["linux"], ... }
@@ -258,62 +255,107 @@ export function parseMiseToolValue(rawValue: string): MiseToolOptions {
     const inner = v.slice(1, -1);
 
     const versionMatch = inner.match(/version\s*=\s*"([^"]*)"/);
-    if (versionMatch) defaults.version = versionMatch[1];
+    if (versionMatch) entry.version = versionMatch[1];
 
     const osMatch = inner.match(/os\s*=\s*\[([^\]]*)\]/);
     if (osMatch) {
-      defaults.os =
+      entry.os =
         osMatch[1].match(/"([^"]*)"/g)?.map((s) => s.slice(1, -1)) || [];
     }
 
     const postMatch = inner.match(/postinstall\s*=\s*"([^"]*)"/);
-    if (postMatch) defaults.postinstall = postMatch[1];
+    if (postMatch) entry.postinstall = postMatch[1];
 
-    // install_env = { KEY = "val", ... }
     const envMatch = inner.match(/install_env\s*=\s*\{([^}]*)\}/);
     if (envMatch) {
       const pairs = envMatch[1].matchAll(/(\w+)\s*=\s*"([^"]*)"/g);
       for (const m of pairs) {
-        defaults.installEnv[m[1]] = m[2];
+        entry.installEnv[m[1]] = m[2];
       }
     }
 
-    return defaults;
+    return entry;
   }
 
   // Bare value
-  return { ...defaults, version: v };
+  entry.version = v;
+  return entry;
 }
 
-// Serialize structured options back to a raw TOML value
-export function serializeMiseToolValue(opts: MiseToolOptions): string {
-  if (opts.isComplex) return opts.version;
+// Split a TOML array string into its top-level elements
+function splitTomlArray(inner: string): string[] {
+  const items: string[] = [];
+  let depth = 0;
+  let current = "";
+  for (const ch of inner) {
+    if (ch === "{" || ch === "[") depth++;
+    if (ch === "}" || ch === "]") depth--;
+    if (ch === "," && depth === 0) {
+      items.push(current.trim());
+      current = "";
+    } else {
+      current += ch;
+    }
+  }
+  if (current.trim()) items.push(current.trim());
+  return items;
+}
 
+// Parse a raw TOML tool value into structured options
+export function parseMiseToolValue(rawValue: string): MiseToolOptions {
+  const v = rawValue.trim();
+
+  // Array of entries: ["3.11", { version = "3.12", os = ["linux"] }]
+  if (v.startsWith("[") && v.endsWith("]")) {
+    const inner = v.slice(1, -1).trim();
+    const items = splitTomlArray(inner);
+    return { entries: items.map(parseInlineEntry) };
+  }
+
+  // Single value (quoted string, inline table, or bare)
+  return { entries: [parseInlineEntry(v)] };
+}
+
+// Serialize a single entry to TOML
+function serializeEntry(entry: MiseToolEntry): string {
   const hasExtras =
-    opts.os.length > 0 ||
-    opts.postinstall ||
-    Object.keys(opts.installEnv).length > 0;
+    entry.os.length > 0 ||
+    entry.postinstall ||
+    Object.keys(entry.installEnv).length > 0;
 
   if (!hasExtras) {
-    return `"${opts.version}"`;
+    return `"${entry.version}"`;
   }
 
-  const parts: string[] = [`version = "${opts.version}"`];
+  const parts: string[] = [`version = "${entry.version}"`];
 
-  if (opts.os.length > 0) {
-    parts.push(`os = [${opts.os.map((o) => `"${o}"`).join(", ")}]`);
+  if (entry.os.length > 0) {
+    parts.push(`os = [${entry.os.map((o) => `"${o}"`).join(", ")}]`);
   }
 
-  if (opts.postinstall) {
-    parts.push(`postinstall = "${opts.postinstall}"`);
+  if (entry.postinstall) {
+    parts.push(`postinstall = "${entry.postinstall}"`);
   }
 
-  if (Object.keys(opts.installEnv).length > 0) {
-    const envParts = Object.entries(opts.installEnv)
-      .map(([k, v]) => `${k} = "${v}"`)
+  if (Object.keys(entry.installEnv).length > 0) {
+    const envParts = Object.entries(entry.installEnv)
+      .map(([k, val]) => `${k} = "${val}"`)
       .join(", ");
     parts.push(`install_env = { ${envParts} }`);
   }
 
   return `{ ${parts.join(", ")} }`;
+}
+
+// Serialize structured options back to a raw TOML value
+export function serializeMiseToolValue(opts: MiseToolOptions): string {
+  if (opts.entries.length === 0) {
+    return '"latest"';
+  }
+
+  if (opts.entries.length === 1) {
+    return serializeEntry(opts.entries[0]);
+  }
+
+  return `[${opts.entries.map(serializeEntry).join(", ")}]`;
 }

@@ -140,10 +140,10 @@
         "source": "Windows.Terminal.Azure"
       },
       {
-        "guid": "{2c4de342-38b7-51cf-b940-2309a097f518}",
+        "guid": "{27d84db3-9b23-50e2-be9e-5160e89213e6}",
         "hidden": false,
         "name": "Ubuntu",
-        "source": "Windows.Terminal.Wsl"
+        "source": "Microsoft.WSL"
       },
       {
         "backgroundImage": "ms-appx:///ProfileIcons/vs-powershell.png",

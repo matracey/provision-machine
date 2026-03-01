@@ -194,6 +194,31 @@
         "hidden": false,
         "name": "Developer Command Prompt for VS 18 [IntPreview]",
         "source": "Windows.Terminal.VisualStudio"
+      },
+      {
+        "backgroundImage": "ms-appx:///ProfileIcons/vs-cmd.png",
+        "backgroundImageAlignment": "bottomRight",
+        "backgroundImageOpacity": 0.75,
+        "backgroundImageStretchMode": "none",
+        "colorScheme": "Visual Studio 2026",
+        "font": {
+          "face": "MesloLGS Nerd Font"
+        },
+        "guid": "{a07d0097-c196-56bf-9d68-97ae7c54e576}",
+        "hidden": false,
+        "name": "Developer Command Prompt for VS 18",
+        "source": "Windows.Terminal.VisualStudio"
+      },
+      {
+        "backgroundImage": "ms-appx:///ProfileIcons/vs-powershell.png",
+        "backgroundImageAlignment": "bottomRight",
+        "backgroundImageOpacity": 0.75,
+        "backgroundImageStretchMode": "none",
+        "colorScheme": "Visual Studio 2026",
+        "guid": "{a428f58c-1c50-5556-8768-ced59feaf612}",
+        "hidden": false,
+        "name": "Developer PowerShell for VS 18",
+        "source": "Windows.Terminal.VisualStudio"
       }
     ]
   },

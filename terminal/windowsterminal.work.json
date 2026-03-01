@@ -77,14 +77,8 @@
       "type": "separator"
     },
     {
-      "icon": null,
-      "profile": "{a428f58c-1c50-5556-8768-ced59feaf612}",
-      "type": "profile"
-    },
-    {
-      "icon": null,
-      "profile": "{a07d0097-c196-56bf-9d68-97ae7c54e576}",
-      "type": "profile"
+      "source": "Windows.Terminal.VisualStudio",
+      "type": "matchProfiles"
     }
   ],
   "profiles": {

@@ -577,3 +577,57 @@ properties:
       settings:
         id: Microsoft.VisualStudioCode.Insiders
         source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install DotNet Framework Redistributable 1_1
+      settings:
+        id: Microsoft.DotNet.Framework.Redistributable.1_1
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install .NET SDK 8
+      settings:
+        id: Microsoft.DotNet.SDK.8
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install .NET SDK 9
+      settings:
+        id: Microsoft.DotNet.SDK.9
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install VCRedist 2015+ x64
+      settings:
+        id: Microsoft.VCRedist.2015+.x64
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install VCRedist 2013 x64
+      settings:
+        id: Microsoft.VCRedist.2013.x64
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install VCRedist 2012 x64
+      settings:
+        id: Microsoft.VCRedist.2012.x64
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install VCRedist 2010 x64
+      settings:
+        id: Microsoft.VCRedist.2010.x64
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install VCRedist 2008 x64
+      settings:
+        id: Microsoft.VCRedist.2008.x64
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install VCRedist 2005 x64
+      settings:
+        id: Microsoft.VCRedist.2005.x64
+        source: winget

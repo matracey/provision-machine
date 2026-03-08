@@ -105,9 +105,9 @@ properties:
         source: winget
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
-        description: Install SQL Server Management Studio
+        description: Install SQL Server Management Studio 22 Preview
       settings:
-        id: Microsoft.SQLServerManagementStudio
+        id: Microsoft.SQLServerManagementStudio.22.Preview
         source: winget
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:

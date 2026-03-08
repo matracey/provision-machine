@@ -303,12 +303,6 @@ properties:
         source: winget
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
-        description: Install Notepad++
-      settings:
-        id: Notepad++.Notepad++
-        source: winget
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
         description: Install Obsidian
       settings:
         id: Obsidian.Obsidian

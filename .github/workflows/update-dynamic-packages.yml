@@ -1,0 +1,141 @@
+name: Update Dynamic WinGet Packages
+
+on:
+  schedule:
+    - cron: "0 9 * * 1" # Every Monday at 09:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-packages:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install PowerShell modules
+        shell: pwsh
+        run: |
+          Install-Module -Name Microsoft.WinGet.Client -Force -Scope CurrentUser
+          Install-Module -Name powershell-yaml -Force -Scope CurrentUser
+
+      - name: Query WinGet for current packages
+        id: query
+        shell: pwsh
+        run: |
+          Import-Module Microsoft.WinGet.Client
+
+          # .NET SDK: two most recent non-preview versions (mirrors Provision-Machine.ps1 logic)
+          $DotNetSdkIds = Find-WinGetPackage -Source 'winget' -Query 'Microsoft.DotNet.SDK' |
+            Where-Object { $_.Id -notmatch '\.Preview' } |
+            Select-Object -Last 2 |
+            ForEach-Object { $_.Id }
+
+          Write-Host "Resolved .NET SDK packages: $($DotNetSdkIds -join ', ')"
+
+          # VC Redistributables: exclude x86 and arm64 variants (mirrors Provision-Machine.ps1 logic)
+          $VcRedistIds = Find-WinGetPackage -Source 'winget' -Query 'Microsoft.VCRedist' |
+            Where-Object { $_.Id -notmatch '\.(x86|arm64)' } |
+            Sort-Object -Descending -Property Id |
+            ForEach-Object { $_.Id }
+
+          Write-Host "Resolved VC Redist packages: $($VcRedistIds -join ', ')"
+
+          if (-not $DotNetSdkIds -and -not $VcRedistIds) {
+            Write-Host "::error::No packages resolved from WinGet queries."
+            exit 1
+          }
+
+          # Pass to next step via JSON
+          $pkgs = @{
+            dotnet = @($DotNetSdkIds)
+            vcredist = @($VcRedistIds)
+          } | ConvertTo-Json -Compress
+
+          "packages=$pkgs" >> $env:GITHUB_OUTPUT
+
+      - name: Update DSC configuration files
+        id: update
+        shell: pwsh
+        run: |
+          Import-Module powershell-yaml
+
+          $pkgs = '${{ steps.query.outputs.packages }}' | ConvertFrom-Json
+          $dotnetIds = @($pkgs.dotnet)
+          $vcredistIds = @($pkgs.vcredist)
+
+          # Build DSC resource blocks for the resolved packages
+          function New-DscEntry {
+            param([string]$Id, [string]$Description)
+            return [ordered]@{
+              resource   = 'Microsoft.WinGet.DSC/WinGetPackage'
+              directives = [ordered]@{ description = $Description }
+              settings   = [ordered]@{ id = $Id; source = 'winget' }
+            }
+          }
+
+          $newEntries = @()
+          foreach ($id in $dotnetIds) {
+            $ver = $id -replace '^Microsoft\.DotNet\.SDK\.', ''
+            $newEntries += New-DscEntry -Id $id -Description "Install .NET SDK $ver"
+          }
+          foreach ($id in $vcredistIds) {
+            $label = ($id -replace '^Microsoft\.', '') -replace '\.', ' '
+            $newEntries += New-DscEntry -Id $id -Description "Install $label"
+          }
+
+          $dynamicIdPattern = '^Microsoft\.(DotNet\.SDK\.\d|VCRedist\.)'
+
+          $changed = $false
+          foreach ($file in @('winget/configuration.personal.dsc.yaml', 'winget/configuration.work.dsc.yaml')) {
+            $raw = Get-Content $file -Raw
+            $yaml = $raw | ConvertFrom-Yaml -Ordered
+            $resources = [System.Collections.ArrayList]@($yaml.properties.resources)
+
+            # Remove existing dynamic entries
+            $static = [System.Collections.ArrayList]@()
+            foreach ($r in $resources) {
+              if ($r.settings.id -notmatch $dynamicIdPattern) {
+                [void]$static.Add($r)
+              }
+            }
+
+            # Append new entries
+            foreach ($entry in $newEntries) {
+              [void]$static.Add($entry)
+            }
+
+            $yaml.properties.resources = @($static)
+
+            # Serialize back to YAML
+            $newYaml = ($yaml | ConvertTo-Yaml).TrimEnd()
+
+            # Compare
+            if ($newYaml -ne $raw.TrimEnd()) {
+              $changed = $true
+              $newYaml | Set-Content $file -Encoding UTF8 -NoNewline
+              Write-Host "Updated $file"
+            } else {
+              Write-Host "No changes needed for $file"
+            }
+          }
+
+          "changed=$($changed.ToString().ToLower())" >> $env:GITHUB_OUTPUT
+
+      - name: Create Pull Request
+        if: steps.update.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: update dynamic WinGet packages (.NET SDK & VC Redist)"
+          branch: chore/update-dynamic-packages
+          title: "chore: update dynamic WinGet packages (.NET SDK & VC Redist)"
+          body: |
+            Automated weekly update of dynamically-resolved WinGet packages:
+            - **Microsoft.DotNet.SDK** — two most recent non-preview versions
+            - **Microsoft.VCRedist** — all x64 redistributables
+
+            Created by the `update-dynamic-packages` workflow.
+          labels: dependencies

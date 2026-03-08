@@ -57,12 +57,6 @@ properties:
         source: winget
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
-        description: Install Dev Home
-      settings:
-        id: Microsoft.DevHome
-        source: winget
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
         description: Install Apple Music
       settings:
         id: 9PFHDD62MXS1

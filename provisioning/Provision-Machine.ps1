@@ -697,23 +697,8 @@ if ($WingetPkgs) {
     } catch {
       Write-Host -ForegroundColor Yellow "Could not load WinGet DSC configuration: $_"
     }
-
-    # Dynamic packages (VS Code with custom install args)
-    if (Import-ModuleIfAvailable -Name 'Microsoft.WinGet.Client') {
-      Write-Host 'Installing dynamic WinGet packages...'
-
-      $VsCodePackages = Find-WinGetPackage -Source:'winget' -Query 'Microsoft.VisualStudioCode' | Where-Object { $_.Id -notmatch '\.CLI' }
-      $VsCodePackages | Select-NotInstalled | Install-WinGetPackage -Mode Silent -Override '/VERYSILENT /MERGETASKS="!runcode,addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath"' -Force
-
-      $DotNetSdkPackages = Find-WinGetPackage -Source:'winget' -Query 'Microsoft.DotNet.SDK' | Where-Object { $_.Id -notmatch '\.Preview' } | Select-Object -Last 2
-      $VcRedistPackages = Find-WinGetPackage -Source:'winget' -Query 'Microsoft.VC' | Where-Object { $_.Id -notmatch '\.(x86|arm64)' } | Sort-Object -Descending -Property Id
-
-      $DotNetSdkPackages | Select-NotInstalled | Install-WinGetPackage -Force -Mode Silent
-      $VcRedistPackages | Select-NotInstalled | Install-WinGetPackage -Force -Mode Silent
-    }
   } else {
     Write-Host "[DryRun] Would apply DSC config: $DscFileName"
-    Write-Host '[DryRun] Would install VS Code, .NET SDKs, and VC Redistributables'
   }
 }
 #endregion

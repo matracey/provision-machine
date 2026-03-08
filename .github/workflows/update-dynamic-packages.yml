@@ -1,0 +1,155 @@
+name: Update Dynamic WinGet Packages
+
+on:
+  schedule:
+    - cron: "0 9 * * 1" # Every Monday at 09:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-packages:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install PowerShell modules
+        shell: pwsh
+        run: |
+          Install-Module -Name Microsoft.WinGet.Client -Force -Scope CurrentUser
+          Install-Module -Name powershell-yaml -Force -Scope CurrentUser
+
+      - name: Query WinGet for current packages
+        id: query
+        shell: pwsh
+        run: |
+          Import-Module Microsoft.WinGet.Client
+
+          $releaseIndex = Invoke-RestMethod `
+            -Uri 'https://builds.dotnet.microsoft.com/dotnet/release-metadata/releases-index.json'
+          $supportedChannels = @($releaseIndex.'releases-index' | Where-Object {
+            $_.'support-phase' -in @('active', 'maintenance')
+          })
+          $latestChannel = $supportedChannels |
+            Sort-Object -Descending -Property @{ Expression = { [version]$_.'channel-version' } } |
+            Select-Object -First 1
+          $latestLtsChannel = $supportedChannels |
+            Where-Object { $_.'release-type' -eq 'lts' } |
+            Sort-Object -Descending -Property @{ Expression = { [version]$_.'channel-version' } } |
+            Select-Object -First 1
+          if (-not $latestChannel -or -not $latestLtsChannel) {
+            Write-Host '::error::Unable to resolve the latest stable and LTS .NET channels.'
+            exit 1
+          }
+
+          $DotNetMajors = @($latestChannel.'channel-version', $latestLtsChannel.'channel-version') |
+            ForEach-Object { ([version]$_).Major } |
+            Sort-Object -Unique
+          $AvailableDotNetSdkIds = Find-WinGetPackage -Source 'winget' -Query 'Microsoft.DotNet.SDK' |
+            Where-Object { $_.Id -match '^Microsoft\.DotNet\.SDK\.\d+$' } |
+            ForEach-Object { $_.Id }
+          $DotNetSdkIds = @($DotNetMajors | ForEach-Object {
+            $id = "Microsoft.DotNet.SDK.$_"
+            if ($id -in $AvailableDotNetSdkIds) { $id }
+          })
+
+          Write-Host "Resolved .NET SDK packages: $($DotNetSdkIds -join ', ')"
+
+          # VC Redistributables: exclude x86 and arm64 variants (mirrors Provision-Machine.ps1 logic)
+          $VcRedistIds = Find-WinGetPackage -Source 'winget' -Query 'Microsoft.VCRedist' |
+            Where-Object { $_.Id -notmatch '\.(x86|arm64)' } |
+            Sort-Object -Descending -Property Id |
+            ForEach-Object { $_.Id }
+
+          Write-Host "Resolved VC Redist packages: $($VcRedistIds -join ', ')"
+
+          if (-not $DotNetSdkIds -and -not $VcRedistIds) {
+            Write-Host "::error::No packages resolved from WinGet queries."
+            exit 1
+          }
+
+          # Pass to next step via JSON
+          $pkgs = @{
+            dotnet = @($DotNetSdkIds)
+            vcredist = @($VcRedistIds)
+          } | ConvertTo-Json -Compress
+
+          "packages=$pkgs" >> $env:GITHUB_OUTPUT
+
+      - name: Update DSC configuration files
+        id: update
+        shell: pwsh
+        run: |
+          Import-Module powershell-yaml
+
+          $pkgs = '${{ steps.query.outputs.packages }}' | ConvertFrom-Json
+          $dotnetIds = @($pkgs.dotnet)
+          $vcredistIds = @($pkgs.vcredist)
+
+          # Build DSC resource blocks for the resolved packages
+          function New-DscEntry {
+            param([string]$Id, [string]$Description)
+            return [ordered]@{
+              resource   = 'Microsoft.WinGet.DSC/WinGetPackage'
+              directives = [ordered]@{ description = $Description }
+              settings   = [ordered]@{ id = $Id; source = 'winget' }
+            }
+          }
+
+          $newEntries = @()
+          foreach ($id in $dotnetIds) {
+            $ver = $id -replace '^Microsoft\.DotNet\.SDK\.', ''
+            $newEntries += New-DscEntry -Id $id -Description "Install .NET SDK $ver"
+          }
+          foreach ($id in $vcredistIds) {
+            $label = ($id -replace '^Microsoft\.', '') -replace '\.', ' '
+            $newEntries += New-DscEntry -Id $id -Description "Install $label"
+          }
+
+          $dynamicIdPattern = '^Microsoft\.(DotNet\.SDK\.\d|VCRedist\.)'
+
+          $changed = $false
+          foreach ($file in @('winget/configuration.personal.dsc.yaml', 'winget/configuration.work.dsc.yaml')) {
+            $raw = Get-Content $file -Raw
+            $yaml = $raw | ConvertFrom-Yaml -Ordered
+            $resources = [System.Collections.ArrayList]@($yaml.properties.resources)
+
+            # Remove existing dynamic entries
+            $static = [System.Collections.ArrayList]@()
+            foreach ($r in $resources) {
+              if ($r.settings.id -notmatch $dynamicIdPattern) {
+                [void]$static.Add($r)
+              }
+            }
+
+            # Append new entries
+            foreach ($entry in $newEntries) {
+              [void]$static.Add($entry)
+            }
+
+            $yaml.properties.resources = @($static)
+
+            # Serialize back to YAML
+            $newYaml = ($yaml | ConvertTo-Yaml).TrimEnd()
+
+            # Compare
+            if ($newYaml -ne $raw.TrimEnd()) {
+              $changed = $true
+              $newYaml | Set-Content $file -Encoding UTF8 -NoNewline
+              Write-Host "Updated $file"
+            } else {
+              Write-Host "No changes needed for $file"
+            }
+          }
+
+          "changed=$($changed.ToString().ToLower())" >> $env:GITHUB_OUTPUT
+
+      - name: Commit and push changes
+        if: steps.update.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add winget/configuration.personal.dsc.yaml winget/configuration.work.dsc.yaml
+          git commit -m "chore: update dynamic .NET SDK and VC Redistributable packages"
+          git push

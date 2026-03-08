@@ -3,27 +3,9 @@ properties:
   resources:
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
-        description: Install Affinity Designer 2
-      settings:
-        id: 9N2D0P16C80H
-        source: msstore
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
         description: Install WhatsApp Beta
       settings:
         id: 9NBDXK71NK08
-        source: msstore
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
-        description: Install Affinity Publisher 2
-      settings:
-        id: 9NTV2DZ11KD9
-        source: msstore
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
-        description: Install Affinity Photo 2
-      settings:
-        id: 9P8DVF1XW02V
         source: msstore
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:

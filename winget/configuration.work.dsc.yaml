@@ -3,6 +3,12 @@ properties:
   resources:
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
+        description: Install Canva Affinity 3
+      settings:
+        id: Canva.Affinity
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
         description: Install Bruno
       settings:
         id: Bruno.Bruno

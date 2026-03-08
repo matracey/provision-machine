@@ -3,6 +3,12 @@ properties:
   resources:
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
+        description: Install Canva Affinity 3
+      settings:
+        id: Canva.Affinity
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
         description: Install WhatsApp Beta
       settings:
         id: 9NBDXK71NK08

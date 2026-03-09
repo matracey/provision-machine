@@ -679,3 +679,32 @@ resources:
     properties:
       UserEmail: matracey@outlook.ie
       ConfigLocation: global
+  # ============================================================
+  # Git Configuration
+  # ============================================================
+  - name: Git system core longpaths
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: "Enable Git long path support at system level"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      executable: git
+      arguments:
+        - config
+        - --system
+        - core.longpaths
+        - "true"
+  - name: Git global credential helper
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: "Configure Git to use the credential manager globally"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      executable: git
+      arguments:
+        - config
+        - --global
+        - credential.helper
+        - manager

@@ -276,3 +276,13 @@ resources:
       module: "Microsoft.Windows.Developer"
     properties:
       Ensure: Present
+  # ============================================================
+  # Remote Desktop
+  # ============================================================
+  - name: Enable Remote Desktop
+    type: Microsoft.Windows.Developer/EnableRemoteDesktop
+    metadata:
+      description: "Enable Remote Desktop connections to this machine"
+      module: "Microsoft.Windows.Developer"
+    properties:
+      Ensure: Present

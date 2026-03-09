@@ -4,15 +4,15 @@ Automated Windows machine provisioning with support for personal and work enviro
 
 ## Features
 
-- **Interactive provisioning script** — a single PowerShell script (`provisioning/Provision-Machine.ps1`) with an interactive menu for selecting what to install and configure
-- **WinGet DSC configurations** — declarative package lists for personal and work machines (`winget/`)
-- **Scoop package management** — bucket and package definitions driven by a JSON configuration file (`provisioning/Configuration.json`)
-- **Windows Terminal settings** — pre-configured profiles for personal and work use (`terminal/`)
-- **Oh My Posh themes** — custom prompt themes (`themes/`)
-- **Visual Studio workload installation** — automated VS installer workload setup
-- **Windows Defender exclusions** — dev-friendly process and folder exclusions
-- **Web configuration editor** — a React + TypeScript SPA for visually editing JSON, YAML, and mise configuration files (`web/`)
-- **CI/CD** — GitHub Actions workflow to validate and publish config files to a GitHub Gist
+- **Interactive provisioning script** â€” a single PowerShell script (`provisioning/Provision-Machine.ps1`) with an interactive menu for selecting what to install and configure
+- **WinGet DSC configurations** â€” declarative package lists for personal and work machines (`winget/`)
+- **Scoop package management** â€” bucket and package definitions driven by a JSON configuration file (`provisioning/Configuration.json`)
+- **Windows Terminal settings** â€” pre-configured profiles for personal and work use (`terminal/`)
+- **Oh My Posh themes** â€” custom prompt themes (`themes/`)
+- **Visual Studio workload installation** â€” automated VS installer workload setup
+- **Windows Defender exclusions** â€” dev-friendly process and folder exclusions
+- **Web configuration editor** â€” a React + TypeScript SPA for visually editing JSON, YAML, and mise configuration files (`web/`)
+- **CI/CD** â€” GitHub Actions workflow to validate and publish config files to a GitHub Gist
 
 ## Quick Start
 
@@ -26,6 +26,9 @@ cd provision-machine
 
 # Or target specific components
 .\provisioning\Provision-Machine.ps1 -Personal -Winget -Scoop -Fonts
+
+# Apply a DSCv3 config via winget configure (uses preview DSC processor)
+winget configure -f .\winget\work.winget --processor-path (Join-Path (Get-AppxPackage 'Microsoft.DesiredStateConfiguration-Preview').InstallLocation 'dsc.exe')
 ```
 
 ### Web Editor
@@ -40,11 +43,11 @@ npm run build    # Production build
 
 The web editor auto-loads configuration files from the repository and provides:
 
-- **JSON editor** — edit `Configuration.json` (Scoop buckets/packages, VS workloads, Defender exclusions) with drag-and-drop reordering, inline editing, and context-aware panels
-- **YAML editor** — edit WinGet DSC configurations for work and personal environments
-- **Mise editor** — edit mise tool versions and settings
-- **Import / Export** — drag-and-drop file loading, JSON and YAML export, and save back to the repository via GitHub PAT
-- **Keyboard shortcuts** — `Ctrl+S` to export, `Escape` to dismiss modals
+- **JSON editor** â€” edit `Configuration.json` (Scoop buckets/packages, VS workloads, Defender exclusions) with drag-and-drop reordering, inline editing, and context-aware panels
+- **YAML editor** â€” edit WinGet DSC configurations for work and personal environments
+- **Mise editor** â€” edit mise tool versions and settings
+- **Import / Export** â€” drag-and-drop file loading, JSON and YAML export, and save back to the repository via GitHub PAT
+- **Keyboard shortcuts** â€” `Ctrl+S` to export, `Escape` to dismiss modals
 
 ## Repository Structure
 

@@ -79,8 +79,8 @@ export const REPO_RAW_BASE_URL = `https://raw.githubusercontent.com/${REPO_OWNER
 // Repo file paths for configuration files
 export const REPO_FILES = {
   json: "provisioning/Configuration.json",
-  yamlWork: "winget/configuration.work.dsc.yaml",
-  yamlPersonal: "winget/configuration.personal.dsc.yaml",
+  yamlWork: "work.winget",
+  yamlPersonal: "personal.winget",
 } as const;
 
 export const MISE_GIST_ID = "e3febf8a83d05ae2d7ade96fd147cd20";

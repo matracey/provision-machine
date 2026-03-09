@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+# Shared PowerShell execution policy resources.
+#
+# NOTE: This module previously used ComputerManagementDsc/PowerShellExecutionPolicy
+# via the Microsoft.Windows/WindowsPowerShell adapter, which is unreliable under
+# DSC v3 preview (adapter crash when OneDrive-redirected Documents is on
+# PSModulePath; upstream Set bug PowerShell/DSC#1416). Switched to native
+# Microsoft.DSC.Transitional/PowerShellScript calling Set-ExecutionPolicy directly.
+$schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+resources:
+  - name: Execution Policy CurrentUser
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: "Set PowerShell execution policy to Unrestricted for CurrentUser scope"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      input:
+        scope: CurrentUser
+        policy: Unrestricted
+      testScript: |
+        param($inputData)
+        & {
+          try { return ((Get-ExecutionPolicy -Scope $inputData.scope) -eq $inputData.policy) }
+          catch { return $false }
+        } 2>$null
+      setScript: |
+        param($inputData)
+        & {
+          try { Set-ExecutionPolicy -Scope $inputData.scope -ExecutionPolicy $inputData.policy -Force -ErrorAction SilentlyContinue }
+          catch { }
+        } 2>$null
+  - name: Execution Policy LocalMachine
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: "Set PowerShell execution policy to Unrestricted for LocalMachine scope"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      input:
+        scope: LocalMachine
+        policy: Unrestricted
+      testScript: |
+        param($inputData)
+        & {
+          try { return ((Get-ExecutionPolicy -Scope $inputData.scope) -eq $inputData.policy) }
+          catch { return $false }
+        } 2>$null
+      setScript: |
+        param($inputData)
+        & {
+          try { Set-ExecutionPolicy -Scope $inputData.scope -ExecutionPolicy $inputData.policy -Force -ErrorAction SilentlyContinue }
+          catch { }
+        } 2>$null

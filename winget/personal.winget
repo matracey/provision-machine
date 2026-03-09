@@ -34,3 +34,7 @@ resources:
     type: Microsoft.DSC/Include
     properties:
       configurationFile: ./modules/power-plan.dsc.yaml
+  - name: Include execution policy
+    type: Microsoft.DSC/Include
+    properties:
+      configurationFile: ./modules/execution-policy.dsc.yaml

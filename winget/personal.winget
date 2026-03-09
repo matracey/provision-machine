@@ -54,3 +54,7 @@ resources:
     type: Microsoft.DSC/Include
     properties:
       configurationFile: ./modules/packages-common.dsc.yaml
+  - name: Include packages personal
+    type: Microsoft.DSC/Include
+    properties:
+      configurationFile: ./modules/packages-personal.dsc.yaml

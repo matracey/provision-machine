@@ -46,3 +46,7 @@ resources:
     type: Microsoft.DSC/Include
     properties:
       configurationFile: ./modules/git-config.dsc.yaml
+  - name: Include packages common
+    type: Microsoft.DSC/Include
+    properties:
+      configurationFile: ./modules/packages-common.dsc.yaml

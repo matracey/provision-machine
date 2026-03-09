@@ -196,3 +196,61 @@ resources:
         - Domain
         - Private
         - Public
+  # ============================================================
+  # UAC Configuration
+  # ============================================================
+  - name: UAC Consent prompt behavior Admin
+    type: Microsoft.Windows.Developer/UserAccessControl
+    directives:
+      allowPrerelease: true
+    properties:
+      AdminConsentPromptBehavior: RequireConsentForNonWindowsBinaries
+  - name: UAC Consent prompt behavior User
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+      valueName: ConsentPromptBehaviorUser
+      valueData:
+        DWord: 3
+  - name: UAC Enable installer detection
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+      valueName: EnableInstallerDetection
+      valueData:
+        DWord: 1
+  - name: UAC Enable LUA
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+      valueName: EnableLUA
+      valueData:
+        DWord: 1
+  - name: UAC Enable virtualization
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+      valueName: EnableVirtualization
+      valueData:
+        DWord: 1
+  - name: UAC Prompt on secure desktop
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+      valueName: PromptOnSecureDesktop
+      valueData:
+        DWord: 0
+  - name: UAC Validate admin code signatures
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+      valueName: ValidateAdminCodeSignatures
+      valueData:
+        DWord: 0
+  - name: UAC Filter administrator token
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+      valueName: FilterAdministratorToken
+      valueData:
+        DWord: 0

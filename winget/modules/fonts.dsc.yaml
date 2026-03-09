@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=https://aka.ms/dsc/schemas/v3/bundled/config/document.json
-# Font repository resources.
+# Font repository and FontBase resources.
 $schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
 resources:
   - name: Clone Google Fonts
@@ -57,4 +57,47 @@ resources:
           git clone --depth 1 --filter=blob:none --no-checkout --single-branch https://github.com/ryanoasis/nerd-fonts.git $dest
           git -C $dest config core.fsmonitor false
           git -C $dest lfs install --skip-smudge 2>&1 | Out-Null
+        }
+  - name: Create font junctions for FontBase
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: "Create directory junctions for FontBase font management"
+      module: "Microsoft.DSC.Transitional"
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Clone Google Fonts')]"
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Clone Nerd Fonts')]"
+    properties:
+      testScript: |
+        $fontBase = Join-Path $env:USERPROFILE "FontBase"
+        $googleLink = Join-Path $fontBase "google-fonts"
+        $nerdLink = Join-Path $fontBase "nerd-fonts"
+        $ok = (Test-Path $googleLink) -and (Test-Path $nerdLink)
+        return $ok
+      setScript: |
+        $fontsDir = Join-Path $env:USERPROFILE "fonts"
+        $fontBase = Join-Path $env:USERPROFILE "FontBase"
+        if (-not (Test-Path $fontBase)) { New-Item -ItemType Directory -Path $fontBase -Force | Out-Null }
+        $googleFontsDir = Join-Path $fontsDir "google-fonts"
+        $allDir = Join-Path $googleFontsDir "all"
+        if (-not (Test-Path $allDir)) { New-Item -ItemType Directory -Path $allDir -Force | Out-Null }
+        foreach ($sub in @("apache", "ofl", "ufl")) {
+          $subDir = Join-Path $googleFontsDir $sub
+          if (Test-Path $subDir) {
+            Get-ChildItem -Path $subDir -Directory | ForEach-Object {
+              $target = Join-Path $allDir $_.Name
+              if (-not (Test-Path $target)) {
+                New-Item -ItemType Junction -Path $allDir -Name $_.Name -Value $_.FullName -Force | Out-Null
+              }
+            }
+          }
+        }
+        $googleLink = Join-Path $fontBase "google-fonts"
+        if (-not (Test-Path $googleLink)) {
+          New-Item -ItemType Junction -Path $fontBase -Name "google-fonts" -Value $allDir -Force | Out-Null
+        }
+        $nerdFontsDir = Join-Path $fontsDir "nerd-fonts"
+        $patchedDir = Join-Path $nerdFontsDir "patched-fonts"
+        $nerdLink = Join-Path $fontBase "nerd-fonts"
+        if (-not (Test-Path $nerdLink)) {
+          New-Item -ItemType Junction -Path $fontBase -Name "nerd-fonts" -Value $patchedDir -Force | Out-Null
         }

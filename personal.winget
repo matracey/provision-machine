@@ -1642,3 +1642,28 @@ resources:
   #       - Microsoft.VisualStudio.Workload.NetWeb
   #       - Microsoft.VisualStudio.Workload.Node
   #     IncludeRecommended: true
+  # ============================================================
+  # Font Repository Cloning
+  # Requires module: GitDsc
+  # Install with: Install-Module GitDsc
+  # ============================================================
+  - name: Clone Google Fonts
+    type: GitDsc/GitClone
+    metadata:
+      description: "Clone the Google Fonts repository for local font access"
+      module: "GitDsc"
+    properties:
+      HttpsUrl: https://github.com/google/fonts.git
+      RootDirectory: "[concat(envvar('USERPROFILE'), '\\fonts')]"
+      FolderName: google-fonts
+      ExtraArgs: "--depth 1"
+  - name: Clone Nerd Fonts
+    type: GitDsc/GitClone
+    metadata:
+      description: "Clone the Nerd Fonts repository for developer fonts"
+      module: "GitDsc"
+    properties:
+      HttpsUrl: https://github.com/ryanoasis/nerd-fonts.git
+      RootDirectory: "[concat(envvar('USERPROFILE'), '\\fonts')]"
+      FolderName: nerd-fonts
+      ExtraArgs: "--depth 1"

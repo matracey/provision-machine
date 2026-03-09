@@ -473,3 +473,20 @@ resources:
         if ($input.input.projectsFolder) {
           Add-MpPreference -ExclusionPath $input.input.projectsFolder -ErrorAction SilentlyContinue
         }
+  # ============================================================
+  # Git User Identity
+  # ============================================================
+  - name: Git user name
+    type: GitDsc/GitConfigUserName
+    directives:
+      allowPrerelease: true
+    properties:
+      UserName: Martin Tracey
+      ConfigLocation: global
+  - name: Git user email
+    type: GitDsc/GitConfigUserEmail
+    directives:
+      allowPrerelease: true
+    properties:
+      UserEmail: matracey@outlook.ie
+      ConfigLocation: global

@@ -10,3 +10,7 @@ resources:
     type: Microsoft.DSC/Include
     properties:
       configurationFile: ./modules/turbo-rdp.dsc.yaml
+  - name: Include developer mode
+    type: Microsoft.DSC/Include
+    properties:
+      configurationFile: ./modules/developer-mode.dsc.yaml

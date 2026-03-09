@@ -464,3 +464,24 @@ resources:
         foreach ($p in $input.input.processExclusions) {
           Add-MpPreference -ExclusionProcess $p -ErrorAction SilentlyContinue
         }
+  # ============================================================
+  # Git Configuration
+  # ============================================================
+  - name: Git system core longpaths
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    properties:
+      executable: git
+      arguments:
+        - config
+        - --system
+        - core.longpaths
+        - "true"
+  - name: Git global credential helper
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    properties:
+      executable: git
+      arguments:
+        - config
+        - --global
+        - credential.helper
+        - manager

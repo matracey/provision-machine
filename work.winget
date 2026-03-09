@@ -2352,3 +2352,57 @@ resources:
   #       Invoke-WebRequest -Uri $url -OutFile $installer -UseBasicParsing
   #       Start-Process -FilePath $installer -ArgumentList "-p", "--norestart" -Wait
   #       Remove-Item $installer -ErrorAction SilentlyContinue
+  # ============================================================
+  # Font Repository Cloning
+  # Requires module: GitDsc
+  # Install with: Install-Module GitDsc
+  # ============================================================
+  # Workaround: GitDsc/GitClone fails under winget configure because DSCv3
+  # expression functions (concat, envvar) are not expanded by the winget
+  # processor. Using PowerShellScript until this is fixed upstream.
+  # - name: Clone Google Fonts
+  #   type: GitDsc/GitClone
+  #   metadata:
+  #     description: "Clone the Google Fonts repository for local font access"
+  #     module: "GitDsc"
+  #   properties:
+  #     HttpsUrl: https://github.com/google/fonts.git
+  #     RootDirectory: "[concat(envvar('USERPROFILE'), '\\fonts')]"
+  #     FolderName: google-fonts
+  #     ExtraArgs: "--depth 1"
+  # - name: Clone Nerd Fonts
+  #   type: GitDsc/GitClone
+  #   metadata:
+  #     description: "Clone the Nerd Fonts repository for developer fonts"
+  #     module: "GitDsc"
+  #   properties:
+  #     HttpsUrl: https://github.com/ryanoasis/nerd-fonts.git
+  #     RootDirectory: "[concat(envvar('USERPROFILE'), '\\fonts')]"
+  #     FolderName: nerd-fonts
+  #     ExtraArgs: "--depth 1"
+  - name: Clone Google Fonts
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: "Clone the Google Fonts repository for local font access"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      testScript: |
+        $dir = Join-Path $env:USERPROFILE 'fonts\google-fonts\.git'
+        return (Test-Path $dir)
+      setScript: |
+        $root = Join-Path $env:USERPROFILE 'fonts'
+        if (-not (Test-Path $root)) { New-Item -ItemType Directory -Path $root -Force | Out-Null }
+        git clone --depth 1 https://github.com/google/fonts.git (Join-Path $root 'google-fonts')
+  - name: Clone Nerd Fonts
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: "Clone the Nerd Fonts repository for developer fonts"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      testScript: |
+        $dir = Join-Path $env:USERPROFILE 'fonts\nerd-fonts\.git'
+        return (Test-Path $dir)
+      setScript: |
+        $root = Join-Path $env:USERPROFILE 'fonts'
+        if (-not (Test-Path $root)) { New-Item -ItemType Directory -Path $root -Force | Out-Null }
+        git clone --depth 1 https://github.com/ryanoasis/nerd-fonts.git (Join-Path $root 'nerd-fonts')

@@ -38,3 +38,7 @@ resources:
     type: Microsoft.DSC/Include
     properties:
       configurationFile: ./modules/execution-policy.dsc.yaml
+  - name: Include defender exclusions personal
+    type: Microsoft.DSC/Include
+    properties:
+      configurationFile: ./modules/defender-exclusions-personal.dsc.yaml

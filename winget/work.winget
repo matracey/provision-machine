@@ -80,3 +80,7 @@ resources:
     type: Microsoft.DSC/Include
     properties:
       configurationFile: ./modules/oh-my-posh-work.dsc.yaml
+  - name: Include windows terminal work
+    type: Microsoft.DSC/Include
+    properties:
+      configurationFile: ./modules/windows-terminal-work.dsc.yaml

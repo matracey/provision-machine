@@ -286,3 +286,13 @@ resources:
       module: "Microsoft.Windows.Developer"
     properties:
       Ensure: Present
+  # ============================================================
+  # Long Path Support
+  # ============================================================
+  - name: Enable Long Paths
+    type: Microsoft.Windows.Developer/EnableLongPathSupport
+    metadata:
+      description: "Enable long path support (>260 chars) for Windows"
+      module: "Microsoft.Windows.Developer"
+    properties:
+      Ensure: Present

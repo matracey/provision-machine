@@ -1797,3 +1797,111 @@ resources:
       executable: mise
       arguments:
         - install
+  # ============================================================
+  # Scoop Package Manager (Hybrid Migration)
+  # ============================================================
+  - name: Scoop Install and configure
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: "Install Scoop package manager, add buckets, install packages, and configure aliases"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      input:
+        prereqs:
+          - 7zip
+          - aria2
+          - dark
+          - git
+          - innounp
+          - lessmsi
+          - wixtoolset
+        buckets:
+          - name: extras
+            url: https://github.com/ScoopInstaller/Extras
+          - name: main
+            url: https://github.com/ScoopInstaller/Main.git
+          - name: matracey
+            url: https://github.com/matracey/scoop-bucket
+          - name: sysinternals
+            url: https://github.com/niheaven/scoop-sysinternals
+          - name: ash258
+            url: https://github.com/Ash258/Shovel-Ash258.git
+          - name: emulators
+            url: https://github.com/hermanjustnu/scoop-emulators.git
+          - name: games
+            url: https://github.com/Calinou/scoop-games
+        packages:
+          - extras/cru
+          - extras/git-credential-manager
+          - extras/scoop-completion
+          - extras/sysinternals
+          - main/7zip
+          - main/aria2
+          - main/azure-functions-core-tools
+          - main/cacert
+          - main/chromedriver
+          - main/coreutils
+          - main/curl
+          - main/dark
+          - main/edgedriver
+          - main/ffmpeg
+          - main/geckodriver
+          - main/git
+          - main/grep
+          - main/gsudo
+          - main/innounp
+          - main/lessmsi
+          - main/pester
+          - main/powershell-beautifier
+          - main/scoop-search
+          - main/vim
+          - main/vimtutor
+          - main/wget
+          - main/winget-ps
+          - main/wixtoolset
+          - matracey/pswindowsupdate
+          - adb
+          - android-clt
+          - dnsjumper
+          - duckstation
+          - GameSaveManager
+          - git-filter-repo
+          - gog-galaxy-plugin-downloader
+          - mediainfo
+          - msiafterburner
+          - msikombustor
+          - nuget
+          - pcsx2
+          - potrace
+          - sqlite
+          - xemu
+        aliases:
+          clean: "scoop cleanup *; scoop cache rm *;"
+          reinstall: "scoop uninstall ; scoop install ;"
+          upgrade: "scoop update; scoop update *;"
+      testScript: |
+        $scoopCmd = Get-Command scoop -ErrorAction SilentlyContinue
+        @{ _inDesiredState = ($null -ne $scoopCmd) } | ConvertTo-Json
+      setScript: |
+        $input = $env:DSC_RESOURCE_INPUT | ConvertFrom-Json
+        # Install Scoop if missing
+        if (-not (Get-Command scoop -ErrorAction SilentlyContinue)) {
+          $installer = Join-Path $env:TEMP "install-scoop.ps1"
+          Invoke-WebRequest -Uri "https://get.scoop.sh" -OutFile $installer -UseBasicParsing
+          & $installer -RunAsAdmin
+          Remove-Item $installer -ErrorAction SilentlyContinue
+          $env:Path = "$env:USERPROFILE\scoop\shims;$env:Path"
+        }
+        # Install prerequisites
+        foreach ($pkg in $input.input.prereqs) { scoop install $pkg }
+        # Add buckets
+        foreach ($bucket in $input.input.buckets) {
+          scoop bucket add $bucket.name $bucket.url 2>$null
+        }
+        # Install packages
+        foreach ($pkg in $input.input.packages) { scoop install $pkg }
+        # Add aliases
+        $aliases = $input.input.aliases
+        foreach ($name in $aliases.PSObject.Properties.Name) {
+          scoop alias add $name $aliases.$name "" 2>$null
+        }

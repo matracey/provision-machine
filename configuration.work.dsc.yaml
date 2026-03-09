@@ -382,3 +382,85 @@ resources:
         - -NoProfile
         - -Command
         - Set-ExecutionPolicy Unrestricted -Scope LocalMachine -Force
+  # ============================================================
+  # Windows Defender Exclusions
+  # ============================================================
+  - name: Windows Defender Exclusions
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    properties:
+      input:
+        processExclusions:
+          - bash.exe
+          - Blend.exe
+          - Code - Insiders.exe
+          - Code.exe
+          - DDConfigCA.exe
+          - devenv.exe
+          - dotnet.exe
+          - FeedbackCollector.exe
+          - git-bash.exe
+          - git.exe
+          - java.exe
+          - java64.exe
+          - Microsoft.VisualStudio.Web.Host.exe
+          - mono-sgen.exe
+          - mono.exe
+          - msbuild.exe
+          - mspdbsrv.exe
+          - MSTest.exe
+          - node.exe
+          - node.js
+          - nuget.exe
+          - PerfWatson2.exe
+          - perfwatson2.exe
+          - powershell.exe
+          - Publicize.exe
+          - pwsh.exe
+          - QTAgent_35.exe
+          - QTAgent_40.exe
+          - QTAgent.exe
+          - QTAgent32_35.exe
+          - QTAgent32_40.exe
+          - QTAgent32.exe
+          - QTDCAgent.exe
+          - QTDCAgent32.exe
+          - ServiceHub.Host.Node.x86.exe
+          - StorePID.exe
+          - T4VSHostProcess.exe
+          - TailoredDeploy.exe
+          - TCM.exe
+          - TextTransform.exe
+          - TfsLabConfig.exe
+          - UserControlTestContainer.exe
+          - vb7to8.exe
+          - vbcscompiler.exe
+          - VcxprojReader.exe
+          - VsDebugWERHelper.exe
+          - VSFinalizer.exe
+          - VsGa.exe
+          - VSHiveStub.exe
+          - vshost-clr2.exe
+          - vshost.exe
+          - vshost32-clr2.exe
+          - vshost32.exe
+          - VSInitializer.exe
+          - VSIXInstaller.exe
+          - VSLaunchBrowser.exe
+          - vsn.exe
+          - VsRegEdit.exe
+          - VSWebHandler.exe
+          - VSWebLauncher.exe
+          - wsl.exe
+          - XDesProc.exe
+      testScript: |
+        $input = $env:DSC_RESOURCE_INPUT | ConvertFrom-Json
+        $current = Get-MpPreference
+        $missingProcesses = $input.input.processExclusions |
+          Where-Object { $_ -notin $current.ExclusionProcess }
+        @{ _inDesiredState = ($missingProcesses.Count -eq 0) } |
+          ConvertTo-Json
+      setScript: |
+        $input = $env:DSC_RESOURCE_INPUT | ConvertFrom-Json
+        foreach ($p in $input.input.processExclusions) {
+          Add-MpPreference -ExclusionProcess $p -ErrorAction SilentlyContinue
+        }

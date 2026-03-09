@@ -535,3 +535,30 @@ resources:
       arguments:
         - /SETACTIVE
         - SCHEME_CURRENT
+  # ============================================================
+  # Execution Policy
+  # ============================================================
+  - name: Set ExecutionPolicy Unrestricted CurrentUser
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: "Set PowerShell execution policy to Unrestricted for CurrentUser scope"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      executable: pwsh
+      arguments:
+        - -NoProfile
+        - -Command
+        - Set-ExecutionPolicy Unrestricted -Scope CurrentUser -Force
+  - name: Set ExecutionPolicy Unrestricted LocalMachine
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: "Set PowerShell execution policy to Unrestricted for LocalMachine scope"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      executable: pwsh
+      arguments:
+        - -NoProfile
+        - -Command
+        - Set-ExecutionPolicy Unrestricted -Scope LocalMachine -Force

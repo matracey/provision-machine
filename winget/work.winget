@@ -84,3 +84,7 @@ resources:
     type: Microsoft.DSC/Include
     properties:
       configurationFile: ./modules/windows-terminal-work.dsc.yaml
+  - name: Include mise
+    type: Microsoft.DSC/Include
+    properties:
+      configurationFile: ./modules/mise.dsc.yaml

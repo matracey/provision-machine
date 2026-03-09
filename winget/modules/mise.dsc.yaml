@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+# Mise tool manager deployment resources.
+$schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+resources:
+  - name: Deploy mise config
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: "Deploy mise configuration for language runtime management"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      input:
+        sourceUrl: "https://gist.githubusercontent.com/matracey/e3febf8a83d05ae2d7ade96fd147cd20/raw/mise.toml"
+      testScript: |
+        param($inputData)
+        $target = Join-Path $env:USERPROFILE '.config\mise\config.toml'
+        return (Test-Path $target)
+      setScript: |
+        param($inputData)
+        $target = Join-Path $env:USERPROFILE '.config\mise\config.toml'
+        $dir = Split-Path $target
+        if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+        Invoke-WebRequest -Uri $inputData.sourceUrl -OutFile $target -UseBasicParsing
+  - name: Run mise install
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: "Install language runtimes defined in the mise configuration"
+      module: "Microsoft.DSC.Transitional"
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Deploy mise config')]"
+    properties:
+      executable: mise
+      arguments:
+        - install

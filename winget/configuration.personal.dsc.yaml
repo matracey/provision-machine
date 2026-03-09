@@ -579,6 +579,12 @@ properties:
       source: winget
   - resource: Microsoft.WinGet.DSC/WinGetPackage
     directives:
+      description: Install DotNet Framework Redistributable 1_1
+    settings:
+      id: Microsoft.DotNet.Framework.Redistributable.1_1
+      source: winget
+  - resource: Microsoft.WinGet.DSC/WinGetPackage
+    directives:
       description: Install .NET SDK 8
     settings:
       id: Microsoft.DotNet.SDK.8

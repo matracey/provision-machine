@@ -92,3 +92,7 @@ resources:
     type: Microsoft.DSC/Include
     properties:
       configurationFile: ./modules/scoop-common.dsc.yaml
+  - name: Include scoop work
+    type: Microsoft.DSC/Include
+    properties:
+      configurationFile: ./modules/scoop-work.dsc.yaml

@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+# Shared developer-mode, RDP, and long-path resources.
+$schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+resources:
+  - name: Enable Developer Mode
+    type: Microsoft.Windows.Developer/DeveloperMode
+    metadata:
+      description: "Enable Windows Developer Mode for sideloading and development"
+      module: "Microsoft.Windows.Developer"
+    properties:
+      Ensure: Present

@@ -18,3 +18,7 @@ resources:
     type: Microsoft.DSC/Include
     properties:
       configurationFile: ./modules/network-sharing.dsc.yaml
+  - name: Include uac
+    type: Microsoft.DSC/Include
+    properties:
+      configurationFile: ./modules/uac.dsc.yaml

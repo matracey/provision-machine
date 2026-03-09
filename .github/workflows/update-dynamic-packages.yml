@@ -65,13 +65,13 @@ jobs:
           $dotnetIds = @($pkgs.dotnet)
           $vcredistIds = @($pkgs.vcredist)
 
-          # Build DSC resource blocks for the resolved packages
+          # Build DSC resource blocks for the resolved packages (DSCv3 format)
           function New-DscEntry {
             param([string]$Id, [string]$Description)
             return [ordered]@{
-              resource   = 'Microsoft.WinGet.DSC/WinGetPackage'
-              directives = [ordered]@{ description = $Description }
-              settings   = [ordered]@{ id = $Id; source = 'winget' }
+              name       = $Description
+              type       = 'Microsoft.WinGet.DSC/WinGetPackage'
+              properties = [ordered]@{ id = $Id; source = 'winget' }
             }
           }
 
@@ -88,15 +88,15 @@ jobs:
           $dynamicIdPattern = '^Microsoft\.(DotNet\.SDK\.\d|VCRedist\.)'
 
           $changed = $false
-          foreach ($file in @('winget/configuration.personal.dsc.yaml', 'winget/configuration.work.dsc.yaml')) {
+          foreach ($file in @('personal.winget', 'work.winget')) {
             $raw = Get-Content $file -Raw
             $yaml = $raw | ConvertFrom-Yaml -Ordered
-            $resources = [System.Collections.ArrayList]@($yaml.properties.resources)
+            $resources = [System.Collections.ArrayList]@($yaml.resources)
 
-            # Remove existing dynamic entries
+            # Remove existing dynamic entries (DSCv3 format uses properties.id)
             $static = [System.Collections.ArrayList]@()
             foreach ($r in $resources) {
-              if ($r.settings.id -notmatch $dynamicIdPattern) {
+              if ($r.properties.id -notmatch $dynamicIdPattern) {
                 [void]$static.Add($r)
               }
             }
@@ -106,7 +106,7 @@ jobs:
               [void]$static.Add($entry)
             }
 
-            $yaml.properties.resources = @($static)
+            $yaml.resources = @($static)
 
             # Serialize back to YAML
             $newYaml = ($yaml | ConvertTo-Yaml).TrimEnd()
@@ -128,6 +128,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add winget/configuration.personal.dsc.yaml winget/configuration.work.dsc.yaml
+          git add winget/modules/packages-common.dsc.yaml
           git commit -m "chore: update dynamic WinGet packages (.NET SDK & VC Redist)"
           git push

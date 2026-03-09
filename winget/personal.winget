@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+# Personal context DSCv3 composite document.
+$schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+metadata:
+  winget:
+    processor:
+      identifier: dscv3
+resources:
+  - name: Include turbo rdp
+    type: Microsoft.DSC/Include
+    properties:
+      configurationFile: ./modules/turbo-rdp.dsc.yaml

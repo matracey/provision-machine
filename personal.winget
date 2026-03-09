@@ -658,3 +658,24 @@ resources:
         if ($input.input.projectsFolder) {
           Add-MpPreference -ExclusionPath $input.input.projectsFolder -ErrorAction SilentlyContinue
         }
+  # ============================================================
+  # Git User Identity
+  # Requires module: GitDsc
+  # Install with: Install-Module GitDsc
+  # ============================================================
+  - name: Git user name
+    type: GitDsc/GitConfigUserName
+    metadata:
+      description: "Configure Git user name globally"
+      module: "GitDsc"
+    properties:
+      UserName: Martin Tracey
+      ConfigLocation: global
+  - name: Git user email
+    type: GitDsc/GitConfigUserEmail
+    metadata:
+      description: "Configure Git user email globally"
+      module: "GitDsc"
+    properties:
+      UserEmail: matracey@outlook.ie
+      ConfigLocation: global

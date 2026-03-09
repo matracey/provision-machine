@@ -485,3 +485,339 @@ resources:
         - --global
         - credential.helper
         - manager
+
+  # ============================================================
+  # WinGet Packages
+  # ============================================================
+  - name: Install Canva Affinity 3
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Canva.Affinity"
+      source: winget
+  - name: Install Bruno
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Bruno.Bruno"
+      source: winget
+  - name: Install K Lite Codec Pack Mega
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "CodecGuide.K-LiteCodecPack.Mega"
+      source: winget
+  - name: Install Azure AzCopy
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.Azure.AZCopy.10"
+      source: winget
+  - name: Install Azure Functions Core Tools
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.Azure.FunctionsCoreTools"
+      source: winget
+  - name: Install Azure Storage Emulator
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.Azure.StorageEmulator"
+      source: winget
+  - name: Install Azure Storage Explorer
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.Azure.StorageExplorer"
+      source: winget
+  - name: Install Azure CLI
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.AzureCLI"
+      source: winget
+  - name: Install WhatsApp Beta
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "9NBDXK71NK08"
+      source: msstore
+  - name: Install CLR Types for SQL Server 2019
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.CLRTypesSQLServer.2019"
+      source: winget
+  - name: Install Apple Music
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "9PFHDD62MXS1"
+      source: msstore
+  - name: Install Microsoft Edge Dev
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.Edge.Dev"
+      source: winget
+  - name: Install Adobe Acrobat Reader 64 bit
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Adobe.Acrobat.Reader.64-bit"
+      source: winget
+  - name: Install 1Password
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "AgileBits.1Password"
+      source: winget
+  - name: Install Microsoft ODBC Driver 17 for SQL Server
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.msodbcsql.17"
+      source: winget
+  - name: Install Power Automate Desktop
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.PowerAutomateDesktop"
+      source: winget
+  - name: Install Remote Help
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.RemoteHelp"
+      source: winget
+  - name: Install SQL Server Management Studio 22 Preview
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.SQLServerManagementStudio.22.Preview"
+      source: winget
+  - name: Install Microsoft Teams
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.Teams"
+      source: winget
+  - name: Install WizTree
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "AntibodySoftware.WizTree"
+      source: winget
+  - name: Install Ubuntu
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Canonical.Ubuntu"
+      source: winget
+  - name: Install DB Browser for SQLite
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "DBBrowserForSQLite.DBBrowserForSQLite"
+      source: winget
+  - name: Install EarTrumpet
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "File-New-Project.EarTrumpet"
+      source: winget
+  - name: Install Mp3tag
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "FlorianHeidenreich.Mp3tag"
+      source: winget
+  - name: Install Web Deploy
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.WebDeploy"
+      source: winget
+  - name: Install Git Credential Manager
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Git.GCM"
+      source: winget
+  - name: Install Windows App
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.WindowsApp"
+      source: winget
+  - name: Install Git
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Git.Git"
+      source: winget
+  - name: Install GitHub Desktop
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "GitHub.GitHubDesktop"
+      source: winget
+  - name: Install Git LFS
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "GitHub.GitLFS"
+      source: winget
+  - name: Install Dual Monitor Tools
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "GNE.DualMonitorTools"
+      source: winget
+  - name: Install Google Chrome
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Google.Chrome"
+      source: winget
+  - name: Install Google Quick Share
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Google.QuickShare"
+      source: winget
+  - name: Install Cyberduck
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Iterate.Cyberduck"
+      source: winget
+  - name: Install Oh My Posh
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "JanDeDobbeleer.OhMyPosh"
+      source: winget
+  - name: Install mise
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "jdx.mise"
+      source: winget
+  - name: Install FontBase
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Levitsky.FontBase"
+      source: winget
+  - name: Install LLVM
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "LLVM.LLVM"
+      source: winget
+  - name: Install NanaZip
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "M2Team.NanaZip"
+      source: winget
+  - name: Install UniGetUI
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "MartiCliment.UniGetUI"
+      source: winget
+  - name: Install Microsoft App Installer
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.AppInstaller"
+      source: winget
+  - name: Install Microsoft Edge
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.Edge"
+      source: winget
+  - name: Install Microsoft Edge Beta
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.Edge.Beta"
+      source: winget
+  - name: Install Edge WebView2 Runtime
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.EdgeWebView2Runtime"
+      source: winget
+  - name: Install Microsoft OneDrive
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.OneDrive"
+      source: winget
+  - name: Install PowerShell
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.PowerShell"
+      source: winget
+  - name: Install PowerToys
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.PowerToys"
+      source: winget
+  - name: Install Rancher Desktop
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "SUSE.RancherDesktop"
+      source: winget
+  - name: Install Windows Terminal Preview
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.WindowsTerminal.Preview"
+      source: winget
+  - name: Install Windows Subsystem for Linux
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.WSL"
+      source: winget
+  - name: Install Mozilla Firefox
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Mozilla.Firefox"
+      source: winget
+  - name: Install Obsidian
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Obsidian.Obsidian"
+      source: winget
+  - name: Install Spotify
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Spotify.Spotify"
+      source: winget
+  - name: Install VLC
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "VideoLAN.VLC"
+      source: winget
+  - name: Install WinSCP
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "WinSCP.WinSCP"
+      source: winget
+  - name: Install Visual Studio Code
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.VisualStudioCode"
+      source: winget
+      override: '/VERYSILENT /MERGETASKS="!runcode,addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath"'
+  - name: Install Visual Studio Code Insiders
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.VisualStudioCode.Insiders"
+      source: winget
+      override: '/VERYSILENT /MERGETASKS="!runcode,addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath"'
+  - name: Install DotNet SDK 8
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.DotNet.SDK.8"
+      source: winget
+  - name: Install DotNet SDK 9
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.DotNet.SDK.9"
+      source: winget
+  - name: Install VCRedist 2015 plus x64
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.VCRedist.2015+.x64"
+      source: winget
+  - name: Install VCRedist 2013 x64
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.VCRedist.2013.x64"
+      source: winget
+  - name: Install VCRedist 2012 x64
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.VCRedist.2012.x64"
+      source: winget
+  - name: Install VCRedist 2010 x64
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.VCRedist.2010.x64"
+      source: winget
+  - name: Install VCRedist 2008 x64
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.VCRedist.2008.x64"
+      source: winget
+  - name: Install VCRedist 2005 x64
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.VCRedist.2005.x64"
+      source: winget
+  - name: Install DotNet Framework Redistributable 1 1
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.DotNet.Framework.Redistributable.1_1"
+      source: winget

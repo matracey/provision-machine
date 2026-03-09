@@ -511,3 +511,532 @@ resources:
         - --global
         - credential.helper
         - manager
+
+  # ============================================================
+  # WinGet Packages
+  # ============================================================
+  - name: Install Affinity Designer 2
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "9N2D0P16C80H"
+      source: msstore
+  - name: Install WhatsApp Beta
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "9NBDXK71NK08"
+      source: msstore
+  - name: Install Affinity Publisher 2
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "9NTV2DZ11KD9"
+      source: msstore
+  - name: Install Affinity Photo 2
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "9P8DVF1XW02V"
+      source: msstore
+  - name: Install Amazon Games
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Amazon.Games"
+      source: winget
+  - name: Install Apple Music
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "9PFHDD62MXS1"
+      source: msstore
+  - name: Install Adobe Acrobat Reader 64 bit
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Adobe.Acrobat.Reader.64-bit"
+      source: winget
+  - name: Install 1Password
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "AgileBits.1Password"
+      source: winget
+  - name: Install ATLauncher
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "ATLauncher.ATLauncher"
+      source: winget
+  - name: Install WizTree
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "AntibodySoftware.WizTree"
+      source: winget
+  - name: Install Ubuntu
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Canonical.Ubuntu"
+      source: winget
+  - name: Install DB Browser for SQLite
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "DBBrowserForSQLite.DBBrowserForSQLite"
+      source: winget
+  - name: Install EarTrumpet
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "File-New-Project.EarTrumpet"
+      source: winget
+  - name: Install Audacity
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Audacity.Audacity"
+      source: winget
+  - name: Install Mp3tag
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "FlorianHeidenreich.Mp3tag"
+      source: winget
+  - name: Install Avidemux
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Avidemux.Avidemux"
+      source: winget
+  - name: Install calibre
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "calibre.calibre"
+      source: winget
+  - name: Install Universal ADB Driver
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "ClockworkMod.UniversalADBDriver"
+      source: winget
+  - name: Install K Lite Codec Pack Full
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "CodecGuide.K-LiteCodecPack.Full"
+      source: winget
+  - name: Install Git Credential Manager
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Git.GCM"
+      source: winget
+  - name: Install Borderless Gaming
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Codeusa.BorderlessGaming"
+      source: winget
+  - name: Install CPU Z MSI
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "CPUID.CPU-Z.MSI"
+      source: winget
+  - name: Install HWMonitor
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "CPUID.HWMonitor"
+      source: winget
+  - name: Install CrystalDiskInfo
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "CrystalDewWorld.CrystalDiskInfo"
+      source: winget
+  - name: Install Das Keyboard
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "DasKeyboard.DasKeyboard"
+      source: winget
+  - name: Install Discord
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Discord.Discord"
+      source: winget
+  - name: Install Discord PTB
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Discord.Discord.PTB"
+      source: winget
+  - name: Install Git
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Git.Git"
+      source: winget
+  - name: Install Docker Desktop
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Docker.DockerDesktop"
+      source: winget
+  - name: Install Dolphin Emulator
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "DolphinEmulator.Dolphin"
+      source: winget
+  - name: Install EA Desktop
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "ElectronicArts.EADesktop"
+      source: winget
+  - name: Install Remote Mouse
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "EmoteInteractive.RemoteMouse"
+      source: winget
+  - name: Install Epic Games Launcher
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "EpicGames.EpicGamesLauncher"
+      source: winget
+  - name: Install MacintoshJS
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "FelixRieseberg.MacintoshJS"
+      source: winget
+  - name: Install Windows95
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "FelixRieseberg.Windows95"
+      source: winget
+  - name: Install GOG Galaxy
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "GOG.Galaxy"
+      source: winget
+  - name: Install Android Studio
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Google.AndroidStudio"
+      source: winget
+  - name: Install GitHub Desktop
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "GitHub.GitHubDesktop"
+      source: winget
+  - name: Install Git LFS
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "GitHub.GitLFS"
+      source: winget
+  - name: Install Dual Monitor Tools
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "GNE.DualMonitorTools"
+      source: winget
+  - name: Install Google Chrome
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Google.Chrome"
+      source: winget
+  - name: Install Google Quick Share
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Google.QuickShare"
+      source: winget
+  - name: Install Cyberduck
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Iterate.Cyberduck"
+      source: winget
+  - name: Install Oh My Posh
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "JanDeDobbeleer.OhMyPosh"
+      source: winget
+  - name: Install HandBrake
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "HandBrake.HandBrake"
+      source: winget
+  - name: Install AutoHotkey
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Lexikos.AutoHotkey"
+      source: winget
+  - name: Install mise
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "jdx.mise"
+      source: winget
+  - name: Install FontBase
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Levitsky.FontBase"
+      source: winget
+  - name: Install RetroArch
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Libretro.RetroArch"
+      source: winget
+  - name: Install LLVM
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "LLVM.LLVM"
+      source: winget
+  - name: Install NanaZip
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "M2Team.NanaZip"
+      source: winget
+  - name: Install UniGetUI
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "MartiCliment.UniGetUI"
+      source: winget
+  - name: Install Logitech G HUB
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Logitech.GHUB"
+      source: winget
+  - name: Install MediaInfo GUI
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "MediaArea.MediaInfo.GUI"
+      source: winget
+  - name: Install Microsoft App Installer
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.AppInstaller"
+      source: winget
+  - name: Install Microsoft Office
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.Office"
+      source: winget
+  - name: Install Microsoft Edge
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.Edge"
+      source: winget
+  - name: Install Microsoft Edge Beta
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.Edge.Beta"
+      source: winget
+  - name: Install Microsoft Remote Desktop Client
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.RemoteDesktopClient"
+      source: winget
+  - name: Install MKVToolNix
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "MoritzBunkus.MKVToolNix"
+      source: winget
+  - name: Install Edge WebView2 Runtime
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.EdgeWebView2Runtime"
+      source: winget
+  - name: Install NordPass
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "NordPassTeam.NordPass"
+      source: winget
+  - name: Install NordVPN
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "NordVPN.NordVPN"
+      source: winget
+  - name: Install Microsoft OneDrive
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.OneDrive"
+      source: winget
+  - name: Install NVIDIA Broadcast
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Nvidia.Broadcast"
+      source: winget
+  - name: Install GeForce Experience
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Nvidia.GeForceExperience"
+      source: winget
+  - name: Install NVIDIA PhysX
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Nvidia.PhysX"
+      source: winget
+  - name: Install NZXT CAM
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "NZXT.CAM"
+      source: winget
+  - name: Install OBS Studio
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "OBSProject.OBSStudio"
+      source: winget
+  - name: Install PowerShell
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.PowerShell"
+      source: winget
+  - name: Install Signal
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "OpenWhisperSystems.Signal"
+      source: winget
+  - name: Install foobar2000
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "PeterPawlowski.foobar2000"
+      source: winget
+  - name: Install Plex
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Plex.Plex"
+      source: winget
+  - name: Install Plex Media Server
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Plex.PlexMediaServer"
+      source: winget
+  - name: Install Postman
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Postman.Postman"
+      source: winget
+  - name: Install qBittorrent
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "qBittorrent.qBittorrent"
+      source: winget
+  - name: Install HWiNFO
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "REALiX.HWiNFO"
+      source: winget
+  - name: Install Rufus
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Rufus.Rufus"
+      source: winget
+  - name: Install SABnzbd
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "SABnzbdTeam.SABnzbd"
+      source: winget
+  - name: Install ElevenClock
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "SomePythonThings.ElevenClock"
+      source: winget
+  - name: Install PowerToys
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.PowerToys"
+      source: winget
+  - name: Install Tailscale
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "tailscale.tailscale"
+      source: winget
+  - name: Install Prowlarr
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "TeamProwlarr.Prowlarr"
+      source: winget
+  - name: Install Radarr
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "TeamRadarr.Radarr"
+      source: winget
+  - name: Install Sonarr
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "TeamSonarr.Sonarr"
+      source: winget
+  - name: Install TIDAL
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "TIDALMusicAS.TIDAL"
+      source: winget
+  - name: Install Ubisoft Connect
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Ubisoft.Connect"
+      source: winget
+  - name: Install Steam
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Valve.Steam"
+      source: winget
+  - name: Install Windows Terminal Preview
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.WindowsTerminal.Preview"
+      source: winget
+  - name: Install Windows Subsystem for Linux
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.WSL"
+      source: winget
+  - name: Install Mozilla Firefox
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Mozilla.Firefox"
+      source: winget
+  - name: Install Notepad Plus Plus
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Notepad++.Notepad++"
+      source: winget
+  - name: Install Obsidian
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Obsidian.Obsidian"
+      source: winget
+  - name: Install Spotify
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Spotify.Spotify"
+      source: winget
+  - name: Install VLC
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "VideoLAN.VLC"
+      source: winget
+  - name: Install WinSCP
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "WinSCP.WinSCP"
+      source: winget
+  - name: Install DotNet SDK 8
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.DotNet.SDK.8"
+      source: winget
+  - name: Install DotNet SDK 9
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.DotNet.SDK.9"
+      source: winget
+  - name: Install VCRedist 2015 plus x64
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.VCRedist.2015+.x64"
+      source: winget
+  - name: Install VCRedist 2013 x64
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.VCRedist.2013.x64"
+      source: winget
+  - name: Install VCRedist 2012 x64
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.VCRedist.2012.x64"
+      source: winget
+  - name: Install VCRedist 2010 x64
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.VCRedist.2010.x64"
+      source: winget
+  - name: Install VCRedist 2008 x64
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.VCRedist.2008.x64"
+      source: winget
+  - name: Install VCRedist 2005 x64
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.VCRedist.2005.x64"
+      source: winget
+  - name: Install DotNet Framework Redistributable 1 1
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.DotNet.Framework.Redistributable.1_1"
+      source: winget

@@ -26,6 +26,9 @@ cd provision-machine
 
 # Or target specific components
 .\provisioning\Provision-Machine.ps1 -Personal -Winget -Scoop -Fonts
+
+# Apply a DSCv3 config via winget configure (uses preview DSC processor)
+winget configure -f work.winget --processor-path (Join-Path (Get-AppxPackage 'Microsoft.DesiredStateConfiguration-Preview').InstallLocation 'dsc.exe')
 ```
 
 ### Web Editor

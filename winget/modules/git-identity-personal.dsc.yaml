@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+# Personal-only Git identity resources.
+$schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+resources:
+  - name: Git user name
+    type: GitDsc/GitConfigUserName
+    metadata:
+      description: "Configure Git user name globally"
+      module: "GitDsc"
+    properties:
+      UserName: Martin Tracey
+      ConfigLocation: global
+  - name: Git user email
+    type: GitDsc/GitConfigUserEmail
+    metadata:
+      description: "Configure Git user email globally"
+      module: "GitDsc"
+    properties:
+      UserEmail: matracey@outlook.ie
+      ConfigLocation: global

@@ -42,3 +42,7 @@ resources:
     type: Microsoft.DSC/Include
     properties:
       configurationFile: ./modules/defender-exclusions-personal.dsc.yaml
+  - name: Include git identity personal
+    type: Microsoft.DSC/Include
+    properties:
+      configurationFile: ./modules/git-identity-personal.dsc.yaml

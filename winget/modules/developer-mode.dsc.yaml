@@ -14,3 +14,15 @@ resources:
       valueName: AllowDevelopmentWithoutDevLicense
       valueData:
         DWord: 1
+  - name: Enable Remote Desktop
+    type: Microsoft.Windows/Registry
+    requireVersion: "=1.0.0"
+    metadata:
+      description: "Enable Remote Desktop connections to this machine"
+      winget:
+        securityContext: elevated
+    properties:
+      keyPath: HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server
+      valueName: fDenyTSConnections
+      valueData:
+        DWord: 0

@@ -7,7 +7,260 @@ metadata:
     processor:
       identifier: "dscv3"
 resources:
-  - name: "Hello World"
-    type: "Microsoft.Windows.Developer/CommandLine/Command"
+  # ============================================================
+  # TurboRDP — RDP session optimization registry values
+  # Requires module: Microsoft.Windows
+  # Ships with DSCv3 / Windows. See: https://learn.microsoft.com/powershell/dsc
+  # ============================================================
+  - name: RDP Select UDP TCP transport
+    type: Microsoft.Windows/Registry
+    metadata:
+      description: "Select UDP/TCP transport for Remote Desktop (0 = auto-select)"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows"
     properties:
-      command: "powershell.exe -Command Write-Host 'Hello World'"
+      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+      valueName: SelectTransport
+      valueData:
+        DWord: 0
+  - name: RDP Enumerate HW before SW
+    type: Microsoft.Windows/Registry
+    metadata:
+      description: "Enumerate hardware codecs before software codecs for RDP"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows"
+    properties:
+      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+      valueName: bEnumerateHWBeforeSW
+      valueData:
+        DWord: 1
+  - name: RDP AVC444 mode preferred
+    type: Microsoft.Windows/Registry
+    metadata:
+      description: "Prefer AVC/H.264 4:4:4 mode for RDP sessions"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows"
+    properties:
+      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+      valueName: AVC444ModePreferred
+      valueData:
+        DWord: 1
+  - name: RDP AVC hardware encode preferred
+    type: Microsoft.Windows/Registry
+    metadata:
+      description: "Prefer hardware encoding for RDP AVC sessions"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows"
+    properties:
+      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+      valueName: AVCHardwareEncodePreferred
+      valueData:
+        DWord: 1
+  - name: RDP Max compression level
+    type: Microsoft.Windows/Registry
+    metadata:
+      description: "Set maximum RDP compression level for best performance"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows"
+    properties:
+      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+      valueName: MaxCompressionLevel
+      valueData:
+        DWord: 0
+  - name: RDP Image quality
+    type: Microsoft.Windows/Registry
+    metadata:
+      description: "Set RDP image quality to high"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows"
+    properties:
+      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+      valueName: ImageQuality
+      valueData:
+        DWord: 2
+  - name: RDP Enable virtualized graphics
+    type: Microsoft.Windows/Registry
+    metadata:
+      description: "Enable virtualized GPU for Remote Desktop sessions"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows"
+    properties:
+      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+      valueName: fEnableVirtualizedGraphics
+      valueData:
+        DWord: 1
+  - name: RDP VG capture frame rate
+    type: Microsoft.Windows/Registry
+    metadata:
+      description: "Set virtualized graphics capture frame rate for RDP"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows"
+    properties:
+      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+      valueName: VGOptimization_CaptureFrameRate
+      valueData:
+        DWord: 1
+  - name: RDP VG compression ratio
+    type: Microsoft.Windows/Registry
+    metadata:
+      description: "Set virtualized graphics JPEG compression ratio for RDP"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows"
+    properties:
+      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+      valueName: VGOptimization_CompressionRatio
+      valueData:
+        DWord: 1
+  - name: RDP Visual experience policy
+    type: Microsoft.Windows/Registry
+    metadata:
+      description: "Set RDP visual experience policy for rich desktop"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows"
+    properties:
+      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+      valueName: VisualExperiencePolicy
+      valueData:
+        DWord: 1
+  - name: RDP Disable WDDM driver
+    type: Microsoft.Windows/Registry
+    metadata:
+      description: "Disable WDDM graphics driver for RDP compatibility"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows"
+    properties:
+      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+      valueName: fEnableWddmDriver
+      valueData:
+        DWord: 0
+  - name: RDP USB redirection mode
+    type: Microsoft.Windows/Registry
+    metadata:
+      description: "Configure USB redirection mode for RDP sessions"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows"
+    properties:
+      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services\Client
+      valueName: fUsbRedirectionEnableMode
+      valueData:
+        DWord: 2
+  - name: RDP DWM frame interval
+    type: Microsoft.Windows/Registry
+    metadata:
+      description: "Set Desktop Window Manager frame interval for RDP"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows"
+    properties:
+      keyPath: HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations
+      valueName: DWMFRAMEINTERVAL
+      valueData:
+        DWord: 15
+  - name: RDP System responsiveness
+    type: Microsoft.Windows/Registry
+    metadata:
+      description: "Set system responsiveness for foreground task priority"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows"
+    properties:
+      keyPath: HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile
+      valueName: SystemResponsiveness
+      valueData:
+        DWord: 0
+  - name: RDP Flow control disable
+    type: Microsoft.Windows/Registry
+    metadata:
+      description: "Disable RDP flow control for unrestricted bandwidth"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows"
+    properties:
+      keyPath: HKLM\SYSTEM\CurrentControlSet\Services\TermDD
+      valueName: FlowControlDisable
+      valueData:
+        DWord: 1
+  - name: RDP Flow control display bandwidth
+    type: Microsoft.Windows/Registry
+    metadata:
+      description: "Set RDP display bandwidth flow control percentage"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows"
+    properties:
+      keyPath: HKLM\SYSTEM\CurrentControlSet\Services\TermDD
+      valueName: FlowControlDisplayBandwidth
+      valueData:
+        DWord: 16
+  - name: RDP Flow control channel bandwidth
+    type: Microsoft.Windows/Registry
+    metadata:
+      description: "Set RDP channel bandwidth flow control percentage"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows"
+    properties:
+      keyPath: HKLM\SYSTEM\CurrentControlSet\Services\TermDD
+      valueName: FlowControlChannelBandwidth
+      valueData:
+        DWord: 144
+  - name: RDP Flow control charge post compression
+    type: Microsoft.Windows/Registry
+    metadata:
+      description: "Charge bandwidth post-compression for RDP flow control"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows"
+    properties:
+      keyPath: HKLM\SYSTEM\CurrentControlSet\Services\TermDD
+      valueName: FlowControlChargePostCompression
+      valueData:
+        DWord: 0
+  - name: RDP Interactive delay
+    type: Microsoft.Windows/Registry
+    metadata:
+      description: "Set interactive input delay for RDP sessions"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows"
+    properties:
+      keyPath: HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp
+      valueName: InteractiveDelay
+      valueData:
+        DWord: 0
+  - name: RDP Disable bandwidth throttling
+    type: Microsoft.Windows/Registry
+    metadata:
+      description: "Disable bandwidth throttling for RDP connections"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows"
+    properties:
+      keyPath: HKLM\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters
+      valueName: DisableBandwidthThrottling
+      valueData:
+        DWord: 1
+  - name: RDP Disable large MTU
+    type: Microsoft.Windows/Registry
+    metadata:
+      description: "Disable large MTU packets for RDP transport"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows"
+    properties:
+      keyPath: HKLM\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters
+      valueName: DisableLargeMtu
+      valueData:
+        DWord: 0

@@ -264,3 +264,15 @@ resources:
       valueName: DisableLargeMtu
       valueData:
         DWord: 0
+  # ============================================================
+  # Developer Mode
+  # Requires module: Microsoft.Windows.Developer
+  # Install with: Install-Module Microsoft.Windows.Developer
+  # ============================================================
+  - name: Enable Developer Mode
+    type: Microsoft.Windows.Developer/DeveloperMode
+    metadata:
+      description: "Enable Windows Developer Mode for sideloading and development"
+      module: "Microsoft.Windows.Developer"
+    properties:
+      Ensure: Present

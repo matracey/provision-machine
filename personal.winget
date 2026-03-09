@@ -310,3 +310,97 @@ resources:
         - Domain
         - Private
         - Public
+  # ============================================================
+  # UAC Configuration
+  # ============================================================
+  - name: UAC Consent prompt behavior Admin
+    type: Microsoft.Windows.Developer/UserAccessControl
+    metadata:
+      description: "Set UAC admin consent prompt to require consent for non-Windows binaries"
+      module: "Microsoft.Windows.Developer"
+    properties:
+      AdminConsentPromptBehavior: RequireConsentForNonWindowsBinaries
+  - name: UAC Consent prompt behavior User
+    type: Microsoft.Windows/Registry
+    metadata:
+      description: "Set UAC consent prompt for standard users (1 = prompt for credentials)"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows"
+    properties:
+      keyPath: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+      valueName: ConsentPromptBehaviorUser
+      valueData:
+        DWord: 3
+  - name: UAC Enable installer detection
+    type: Microsoft.Windows/Registry
+    metadata:
+      description: "Enable UAC installer detection for elevation prompts"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows"
+    properties:
+      keyPath: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+      valueName: EnableInstallerDetection
+      valueData:
+        DWord: 1
+  - name: UAC Enable LUA
+    type: Microsoft.Windows/Registry
+    metadata:
+      description: "Enable Limited User Account (LUA) for UAC protection"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows"
+    properties:
+      keyPath: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+      valueName: EnableLUA
+      valueData:
+        DWord: 1
+  - name: UAC Enable virtualization
+    type: Microsoft.Windows/Registry
+    metadata:
+      description: "Enable file and registry virtualization for legacy apps"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows"
+    properties:
+      keyPath: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+      valueName: EnableVirtualization
+      valueData:
+        DWord: 1
+  - name: UAC Prompt on secure desktop
+    type: Microsoft.Windows/Registry
+    metadata:
+      description: "Show UAC prompts on the secure desktop"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows"
+    properties:
+      keyPath: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+      valueName: PromptOnSecureDesktop
+      valueData:
+        DWord: 0
+  - name: UAC Validate admin code signatures
+    type: Microsoft.Windows/Registry
+    metadata:
+      description: "Validate code signatures for elevated admin applications"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows"
+    properties:
+      keyPath: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+      valueName: ValidateAdminCodeSignatures
+      valueData:
+        DWord: 0
+  - name: UAC Filter administrator token
+    type: Microsoft.Windows/Registry
+    metadata:
+      description: "Filter administrator token for UAC enforcement"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows"
+    properties:
+      keyPath: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+      valueName: FilterAdministratorToken
+      valueData:
+        DWord: 0

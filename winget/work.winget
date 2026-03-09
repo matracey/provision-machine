@@ -88,3 +88,7 @@ resources:
     type: Microsoft.DSC/Include
     properties:
       configurationFile: ./modules/mise.dsc.yaml
+  - name: Include scoop common
+    type: Microsoft.DSC/Include
+    properties:
+      configurationFile: ./modules/scoop-common.dsc.yaml

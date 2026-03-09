@@ -1,0 +1,391 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/PowerShell/DSC/main/schemas/2023/08/config/document.json
+# Common Scoop buckets, packages, and aliases shared by work and personal.
+$schema: https://raw.githubusercontent.com/PowerShell/DSC/main/schemas/2023/08/config/document.json
+resources:
+  - name: Scoop Install
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: Install Scoop package manager if not present
+      module: Microsoft.DSC.Transitional
+    properties:
+      testScript: "& {\n  try {\n    $scoopCmd = Get-Command scoop -ErrorAction SilentlyContinue\n  return ($null -ne $scoopCmd)\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $installer = Join-Path $env:TEMP \"install-scoop.ps1\"\n  Invoke-WebRequest -Uri \"https://get.scoop.sh\" -OutFile $installer -UseBasicParsing\n  pwsh -NoProfile -NonInteractive -File $installer -RunAsAdmin 2>&1 | Out-Null\n  Remove-Item $installer -ErrorAction SilentlyContinue\n  $env:Path = \"$env:USERPROFILE\\scoop\\shims;$env:Path\"\n  } catch { }\n} 2>$null"
+  - name: Scoop Prereqs
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: Install Scoop prerequisite packages
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Install')]"
+    properties:
+      input:
+        prereqs:
+          - 7zip
+          - aria2
+          - dark
+          - git
+          - innounp
+          - lessmsi
+          - wixtoolset
+      testScript: "param($inputData)\n& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $missing = $inputData.prereqs | Where-Object { -not (scoop list $_ 2>&1 | Select-String \"^  $_\\s\") }\n  return ($null -eq $missing -or $missing.Count -eq 0)\n  } catch { return $false }\n} 2>$null"
+      setScript: "param($inputData)\n& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  foreach ($pkg in $inputData.prereqs) { scoop install $pkg 2>&1 | Out-Null }\n  } catch { }\n} 2>$null"
+  - name: Scoop Bucket extras
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Add Scoop bucket: extras'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Prereqs')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $buckets = scoop bucket list 2>&1\n  return [bool]($buckets | Select-String '^\\s*extras\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop bucket add extras https://github.com/ScoopInstaller/Extras 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Bucket main
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Add Scoop bucket: main'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Prereqs')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $buckets = scoop bucket list 2>&1\n  return [bool]($buckets | Select-String '^\\s*main\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop bucket add main https://github.com/ScoopInstaller/Main.git 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Bucket matracey
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Add Scoop bucket: matracey'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Prereqs')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $buckets = scoop bucket list 2>&1\n  return [bool]($buckets | Select-String '^\\s*matracey\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop bucket add matracey https://github.com/matracey/scoop-bucket 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Bucket sysinternals
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Add Scoop bucket: sysinternals'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Prereqs')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $buckets = scoop bucket list 2>&1\n  return [bool]($buckets | Select-String '^\\s*sysinternals\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop bucket add sysinternals https://github.com/niheaven/scoop-sysinternals 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Package cru
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Install Scoop package: extras/cru'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Bucket extras')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $result = scoop list cru 2>&1\n  return [bool]($result | Select-String '^  cru\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop install extras/cru 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Package git-credential-manager
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Install Scoop package: extras/git-credential-manager'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Bucket extras')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $result = scoop list git-credential-manager 2>&1\n  return [bool]($result | Select-String '^  git-credential-manager\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop install extras/git-credential-manager 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Package scoop-completion
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Install Scoop package: extras/scoop-completion'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Bucket extras')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $result = scoop list scoop-completion 2>&1\n  return [bool]($result | Select-String '^  scoop-completion\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop install extras/scoop-completion 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Package sysinternals
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Install Scoop package: extras/sysinternals'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Bucket extras')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $result = scoop list sysinternals 2>&1\n  return [bool]($result | Select-String '^  sysinternals\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop install extras/sysinternals 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Package 7zip
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Install Scoop package: main/7zip'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Bucket main')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $result = scoop list 7zip 2>&1\n  return [bool]($result | Select-String '^  7zip\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop install main/7zip 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Package aria2
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Install Scoop package: main/aria2'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Bucket main')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $result = scoop list aria2 2>&1\n  return [bool]($result | Select-String '^  aria2\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop install main/aria2 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Package azure-functions-core-tools
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Install Scoop package: main/azure-functions-core-tools'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Bucket main')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $result = scoop list azure-functions-core-tools 2>&1\n  return [bool]($result | Select-String '^  azure-functions-core-tools\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop install main/azure-functions-core-tools 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Package cacert
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Install Scoop package: main/cacert'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Bucket main')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $result = scoop list cacert 2>&1\n  return [bool]($result | Select-String '^  cacert\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop install main/cacert 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Package chromedriver
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Install Scoop package: main/chromedriver'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Bucket main')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $result = scoop list chromedriver 2>&1\n  return [bool]($result | Select-String '^  chromedriver\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop install main/chromedriver 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Package coreutils
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Install Scoop package: main/coreutils'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Bucket main')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $result = scoop list coreutils 2>&1\n  return [bool]($result | Select-String '^  coreutils\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop install main/coreutils 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Package curl
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Install Scoop package: main/curl'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Bucket main')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $result = scoop list curl 2>&1\n  return [bool]($result | Select-String '^  curl\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop install main/curl 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Package dark
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Install Scoop package: main/dark'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Bucket main')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $result = scoop list dark 2>&1\n  return [bool]($result | Select-String '^  dark\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop install main/dark 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Package edgedriver
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Install Scoop package: main/edgedriver'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Bucket main')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $result = scoop list edgedriver 2>&1\n  return [bool]($result | Select-String '^  edgedriver\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop install main/edgedriver 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Package ffmpeg
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Install Scoop package: main/ffmpeg'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Bucket main')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $result = scoop list ffmpeg 2>&1\n  return [bool]($result | Select-String '^  ffmpeg\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop install main/ffmpeg 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Package geckodriver
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Install Scoop package: main/geckodriver'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Bucket main')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $result = scoop list geckodriver 2>&1\n  return [bool]($result | Select-String '^  geckodriver\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop install main/geckodriver 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Package git
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Install Scoop package: main/git'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Bucket main')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $result = scoop list git 2>&1\n  return [bool]($result | Select-String '^  git\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop install main/git 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Package grep
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Install Scoop package: main/grep'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Bucket main')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $result = scoop list grep 2>&1\n  return [bool]($result | Select-String '^  grep\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop install main/grep 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Package gsudo
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Install Scoop package: main/gsudo'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Bucket main')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $result = scoop list gsudo 2>&1\n  return [bool]($result | Select-String '^  gsudo\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop install main/gsudo 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Package innounp
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Install Scoop package: main/innounp'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Bucket main')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $result = scoop list innounp 2>&1\n  return [bool]($result | Select-String '^  innounp\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop install main/innounp 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Package lessmsi
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Install Scoop package: main/lessmsi'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Bucket main')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $result = scoop list lessmsi 2>&1\n  return [bool]($result | Select-String '^  lessmsi\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop install main/lessmsi 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Package pester
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Install Scoop package: main/pester'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Bucket main')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $result = scoop list pester 2>&1\n  return [bool]($result | Select-String '^  pester\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop install main/pester 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Package powershell-beautifier
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Install Scoop package: main/powershell-beautifier'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Bucket main')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $result = scoop list powershell-beautifier 2>&1\n  return [bool]($result | Select-String '^  powershell-beautifier\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop install main/powershell-beautifier 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Package scoop-search
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Install Scoop package: main/scoop-search'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Bucket main')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $result = scoop list scoop-search 2>&1\n  return [bool]($result | Select-String '^  scoop-search\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop install main/scoop-search 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Package vim
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Install Scoop package: main/vim'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Bucket main')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $result = scoop list vim 2>&1\n  return [bool]($result | Select-String '^  vim\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop install main/vim 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Package vimtutor
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Install Scoop package: main/vimtutor'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Bucket main')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $result = scoop list vimtutor 2>&1\n  return [bool]($result | Select-String '^  vimtutor\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop install main/vimtutor 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Package wget
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Install Scoop package: main/wget'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Bucket main')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $result = scoop list wget 2>&1\n  return [bool]($result | Select-String '^  wget\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop install main/wget 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Package winget-ps
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Install Scoop package: main/winget-ps'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Bucket main')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $result = scoop list winget-ps 2>&1\n  return [bool]($result | Select-String '^  winget-ps\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop install main/winget-ps 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Package wixtoolset
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Install Scoop package: main/wixtoolset'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Bucket main')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $result = scoop list wixtoolset 2>&1\n  return [bool]($result | Select-String '^  wixtoolset\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop install main/wixtoolset 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Package pswindowsupdate
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Install Scoop package: matracey/pswindowsupdate'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Bucket matracey')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $result = scoop list pswindowsupdate 2>&1\n  return [bool]($result | Select-String '^  pswindowsupdate\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop install matracey/pswindowsupdate 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Alias clean
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Add Scoop alias: clean'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Install')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $aliases = scoop alias list 2>&1\n  return [bool]($aliases | Select-String '^  clean\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop alias add clean 'scoop cleanup *; scoop cache rm *;' '' 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Alias reinstall
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Add Scoop alias: reinstall'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Install')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $aliases = scoop alias list 2>&1\n  return [bool]($aliases | Select-String '^  reinstall\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop alias add reinstall 'scoop uninstall ; scoop install ;' '' 2>&1 | Out-Null\n  } catch { }\n} 2>$null"
+  - name: Scoop Alias upgrade
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: 'Add Scoop alias: upgrade'
+      module: Microsoft.DSC.Transitional
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Scoop Install')]"
+    properties:
+      testScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $aliases = scoop alias list 2>&1\n  return [bool]($aliases | Select-String '^  upgrade\\s')\n  } catch { return $false }\n} 2>$null"
+      setScript: "& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  scoop alias add upgrade 'scoop update; scoop update *;' '' 2>&1 | Out-Null\n  } catch { }\n} 2>$null"

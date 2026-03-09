@@ -165,3 +165,12 @@ resources:
       allowPrerelease: true
     properties:
       Ensure: Present
+  # ============================================================
+  # Remote Desktop
+  # ============================================================
+  - name: Enable Remote Desktop
+    type: Microsoft.Windows.Developer/EnableRemoteDesktop
+    directives:
+      allowPrerelease: true
+    properties:
+      Ensure: Present

@@ -174,3 +174,12 @@ resources:
       allowPrerelease: true
     properties:
       Ensure: Present
+  # ============================================================
+  # Long Path Support
+  # ============================================================
+  - name: Enable Long Paths
+    type: Microsoft.Windows.Developer/EnableLongPathSupport
+    directives:
+      allowPrerelease: true
+    properties:
+      Ensure: Present

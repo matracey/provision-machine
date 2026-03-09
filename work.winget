@@ -2525,3 +2525,127 @@ resources:
       executable: mise
       arguments:
         - install
+  # ============================================================
+  # Scoop Package Manager (Hybrid Migration)
+  # ============================================================
+  - name: Scoop Install and configure
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: "Install Scoop package manager, add buckets, install packages, and configure aliases"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      input:
+        prereqs:
+          - 7zip
+          - aria2
+          - dark
+          - git
+          - innounp
+          - lessmsi
+          - wixtoolset
+        buckets:
+          - name: extras
+            url: https://github.com/ScoopInstaller/Extras
+          - name: main
+            url: https://github.com/ScoopInstaller/Main.git
+          - name: matracey
+            url: https://github.com/matracey/scoop-bucket
+          - name: sysinternals
+            url: https://github.com/niheaven/scoop-sysinternals
+        packages:
+          - extras/cru
+          - extras/git-credential-manager
+          - extras/scoop-completion
+          - extras/sysinternals
+          - extras/servicebusexplorer
+          - main/7zip
+          - main/aria2
+          - main/azure-functions-core-tools
+          - main/cacert
+          - main/chromedriver
+          - main/coreutils
+          - main/curl
+          - main/dark
+          - main/edgedriver
+          - main/ffmpeg
+          - main/geckodriver
+          - main/git
+          - main/grep
+          - main/gsudo
+          - main/innounp
+          - main/lessmsi
+          - main/pester
+          - main/powershell-beautifier
+          - main/scoop-search
+          - main/vim
+          - main/vimtutor
+          - main/wget
+          - main/winget-ps
+          - main/wixtoolset
+          - matracey/pswindowsupdate
+          - matracey/clickpaste
+          - matracey/microsoft-graph
+          - matracey/microsoft-graph-applications
+          - matracey/microsoft-graph-authentication
+          - matracey/microsoft-graph-backuprestore
+          - matracey/microsoft-graph-bookings
+          - matracey/microsoft-graph-calendar
+          - matracey/microsoft-graph-changenotifications
+          - matracey/microsoft-graph-cloudcommunications
+          - matracey/microsoft-graph-compliance
+          - matracey/microsoft-graph-crossdeviceexperiences
+          - matracey/microsoft-graph-devicemanagement
+          - matracey/microsoft-graph-devicemanagement-administration
+          - matracey/microsoft-graph-devicemanagement-enrollment
+          - matracey/microsoft-graph-devicemanagement-functions
+          - matracey/microsoft-graph-devices-cloudprint
+          - matracey/microsoft-graph-devices-corporatemanagement
+          - matracey/microsoft-graph-devices-serviceannouncement
+          - matracey/microsoft-graph-directoryobjects
+          - matracey/microsoft-graph-education
+          - matracey/microsoft-graph-files
+          - matracey/microsoft-graph-groups
+          - matracey/microsoft-graph-identity-directorymanagement
+          - matracey/microsoft-graph-identity-governance
+          - matracey/microsoft-graph-identity-partner
+          - matracey/microsoft-graph-identity-signins
+          - matracey/microsoft-graph-mail
+          - matracey/microsoft-graph-notes
+          - matracey/microsoft-graph-people
+          - matracey/microsoft-graph-personalcontacts
+          - matracey/microsoft-graph-planner
+          - matracey/microsoft-graph-reports
+          - matracey/microsoft-graph-schemaextensions
+          - matracey/microsoft-graph-search
+          - matracey/microsoft-graph-security
+          - matracey/microsoft-graph-sites
+          - matracey/microsoft-graph-teams
+          - matracey/microsoft-graph-users
+          - matracey/microsoft-graph-users-actions
+          - matracey/microsoft-graph-users-functions
+          - matracey/setuserfta
+        aliases:
+          clean: "scoop cleanup *; scoop cache rm *;"
+          reinstall: "scoop uninstall ; scoop install ;"
+          upgrade: "scoop update; scoop update *;"
+      testScript: |
+        $scoopCmd = Get-Command scoop -ErrorAction SilentlyContinue
+        @{ _inDesiredState = ($null -ne $scoopCmd) } | ConvertTo-Json
+      setScript: |
+        param($inputData)
+        if (-not (Get-Command scoop -ErrorAction SilentlyContinue)) {
+          $installer = Join-Path $env:TEMP "install-scoop.ps1"
+          Invoke-WebRequest -Uri "https://get.scoop.sh" -OutFile $installer -UseBasicParsing
+          & $installer -RunAsAdmin
+          Remove-Item $installer -ErrorAction SilentlyContinue
+          $env:Path = "$env:USERPROFILE\scoop\shims;$env:Path"
+        }
+        foreach ($pkg in $inputData.prereqs) { scoop install $pkg }
+        foreach ($bucket in $inputData.buckets) {
+          scoop bucket add $bucket.name $bucket.url 2>$null
+        }
+        foreach ($pkg in $inputData.packages) { scoop install $pkg }
+        $aliases = $inputData.aliases
+        foreach ($name in $aliases.PSObject.Properties.Name) {
+          scoop alias add $name $aliases.$name "" 2>$null
+        }

@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/PowerShell/DSC/main/schemas/2023/08/config/document.json
+# Personal context DSCv3 configuration document
+# Apply with: winget configure --file personal.winget
+$schema: https://raw.githubusercontent.com/PowerShell/DSC/main/schemas/2023/08/config/document.json
+metadata:
+  winget:
+    processor:
+      identifier: "dscv3"
+resources:
+  - name: "Hello World"
+    type: "Microsoft.Windows.Developer/CommandLine/Command"
+    properties:
+      command: "powershell.exe -Command Write-Host 'Hello World'"

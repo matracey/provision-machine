@@ -54,3 +54,7 @@ resources:
     type: Microsoft.DSC/Include
     properties:
       configurationFile: ./modules/packages-work.dsc.yaml
+  - name: Include vscode
+    type: Microsoft.DSC/Include
+    properties:
+      configurationFile: ./modules/vscode.dsc.yaml

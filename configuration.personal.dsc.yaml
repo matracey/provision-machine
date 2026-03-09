@@ -363,3 +363,22 @@ resources:
       arguments:
         - /SETACTIVE
         - SCHEME_CURRENT
+  # ============================================================
+  # Execution Policy
+  # ============================================================
+  - name: Set ExecutionPolicy Unrestricted CurrentUser
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    properties:
+      executable: pwsh
+      arguments:
+        - -NoProfile
+        - -Command
+        - Set-ExecutionPolicy Unrestricted -Scope CurrentUser -Force
+  - name: Set ExecutionPolicy Unrestricted LocalMachine
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    properties:
+      executable: pwsh
+      arguments:
+        - -NoProfile
+        - -Command
+        - Set-ExecutionPolicy Unrestricted -Scope LocalMachine -Force

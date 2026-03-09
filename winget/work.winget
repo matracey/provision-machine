@@ -42,3 +42,7 @@ resources:
     type: Microsoft.DSC/Include
     properties:
       configurationFile: ./modules/defender-exclusions-work.dsc.yaml
+  - name: Include git config
+    type: Microsoft.DSC/Include
+    properties:
+      configurationFile: ./modules/git-config.dsc.yaml

@@ -490,3 +490,24 @@ resources:
     properties:
       UserEmail: matracey@outlook.ie
       ConfigLocation: global
+  # ============================================================
+  # Git Configuration
+  # ============================================================
+  - name: Git system core longpaths
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    properties:
+      executable: git
+      arguments:
+        - config
+        - --system
+        - core.longpaths
+        - "true"
+  - name: Git global credential helper
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    properties:
+      executable: git
+      arguments:
+        - config
+        - --global
+        - credential.helper
+        - manager

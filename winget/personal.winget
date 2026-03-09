@@ -62,3 +62,17 @@ resources:
     type: Microsoft.DSC/Include
     properties:
       configurationFile: ./modules/vscode.dsc.yaml
+  - name: Include visual studio preview
+    type: Microsoft.DSC/Include
+    properties:
+      configurationFile: ./modules/visual-studio-preview.dsc.yaml
+  # --- Opt-in: uncomment to install VS Enterprise Release ---
+  # - name: Include visual studio release
+  #   type: Microsoft.DSC/Include
+  #   properties:
+  #     configurationFile: ./modules/visual-studio-release.dsc.yaml
+  # --- Opt-in: uncomment to install VS Enterprise IntPreview ---
+  # - name: Include visual studio intpreview
+  #   type: Microsoft.DSC/Include
+  #   properties:
+  #     configurationFile: ./modules/visual-studio-intpreview.dsc.yaml

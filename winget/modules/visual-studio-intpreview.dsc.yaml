@@ -1,0 +1,22 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/PowerShell/DSC/main/schemas/2023/08/config/document.json
+# Visual Studio Enterprise IntPreview channel installation via bootstrapper.
+$schema: https://raw.githubusercontent.com/PowerShell/DSC/main/schemas/2023/08/config/document.json
+resources:
+  - name: Install VS IntPreview via bootstrapper
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: "Install Visual Studio Enterprise IntPreview via bootstrapper"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      testScript: |
+        $vsWhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+        if (-not (Test-Path $vsWhere)) { return $false }
+        $intPreview = & $vsWhere -prerelease -all -format json | ConvertFrom-Json |
+          Where-Object { $_.channelId -match "IntPreview" }
+        return ($null -ne $intPreview)
+      setScript: |
+        $url = "https://aka.ms/vs/18/intpreview/vs_enterprise.exe"
+        $installer = Join-Path $env:TEMP "vs_intpreview.exe"
+        Invoke-WebRequest -Uri $url -OutFile $installer -UseBasicParsing
+        Start-Process -FilePath $installer -ArgumentList "-p", "--norestart" -Wait
+        Remove-Item $installer -ErrorAction SilentlyContinue

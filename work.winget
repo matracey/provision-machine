@@ -2269,3 +2269,86 @@ resources:
         - --silent
         - --accept-package-agreements
         - --accept-source-agreements
+  # ============================================================
+  # Visual Studio Installation
+  # Requires module: Microsoft.WinGet.DSC
+  # Ships with WinGet. See: https://learn.microsoft.com/windows/package-manager
+  # ============================================================
+  # Workaround: Microsoft.WinGet.DSC/WinGetPackage resource removed in DSCv3 preview.
+  # Using Microsoft.WinGet/Package instead.
+  - name: Install Visual Studio Enterprise Insiders
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: "Install Visual Studio Enterprise Insiders via WinGet DSC"
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.VisualStudio.Enterprise.Insiders"
+      source: winget
+  # Requires module: Microsoft.VisualStudio.DSC
+  # Installed with Visual Studio. See: https://www.powershellgallery.com/packages/Microsoft.VisualStudio.DSC
+  - name: VS Insiders Workloads
+    type: Microsoft.VisualStudio.DSC/VSComponents
+    metadata:
+      description: "VS Insiders Workloads"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.VisualStudio.DSC"
+    dependsOn:
+      - "Install Visual Studio Enterprise Insiders"
+    properties:
+      ProductId: Microsoft.VisualStudio.Product.Enterprise
+      ChannelId: VisualStudio.18.Preview
+      Components:
+        - Microsoft.VisualStudio.Workload.Azure
+        - Microsoft.VisualStudio.Workload.CoreEditor
+        - Microsoft.VisualStudio.Workload.Data
+        - Microsoft.VisualStudio.Workload.ManagedDesktop
+        - Microsoft.VisualStudio.Workload.NativeDesktop
+        - Microsoft.VisualStudio.Workload.NetCrossPlat
+        - Microsoft.VisualStudio.Workload.NetWeb
+        - Microsoft.VisualStudio.Workload.Node
+      IncludeRecommended: true
+  # # --- Opt-in: uncomment to install VS Enterprise Release ---
+  # - name: Install Visual Studio Enterprise
+  #   type: Microsoft.WinGet/Package
+  #   metadata:
+  #     description: Install Visual Studio Enterprise
+  #   properties:
+  #     id: "Microsoft.VisualStudio.Enterprise"
+  #     source: winget
+  # - name: VS Release Workloads
+  #   type: Microsoft.VisualStudio.DSC/VSComponents
+  #   metadata:
+  #     winget:
+  #       securityContext: "elevated"
+  #   dependsOn:
+  #     - "Install Visual Studio Enterprise"
+  #   properties:
+  #     ProductId: Microsoft.VisualStudio.Product.Enterprise
+  #     ChannelId: VisualStudio.18.Release
+  #     Components:
+  #       - Microsoft.VisualStudio.Workload.Azure
+  #       - Microsoft.VisualStudio.Workload.CoreEditor
+  #       - Microsoft.VisualStudio.Workload.Data
+  #       - Microsoft.VisualStudio.Workload.ManagedDesktop
+  #       - Microsoft.VisualStudio.Workload.NativeDesktop
+  #       - Microsoft.VisualStudio.Workload.NetCrossPlat
+  #       - Microsoft.VisualStudio.Workload.NetWeb
+  #       - Microsoft.VisualStudio.Workload.Node
+  #     IncludeRecommended: true
+  # # --- Opt-in: uncomment to install VS IntPreview ---
+  # - name: Install VS IntPreview via bootstrapper
+  #   type: Microsoft.DSC.Transitional/PowerShellScript
+  #   properties:
+  #     testScript: |
+  #       $vsWhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+  #       if (-not (Test-Path $vsWhere)) { @{ _inDesiredState = $false } | ConvertTo-Json; return }
+  #       $intPreview = & $vsWhere -prerelease -all -format json | ConvertFrom-Json |
+  #         Where-Object { $_.channelId -match "IntPreview" }
+  #       @{ _inDesiredState = ($null -ne $intPreview) } | ConvertTo-Json
+  #     setScript: |
+  #       $url = "https://aka.ms/vs/18/intpreview/vs_enterprise.exe"
+  #       $installer = Join-Path $env:TEMP "vs_intpreview.exe"
+  #       Invoke-WebRequest -Uri $url -OutFile $installer -UseBasicParsing
+  #       Start-Process -FilePath $installer -ArgumentList "-p", "--norestart" -Wait
+  #       Remove-Item $installer -ErrorAction SilentlyContinue

@@ -1,0 +1,409 @@
+# yaml-language-server: $schema=https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+# Common WinGet package resources shared by work and personal.
+$schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+resources:
+  - name: Install Canva Affinity 3
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Canva Affinity 3
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Canva.Affinity"
+      source: winget
+      acceptAgreements: true
+  - name: Install WhatsApp Beta
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install WhatsApp Beta
+      module: "Microsoft.WinGet"
+    properties:
+      id: "9NBDXK71NK08"
+      source: msstore
+      acceptAgreements: true
+  - name: Install Apple Music
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Apple Music
+      module: "Microsoft.WinGet"
+    properties:
+      id: "9PFHDD62MXS1"
+      source: msstore
+      acceptAgreements: true
+  - name: Install Adobe Acrobat Reader 64 bit
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Adobe Acrobat Reader 64 bit
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Adobe.Acrobat.Reader.64-bit"
+      source: winget
+      acceptAgreements: true
+  - name: Install 1Password
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install 1Password
+      module: "Microsoft.WinGet"
+    properties:
+      id: "AgileBits.1Password"
+      source: winget
+      acceptAgreements: true
+  - name: Install WizTree
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install WizTree
+      module: "Microsoft.WinGet"
+    properties:
+      id: "AntibodySoftware.WizTree"
+      source: winget
+      acceptAgreements: true
+  - name: Install Ubuntu
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Ubuntu
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Canonical.Ubuntu"
+      source: winget
+      acceptAgreements: true
+  - name: Install DB Browser for SQLite
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install DB Browser for SQLite
+      module: "Microsoft.WinGet"
+    properties:
+      id: "DBBrowserForSQLite.DBBrowserForSQLite"
+      source: winget
+      acceptAgreements: true
+  - name: Install EarTrumpet
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install EarTrumpet
+      module: "Microsoft.WinGet"
+    properties:
+      id: "File-New-Project.EarTrumpet"
+      source: winget
+      acceptAgreements: true
+  - name: Install Mp3tag
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Mp3tag
+      module: "Microsoft.WinGet"
+    properties:
+      id: "FlorianHeidenreich.Mp3tag"
+      source: winget
+      acceptAgreements: true
+  - name: Install Git Credential Manager
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Git Credential Manager
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Git.GCM"
+      source: winget
+      acceptAgreements: true
+  - name: Install Git
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Git
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Git.Git"
+      source: winget
+      acceptAgreements: true
+  - name: Install GitHub Desktop
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install GitHub Desktop
+      module: "Microsoft.WinGet"
+    properties:
+      id: "GitHub.GitHubDesktop"
+      source: winget
+      acceptAgreements: true
+  - name: Install Git LFS
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Git LFS
+      module: "Microsoft.WinGet"
+    properties:
+      id: "GitHub.GitLFS"
+      source: winget
+      acceptAgreements: true
+  - name: Install Dual Monitor Tools
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Dual Monitor Tools
+      module: "Microsoft.WinGet"
+    properties:
+      id: "GNE.DualMonitorTools"
+      source: winget
+      acceptAgreements: true
+  - name: Install Cyberduck
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Cyberduck
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Iterate.Cyberduck"
+      source: winget
+      acceptAgreements: true
+  - name: Install Oh My Posh
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Oh My Posh
+      module: "Microsoft.WinGet"
+    properties:
+      id: "JanDeDobbeleer.OhMyPosh"
+      source: winget
+      acceptAgreements: true
+  - name: Install mise
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install mise
+      module: "Microsoft.WinGet"
+    properties:
+      id: "jdx.mise"
+      source: winget
+      acceptAgreements: true
+  - name: Install FontBase
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install FontBase
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Levitsky.FontBase"
+      source: winget
+      acceptAgreements: true
+  - name: Install LLVM
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install LLVM
+      module: "Microsoft.WinGet"
+    properties:
+      id: "LLVM.LLVM"
+      source: winget
+      acceptAgreements: true
+  - name: Install NanaZip
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install NanaZip
+      module: "Microsoft.WinGet"
+    properties:
+      id: "M2Team.NanaZip"
+      source: winget
+      acceptAgreements: true
+  - name: Install UniGetUI
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install UniGetUI
+      module: "Microsoft.WinGet"
+    properties:
+      id: "MartiCliment.UniGetUI"
+      source: winget
+      acceptAgreements: true
+  - name: Install Microsoft App Installer
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Microsoft App Installer
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.AppInstaller"
+      source: winget
+      acceptAgreements: true
+  - name: Install Microsoft Edge
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Microsoft Edge
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.Edge"
+      source: winget
+      acceptAgreements: true
+  - name: Install Microsoft Edge Beta
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Microsoft Edge Beta
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.Edge.Beta"
+      source: winget
+      acceptAgreements: true
+  - name: Install Edge WebView2 Runtime
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Edge WebView2 Runtime
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.EdgeWebView2Runtime"
+      source: winget
+      acceptAgreements: true
+  - name: Install Microsoft OneDrive
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Microsoft OneDrive
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.OneDrive"
+      source: winget
+      acceptAgreements: true
+  - name: Install PowerShell
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install PowerShell
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.PowerShell"
+      source: winget
+      acceptAgreements: true
+  - name: Install PowerToys
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install PowerToys
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.PowerToys"
+      source: winget
+      acceptAgreements: true
+  - name: Install Windows Terminal Preview
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Windows Terminal Preview
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.WindowsTerminal.Preview"
+      source: winget
+      acceptAgreements: true
+  - name: Install Windows Subsystem for Linux
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Windows Subsystem for Linux
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.WSL"
+      source: winget
+      acceptAgreements: true
+  - name: Install Mozilla Firefox
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Mozilla Firefox
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Mozilla.Firefox"
+      source: winget
+      acceptAgreements: true
+  - name: Install Obsidian
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Obsidian
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Obsidian.Obsidian"
+      source: winget
+      acceptAgreements: true
+  - name: Install Spotify
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Spotify
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Spotify.Spotify"
+      source: winget
+      acceptAgreements: true
+  - name: Install VLC
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install VLC
+      module: "Microsoft.WinGet"
+    properties:
+      id: "VideoLAN.VLC"
+      source: winget
+      acceptAgreements: true
+  - name: Install WinSCP
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install WinSCP
+      module: "Microsoft.WinGet"
+    properties:
+      id: "WinSCP.WinSCP"
+      source: winget
+      acceptAgreements: true
+  - name: Install DotNet SDK 8
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install DotNet SDK 8
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.DotNet.SDK.8"
+      source: winget
+      acceptAgreements: true
+  - name: Install DotNet SDK 9
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install DotNet SDK 9
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.DotNet.SDK.9"
+      source: winget
+      acceptAgreements: true
+  - name: Install VCRedist 2015 plus x64
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install VCRedist 2015 plus x64
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.VCRedist.2015+.x64"
+      source: winget
+      acceptAgreements: true
+  - name: Install VCRedist 2013 x64
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install VCRedist 2013 x64
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.VCRedist.2013.x64"
+      source: winget
+      acceptAgreements: true
+  - name: Install VCRedist 2012 x64
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install VCRedist 2012 x64
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.VCRedist.2012.x64"
+      source: winget
+      acceptAgreements: true
+  - name: Install VCRedist 2010 x64
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install VCRedist 2010 x64
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.VCRedist.2010.x64"
+      source: winget
+      acceptAgreements: true
+  - name: Install VCRedist 2008 x64
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install VCRedist 2008 x64
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.VCRedist.2008.x64"
+      source: winget
+      acceptAgreements: true
+  - name: Install VCRedist 2005 x64
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install VCRedist 2005 x64
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.VCRedist.2005.x64"
+      source: winget
+      acceptAgreements: true
+  - name: Install DotNet Framework Redistributable 1 1
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install DotNet Framework Redistributable 1 1
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.DotNet.Framework.Redistributable.1_1"
+      source: winget
+      acceptAgreements: true

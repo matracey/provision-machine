@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+# Visual Studio Enterprise Preview channel installation and workloads.
+$schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+resources:
+  - name: Install Visual Studio Enterprise Insiders
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: "Install Visual Studio Enterprise Insiders via WinGet"
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.VisualStudio.Enterprise.Insiders"
+      source: winget
+      acceptAgreements: true
+  - name: VS Preview Workloads
+    type: Microsoft.VisualStudio.DSC/VSComponents
+    requireVersion: "=1.0.35"
+    metadata:
+      description: "VS Preview Workloads"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.VisualStudio.DSC"
+    dependsOn:
+      - "[resourceId('Microsoft.WinGet/Package','Install Visual Studio Enterprise Insiders')]"
+    properties:
+      ProductId: Microsoft.VisualStudio.Product.Enterprise
+      ChannelId: VisualStudio.18.Preview
+      Components:
+        - Microsoft.VisualStudio.Workload.Azure
+        - Microsoft.VisualStudio.Workload.CoreEditor
+        - Microsoft.VisualStudio.Workload.NetWeb
+        - Microsoft.VisualStudio.Component.VC.Runtimes.x86.x64.Spectre
+        - Microsoft.VisualStudio.Component.VC.Tools.x86.x64
+        - Microsoft.VisualStudio.Component.VC.CLI.Support
+        - Microsoft.Component.Azure.DataLake.Tools
+      IncludeRecommended: true

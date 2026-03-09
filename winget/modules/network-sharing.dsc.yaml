@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+# Shared file and printer sharing resource.
+$schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+resources:
+  - name: Enable File and Printer Sharing
+    type: Microsoft.Windows.Developer/AdvancedNetworkSharingSetting
+    metadata:
+      description: "Enable file and printer sharing for Domain, Private, and Public profiles"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows.Developer"
+    properties:
+      Name: FileAndPrinterSharing
+      Profiles:
+        - Domain
+        - Private
+        - Public

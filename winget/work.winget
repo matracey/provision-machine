@@ -14,3 +14,7 @@ resources:
     type: Microsoft.DSC/Include
     properties:
       configurationFile: ./modules/developer-mode.dsc.yaml
+  - name: Include network sharing
+    type: Microsoft.DSC/Include
+    properties:
+      configurationFile: ./modules/network-sharing.dsc.yaml

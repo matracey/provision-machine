@@ -1,0 +1,158 @@
+# yaml-language-server: $schema=https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+# Work context DSCv3 configuration document
+# Apply with: dsc config set --path configuration.work.dsc.yaml
+$schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+metadata:
+  Microsoft.DSC:
+    securityContext: elevated
+resources:
+  # ============================================================
+  # TurboRDP — RDP session optimization registry values
+  # ============================================================
+  - name: RDP Select UDP TCP transport
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+      valueName: SelectTransport
+      valueData:
+        DWord: 0
+  - name: RDP Enumerate HW before SW
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+      valueName: bEnumerateHWBeforeSW
+      valueData:
+        DWord: 1
+  - name: RDP AVC444 mode preferred
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+      valueName: AVC444ModePreferred
+      valueData:
+        DWord: 1
+  - name: RDP AVC hardware encode preferred
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+      valueName: AVCHardwareEncodePreferred
+      valueData:
+        DWord: 1
+  - name: RDP Max compression level
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+      valueName: MaxCompressionLevel
+      valueData:
+        DWord: 0
+  - name: RDP Image quality
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+      valueName: ImageQuality
+      valueData:
+        DWord: 2
+  - name: RDP Enable virtualized graphics
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+      valueName: fEnableVirtualizedGraphics
+      valueData:
+        DWord: 1
+  - name: RDP VG capture frame rate
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+      valueName: VGOptimization_CaptureFrameRate
+      valueData:
+        DWord: 1
+  - name: RDP VG compression ratio
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+      valueName: VGOptimization_CompressionRatio
+      valueData:
+        DWord: 1
+  - name: RDP Visual experience policy
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+      valueName: VisualExperiencePolicy
+      valueData:
+        DWord: 1
+  - name: RDP Disable WDDM driver
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+      valueName: fEnableWddmDriver
+      valueData:
+        DWord: 0
+  - name: RDP USB redirection mode
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services\Client
+      valueName: fUsbRedirectionEnableMode
+      valueData:
+        DWord: 2
+  - name: RDP DWM frame interval
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations
+      valueName: DWMFRAMEINTERVAL
+      valueData:
+        DWord: 15
+  - name: RDP System responsiveness
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile
+      valueName: SystemResponsiveness
+      valueData:
+        DWord: 0
+  - name: RDP Flow control disable
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM\SYSTEM\CurrentControlSet\Services\TermDD
+      valueName: FlowControlDisable
+      valueData:
+        DWord: 1
+  - name: RDP Flow control display bandwidth
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM\SYSTEM\CurrentControlSet\Services\TermDD
+      valueName: FlowControlDisplayBandwidth
+      valueData:
+        DWord: 16
+  - name: RDP Flow control channel bandwidth
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM\SYSTEM\CurrentControlSet\Services\TermDD
+      valueName: FlowControlChannelBandwidth
+      valueData:
+        DWord: 144
+  - name: RDP Flow control charge post compression
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM\SYSTEM\CurrentControlSet\Services\TermDD
+      valueName: FlowControlChargePostCompression
+      valueData:
+        DWord: 0
+  - name: RDP Interactive delay
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp
+      valueName: InteractiveDelay
+      valueData:
+        DWord: 0
+  - name: RDP Disable bandwidth throttling
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters
+      valueName: DisableBandwidthThrottling
+      valueData:
+        DWord: 1
+  - name: RDP Disable large MTU
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters
+      valueName: DisableLargeMtu
+      valueData:
+        DWord: 0

@@ -76,3 +76,7 @@ resources:
     type: Microsoft.DSC/Include
     properties:
       configurationFile: ./modules/fonts.dsc.yaml
+  - name: Include oh my posh work
+    type: Microsoft.DSC/Include
+    properties:
+      configurationFile: ./modules/oh-my-posh-work.dsc.yaml

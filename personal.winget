@@ -708,3 +708,871 @@ resources:
         - --global
         - credential.helper
         - manager
+  # ============================================================
+  # WinGet Packages
+  # Requires module: Microsoft.WinGet
+  # Ships with WinGet. See: https://learn.microsoft.com/windows/package-manager
+  # ============================================================
+  - name: Install Canva Affinity 3
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Canva Affinity 3
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Canva.Affinity"
+      source: winget
+  - name: Install WhatsApp Beta
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install WhatsApp Beta
+      module: "Microsoft.WinGet"
+    properties:
+      id: "9NBDXK71NK08"
+      source: msstore
+  - name: Install Amazon Games
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Amazon Games
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Amazon.Games"
+      source: winget
+  - name: Install Apple Music
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Apple Music
+      module: "Microsoft.WinGet"
+    properties:
+      id: "9PFHDD62MXS1"
+      source: msstore
+  - name: Install Adobe Acrobat Reader 64 bit
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Adobe Acrobat Reader 64 bit
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Adobe.Acrobat.Reader.64-bit"
+      source: winget
+  - name: Install 1Password
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install 1Password
+      module: "Microsoft.WinGet"
+    properties:
+      id: "AgileBits.1Password"
+      source: winget
+  - name: Install ATLauncher
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install ATLauncher
+      module: "Microsoft.WinGet"
+    properties:
+      id: "ATLauncher.ATLauncher"
+      source: winget
+  - name: Install WizTree
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install WizTree
+      module: "Microsoft.WinGet"
+    properties:
+      id: "AntibodySoftware.WizTree"
+      source: winget
+  - name: Install Ubuntu
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Ubuntu
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Canonical.Ubuntu"
+      source: winget
+  - name: Install DB Browser for SQLite
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install DB Browser for SQLite
+      module: "Microsoft.WinGet"
+    properties:
+      id: "DBBrowserForSQLite.DBBrowserForSQLite"
+      source: winget
+  - name: Install EarTrumpet
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install EarTrumpet
+      module: "Microsoft.WinGet"
+    properties:
+      id: "File-New-Project.EarTrumpet"
+      source: winget
+  - name: Install Audacity
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Audacity
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Audacity.Audacity"
+      source: winget
+  - name: Install Mp3tag
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Mp3tag
+      module: "Microsoft.WinGet"
+    properties:
+      id: "FlorianHeidenreich.Mp3tag"
+      source: winget
+  - name: Install Avidemux
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Avidemux
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Avidemux.Avidemux"
+      source: winget
+  - name: Install calibre
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install calibre
+      module: "Microsoft.WinGet"
+    properties:
+      id: "calibre.calibre"
+      source: winget
+  - name: Install Universal ADB Driver
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Universal ADB Driver
+      module: "Microsoft.WinGet"
+    properties:
+      id: "ClockworkMod.UniversalADBDriver"
+      source: winget
+  - name: Install K Lite Codec Pack Full
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install K Lite Codec Pack Full
+      module: "Microsoft.WinGet"
+    properties:
+      id: "CodecGuide.K-LiteCodecPack.Full"
+      source: winget
+  - name: Install Git Credential Manager
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Git Credential Manager
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Git.GCM"
+      source: winget
+  - name: Install Borderless Gaming
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Borderless Gaming
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Codeusa.BorderlessGaming"
+      source: winget
+  - name: Install CPU Z MSI
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install CPU Z MSI
+      module: "Microsoft.WinGet"
+    properties:
+      id: "CPUID.CPU-Z.MSI"
+      source: winget
+  - name: Install HWMonitor
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install HWMonitor
+      module: "Microsoft.WinGet"
+    properties:
+      id: "CPUID.HWMonitor"
+      source: winget
+  - name: Install CrystalDiskInfo
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install CrystalDiskInfo
+      module: "Microsoft.WinGet"
+    properties:
+      id: "CrystalDewWorld.CrystalDiskInfo"
+      source: winget
+  - name: Install Das Keyboard
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Das Keyboard
+      module: "Microsoft.WinGet"
+    properties:
+      id: "DasKeyboard.DasKeyboard"
+      source: winget
+  - name: Install Discord
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Discord
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Discord.Discord"
+      source: winget
+  - name: Install Discord PTB
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Discord PTB
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Discord.Discord.PTB"
+      source: winget
+  - name: Install Git
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Git
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Git.Git"
+      source: winget
+  - name: Install Docker Desktop
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Docker Desktop
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Docker.DockerDesktop"
+      source: winget
+  - name: Install Dolphin Emulator
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Dolphin Emulator
+      module: "Microsoft.WinGet"
+    properties:
+      id: "DolphinEmulator.Dolphin"
+      source: winget
+  - name: Install EA Desktop
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install EA Desktop
+      module: "Microsoft.WinGet"
+    properties:
+      id: "ElectronicArts.EADesktop"
+      source: winget
+  - name: Install Remote Mouse
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Remote Mouse
+      module: "Microsoft.WinGet"
+    properties:
+      id: "EmoteInteractive.RemoteMouse"
+      source: winget
+  - name: Install Epic Games Launcher
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Epic Games Launcher
+      module: "Microsoft.WinGet"
+    properties:
+      id: "EpicGames.EpicGamesLauncher"
+      source: winget
+  - name: Install MacintoshJS
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install MacintoshJS
+      module: "Microsoft.WinGet"
+    properties:
+      id: "FelixRieseberg.MacintoshJS"
+      source: winget
+  - name: Install Windows95
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Windows95
+      module: "Microsoft.WinGet"
+    properties:
+      id: "FelixRieseberg.Windows95"
+      source: winget
+  - name: Install GOG Galaxy
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install GOG Galaxy
+      module: "Microsoft.WinGet"
+    properties:
+      id: "GOG.Galaxy"
+      source: winget
+  - name: Install Android Studio
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Android Studio
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Google.AndroidStudio"
+      source: winget
+  - name: Install GitHub Desktop
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install GitHub Desktop
+      module: "Microsoft.WinGet"
+    properties:
+      id: "GitHub.GitHubDesktop"
+      source: winget
+  - name: Install Git LFS
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Git LFS
+      module: "Microsoft.WinGet"
+    properties:
+      id: "GitHub.GitLFS"
+      source: winget
+  - name: Install Dual Monitor Tools
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Dual Monitor Tools
+      module: "Microsoft.WinGet"
+    properties:
+      id: "GNE.DualMonitorTools"
+      source: winget
+  - name: Install Google Chrome
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Google Chrome
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Google.Chrome"
+      source: winget
+  - name: Install Google Quick Share
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Google Quick Share
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Google.QuickShare"
+      source: winget
+  - name: Install Cyberduck
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Cyberduck
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Iterate.Cyberduck"
+      source: winget
+  - name: Install Oh My Posh
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Oh My Posh
+      module: "Microsoft.WinGet"
+    properties:
+      id: "JanDeDobbeleer.OhMyPosh"
+      source: winget
+  - name: Install HandBrake
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install HandBrake
+      module: "Microsoft.WinGet"
+    properties:
+      id: "HandBrake.HandBrake"
+      source: winget
+  - name: Install AutoHotkey
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install AutoHotkey
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Lexikos.AutoHotkey"
+      source: winget
+  - name: Install mise
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install mise
+      module: "Microsoft.WinGet"
+    properties:
+      id: "jdx.mise"
+      source: winget
+  - name: Install FontBase
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install FontBase
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Levitsky.FontBase"
+      source: winget
+  - name: Install RetroArch
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install RetroArch
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Libretro.RetroArch"
+      source: winget
+  - name: Install LLVM
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install LLVM
+      module: "Microsoft.WinGet"
+    properties:
+      id: "LLVM.LLVM"
+      source: winget
+  - name: Install NanaZip
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install NanaZip
+      module: "Microsoft.WinGet"
+    properties:
+      id: "M2Team.NanaZip"
+      source: winget
+  - name: Install UniGetUI
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install UniGetUI
+      module: "Microsoft.WinGet"
+    properties:
+      id: "MartiCliment.UniGetUI"
+      source: winget
+  - name: Install Logitech G HUB
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Logitech G HUB
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Logitech.GHUB"
+      source: winget
+  - name: Install MediaInfo GUI
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install MediaInfo GUI
+      module: "Microsoft.WinGet"
+    properties:
+      id: "MediaArea.MediaInfo.GUI"
+      source: winget
+  - name: Install Microsoft App Installer
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Microsoft App Installer
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.AppInstaller"
+      source: winget
+  - name: Install Microsoft Office
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Microsoft Office
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.Office"
+      source: winget
+  - name: Install Microsoft Edge
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Microsoft Edge
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.Edge"
+      source: winget
+  - name: Install Microsoft Edge Beta
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Microsoft Edge Beta
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.Edge.Beta"
+      source: winget
+  - name: Install Microsoft Remote Desktop Client
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Microsoft Remote Desktop Client
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.RemoteDesktopClient"
+      source: winget
+  - name: Install MKVToolNix
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install MKVToolNix
+      module: "Microsoft.WinGet"
+    properties:
+      id: "MoritzBunkus.MKVToolNix"
+      source: winget
+  - name: Install Edge WebView2 Runtime
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Edge WebView2 Runtime
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.EdgeWebView2Runtime"
+      source: winget
+  - name: Install NordPass
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install NordPass
+      module: "Microsoft.WinGet"
+    properties:
+      id: "NordPassTeam.NordPass"
+      source: winget
+  - name: Install NordVPN
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install NordVPN
+      module: "Microsoft.WinGet"
+    properties:
+      id: "NordVPN.NordVPN"
+      source: winget
+  - name: Install Microsoft OneDrive
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Microsoft OneDrive
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.OneDrive"
+      source: winget
+  - name: Install NVIDIA Broadcast
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install NVIDIA Broadcast
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Nvidia.Broadcast"
+      source: winget
+  - name: Install GeForce Experience
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install GeForce Experience
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Nvidia.GeForceExperience"
+      source: winget
+  - name: Install NVIDIA PhysX
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install NVIDIA PhysX
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Nvidia.PhysX"
+      source: winget
+  - name: Install NZXT CAM
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install NZXT CAM
+      module: "Microsoft.WinGet"
+    properties:
+      id: "NZXT.CAM"
+      source: winget
+  - name: Install OBS Studio
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install OBS Studio
+      module: "Microsoft.WinGet"
+    properties:
+      id: "OBSProject.OBSStudio"
+      source: winget
+  - name: Install PowerShell
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install PowerShell
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.PowerShell"
+      source: winget
+  - name: Install Signal
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Signal
+      module: "Microsoft.WinGet"
+    properties:
+      id: "OpenWhisperSystems.Signal"
+      source: winget
+  - name: Install foobar2000
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install foobar2000
+      module: "Microsoft.WinGet"
+    properties:
+      id: "PeterPawlowski.foobar2000"
+      source: winget
+  - name: Install Plex
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Plex
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Plex.Plex"
+      source: winget
+  - name: Install Plex Media Server
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Plex Media Server
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Plex.PlexMediaServer"
+      source: winget
+  - name: Install Postman
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Postman
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Postman.Postman"
+      source: winget
+  - name: Install qBittorrent
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install qBittorrent
+      module: "Microsoft.WinGet"
+    properties:
+      id: "qBittorrent.qBittorrent"
+      source: winget
+  - name: Install HWiNFO
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install HWiNFO
+      module: "Microsoft.WinGet"
+    properties:
+      id: "REALiX.HWiNFO"
+      source: winget
+  - name: Install Rufus
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Rufus
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Rufus.Rufus"
+      source: winget
+  - name: Install SABnzbd
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install SABnzbd
+      module: "Microsoft.WinGet"
+    properties:
+      id: "SABnzbdTeam.SABnzbd"
+      source: winget
+  - name: Install ElevenClock
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install ElevenClock
+      module: "Microsoft.WinGet"
+    properties:
+      id: "SomePythonThings.ElevenClock"
+      source: winget
+  - name: Install PowerToys
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install PowerToys
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.PowerToys"
+      source: winget
+  - name: Install Tailscale
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Tailscale
+      module: "Microsoft.WinGet"
+    properties:
+      id: "tailscale.tailscale"
+      source: winget
+  - name: Install Prowlarr
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Prowlarr
+      module: "Microsoft.WinGet"
+    properties:
+      id: "TeamProwlarr.Prowlarr"
+      source: winget
+  - name: Install Radarr
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Radarr
+      module: "Microsoft.WinGet"
+    properties:
+      id: "TeamRadarr.Radarr"
+      source: winget
+  - name: Install Sonarr
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Sonarr
+      module: "Microsoft.WinGet"
+    properties:
+      id: "TeamSonarr.Sonarr"
+      source: winget
+  - name: Install TIDAL
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install TIDAL
+      module: "Microsoft.WinGet"
+    properties:
+      id: "TIDALMusicAS.TIDAL"
+      source: winget
+  - name: Install Ubisoft Connect
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Ubisoft Connect
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Ubisoft.Connect"
+      source: winget
+  - name: Install Steam
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Steam
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Valve.Steam"
+      source: winget
+  - name: Install Windows Terminal Preview
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Windows Terminal Preview
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.WindowsTerminal.Preview"
+      source: winget
+  - name: Install Windows Subsystem for Linux
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Windows Subsystem for Linux
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.WSL"
+      source: winget
+  - name: Install Mozilla Firefox
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Mozilla Firefox
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Mozilla.Firefox"
+      source: winget
+  - name: Install Notepad++
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Notepad++
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Notepad++.Notepad++"
+      source: winget
+  - name: Install Obsidian
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Obsidian
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Obsidian.Obsidian"
+      source: winget
+  - name: Install Spotify
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Spotify
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Spotify.Spotify"
+      source: winget
+  - name: Install VLC
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install VLC
+      module: "Microsoft.WinGet"
+    properties:
+      id: "VideoLAN.VLC"
+      source: winget
+  - name: Install WinSCP
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install WinSCP
+      module: "Microsoft.WinGet"
+    properties:
+      id: "WinSCP.WinSCP"
+      source: winget
+  - name: Install DotNet SDK 8
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install DotNet SDK 8
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.DotNet.SDK.8"
+      source: winget
+  - name: Install DotNet SDK 9
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install DotNet SDK 9
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.DotNet.SDK.9"
+      source: winget
+  - name: Install VCRedist 2015 plus x64
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install VCRedist 2015 plus x64
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.VCRedist.2015+.x64"
+      source: winget
+  - name: Install VCRedist 2013 x64
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install VCRedist 2013 x64
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.VCRedist.2013.x64"
+      source: winget
+  - name: Install VCRedist 2012 x64
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install VCRedist 2012 x64
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.VCRedist.2012.x64"
+      source: winget
+  - name: Install VCRedist 2010 x64
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install VCRedist 2010 x64
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.VCRedist.2010.x64"
+      source: winget
+  - name: Install VCRedist 2008 x64
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install VCRedist 2008 x64
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.VCRedist.2008.x64"
+      source: winget
+  - name: Install VCRedist 2005 x64
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install VCRedist 2005 x64
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.VCRedist.2005.x64"
+      source: winget
+  - name: Install DotNet Framework Redistributable 1 1
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install DotNet Framework Redistributable 1 1
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.DotNet.Framework.Redistributable.1_1"
+      source: winget
+  # Workaround: Microsoft.WinGet/Package does not support the 'override' property.
+  # See: https://github.com/microsoft/winget-cli/issues/3401
+  # Using Microsoft.DSC.Transitional/PowerShellScript for idempotent install with custom Inno Setup tasks.
+  - name: Install Visual Studio Code
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: "Install Visual Studio Code with context menu, file associations, and PATH"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      input:
+        id: "Microsoft.VisualStudioCode"
+        source: winget
+        override: '/VERYSILENT /MERGETASKS="!runcode,addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath"'
+      testScript: |
+        $in = $env:DSC_RESOURCE_INPUT | ConvertFrom-Json
+        & winget list --id $in.input.id --exact --source $in.input.source 2>$null
+        @{ _inDesiredState = ($LASTEXITCODE -eq 0) } | ConvertTo-Json
+      setScript: |
+        $in = $env:DSC_RESOURCE_INPUT | ConvertFrom-Json
+        & winget install --id $in.input.id --source $in.input.source --silent --accept-package-agreements --accept-source-agreements --override $in.input.override
+  # Workaround: Microsoft.WinGet/Package does not support the 'override' property.
+  # See: https://github.com/microsoft/winget-cli/issues/3401
+  - name: Install Visual Studio Code Insiders
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: "Install Visual Studio Code Insiders with context menu, file associations, and PATH"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      input:
+        id: "Microsoft.VisualStudioCode.Insiders"
+        source: winget
+        override: '/VERYSILENT /MERGETASKS="!runcode,addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath"'
+      testScript: |
+        $in = $env:DSC_RESOURCE_INPUT | ConvertFrom-Json
+        & winget list --id $in.input.id --exact --source $in.input.source 2>$null
+        @{ _inDesiredState = ($LASTEXITCODE -eq 0) } | ConvertTo-Json
+      setScript: |
+        $in = $env:DSC_RESOURCE_INPUT | ConvertFrom-Json
+        & winget install --id $in.input.id --source $in.input.source --silent --accept-package-agreements --accept-source-agreements --override $in.input.override

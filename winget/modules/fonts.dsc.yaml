@@ -1,0 +1,60 @@
+# yaml-language-server: $schema=https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+# Font repository resources.
+$schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+resources:
+  - name: Clone Google Fonts
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: "Clone the Google Fonts repository (shallow)"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      testScript: |
+        $dir = Join-Path $env:USERPROFILE 'fonts\google-fonts\.git'
+        return (Test-Path $dir)
+      setScript: |
+        $root = Join-Path $env:USERPROFILE 'fonts'
+        if (-not (Test-Path $root)) { New-Item -ItemType Directory -Path $root -Force | Out-Null }
+        $dest = Join-Path $root 'google-fonts'
+        if (Test-Path (Join-Path $dest '.git')) {
+          git -C $dest pull 2>&1 | Out-Null
+        } else {
+          if (Test-Path $dest) { Remove-Item $dest -Recurse -Force }
+          git clone --depth 1 --filter=blob:none --no-checkout --single-branch https://github.com/google/fonts.git $dest
+          git -C $dest config core.fsmonitor false
+        }
+  - name: Sparse Checkout Google Fonts
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: "Configure sparse checkout for Google Fonts (apache, ofl, ufl dirs only)"
+      module: "Microsoft.DSC.Transitional"
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Clone Google Fonts')]"
+    properties:
+      testScript: |
+        $dir = Join-Path $env:USERPROFILE 'fonts\google-fonts'
+        $sparse = Join-Path $dir '.git\info\sparse-checkout'
+        return (Test-Path $sparse)
+      setScript: |
+        $dir = Join-Path $env:USERPROFILE 'fonts\google-fonts'
+        git -C $dir sparse-checkout set --no-cone '/apache/' '/ofl/' '/ufl/'
+  - name: Clone Nerd Fonts
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: "Clone the Nerd Fonts repository (shallow)"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      testScript: |
+        $dir = Join-Path $env:USERPROFILE 'fonts\nerd-fonts\.git'
+        return (Test-Path $dir)
+      setScript: |
+        $root = Join-Path $env:USERPROFILE 'fonts'
+        if (-not (Test-Path $root)) { New-Item -ItemType Directory -Path $root -Force | Out-Null }
+        $dest = Join-Path $root 'nerd-fonts'
+        if (Test-Path (Join-Path $dest '.git')) {
+          git -C $dest pull 2>&1 | Out-Null
+        } else {
+          if (Test-Path $dest) { Remove-Item $dest -Recurse -Force }
+          git clone --depth 1 --filter=blob:none --no-checkout --single-branch https://github.com/ryanoasis/nerd-fonts.git $dest
+          git -C $dest config core.fsmonitor false
+          git -C $dest lfs install --skip-smudge 2>&1 | Out-Null
+        }

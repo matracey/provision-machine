@@ -50,3 +50,7 @@ resources:
     type: Microsoft.DSC/Include
     properties:
       configurationFile: ./modules/packages-common.dsc.yaml
+  - name: Include packages work
+    type: Microsoft.DSC/Include
+    properties:
+      configurationFile: ./modules/packages-work.dsc.yaml

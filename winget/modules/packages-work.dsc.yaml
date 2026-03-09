@@ -1,0 +1,276 @@
+# yaml-language-server: $schema=https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+# Work-only WinGet package resources.
+$schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+resources:
+  - name: Install Bruno
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: "Install Bruno (workaround for DSCv3 stateAndDiff bug)"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      executable: winget
+      arguments:
+        - install
+        - --id
+        - "Bruno.Bruno"
+        - --source
+        - winget
+        - --silent
+        - --accept-package-agreements
+        - --accept-source-agreements
+  - name: Install K Lite Codec Pack Mega
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: "Install K Lite Codec Pack Mega (workaround for DSCv3 stateAndDiff bug)"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      executable: winget
+      arguments:
+        - install
+        - --id
+        - "CodecGuide.K-LiteCodecPack.Mega"
+        - --source
+        - winget
+        - --silent
+        - --accept-package-agreements
+        - --accept-source-agreements
+  - name: Install Azure AzCopy
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: "Install Azure AzCopy (workaround for DSCv3 stateAndDiff bug)"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      executable: winget
+      arguments:
+        - install
+        - --id
+        - "Microsoft.Azure.AZCopy.10"
+        - --source
+        - winget
+        - --silent
+        - --accept-package-agreements
+        - --accept-source-agreements
+  - name: Install Azure Functions Core Tools
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: "Install Azure Functions Core Tools (workaround for DSCv3 stateAndDiff bug)"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      executable: winget
+      arguments:
+        - install
+        - --id
+        - "Microsoft.Azure.FunctionsCoreTools"
+        - --source
+        - winget
+        - --silent
+        - --accept-package-agreements
+        - --accept-source-agreements
+  - name: Install Azure Storage Emulator
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: "Install Azure Storage Emulator (workaround for DSCv3 stateAndDiff bug)"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      executable: winget
+      arguments:
+        - install
+        - --id
+        - "Microsoft.Azure.StorageEmulator"
+        - --source
+        - winget
+        - --silent
+        - --accept-package-agreements
+        - --accept-source-agreements
+  - name: Install Azure Storage Explorer
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: "Install Azure Storage Explorer (workaround for DSCv3 stateAndDiff bug)"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      executable: winget
+      arguments:
+        - install
+        - --id
+        - "Microsoft.Azure.StorageExplorer"
+        - --source
+        - winget
+        - --silent
+        - --accept-package-agreements
+        - --accept-source-agreements
+  - name: Install Azure CLI
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: "Install Azure CLI (workaround for DSCv3 stateAndDiff bug)"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      executable: winget
+      arguments:
+        - install
+        - --id
+        - "Microsoft.AzureCLI"
+        - --source
+        - winget
+        - --silent
+        - --accept-package-agreements
+        - --accept-source-agreements
+  - name: Install CLR Types for SQL Server 2019
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: "Install CLR Types for SQL Server 2019 (workaround for DSCv3 stateAndDiff bug)"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      executable: winget
+      arguments:
+        - install
+        - --id
+        - "Microsoft.CLRTypesSQLServer.2019"
+        - --source
+        - winget
+        - --silent
+        - --accept-package-agreements
+        - --accept-source-agreements
+  - name: Install Microsoft Edge Dev
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: "Install Microsoft Edge Dev (workaround for DSCv3 stateAndDiff bug)"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      executable: winget
+      arguments:
+        - install
+        - --id
+        - "Microsoft.Edge.Dev"
+        - --source
+        - winget
+        - --silent
+        - --accept-package-agreements
+        - --accept-source-agreements
+  - name: Install Microsoft ODBC Driver 17 for SQL Server
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: "Install Microsoft ODBC Driver 17 for SQL Server (workaround for DSCv3 stateAndDiff bug)"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      executable: winget
+      arguments:
+        - install
+        - --id
+        - "Microsoft.msodbcsql.17"
+        - --source
+        - winget
+        - --silent
+        - --accept-package-agreements
+        - --accept-source-agreements
+  - name: Install Power Automate Desktop
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: "Install Power Automate Desktop (workaround for DSCv3 stateAndDiff bug)"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      executable: winget
+      arguments:
+        - install
+        - --id
+        - "Microsoft.PowerAutomateDesktop"
+        - --source
+        - winget
+        - --silent
+        - --accept-package-agreements
+        - --accept-source-agreements
+  - name: Install Remote Help
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: "Install Remote Help (workaround for DSCv3 stateAndDiff bug)"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      executable: winget
+      arguments:
+        - install
+        - --id
+        - "Microsoft.RemoteHelp"
+        - --source
+        - winget
+        - --silent
+        - --accept-package-agreements
+        - --accept-source-agreements
+  - name: Install SQL Server Management Studio 22 Preview
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: "Install SQL Server Management Studio 22 Preview (workaround for DSCv3 stateAndDiff bug)"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      executable: winget
+      arguments:
+        - install
+        - --id
+        - "Microsoft.SQLServerManagementStudio.22.Preview"
+        - --source
+        - winget
+        - --silent
+        - --accept-package-agreements
+        - --accept-source-agreements
+  - name: Install Microsoft Teams
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: "Install Microsoft Teams (workaround for DSCv3 stateAndDiff bug)"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      executable: winget
+      arguments:
+        - install
+        - --id
+        - "Microsoft.Teams"
+        - --source
+        - winget
+        - --silent
+        - --accept-package-agreements
+        - --accept-source-agreements
+  - name: Install Web Deploy
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: "Install Web Deploy (workaround for DSCv3 stateAndDiff bug)"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      executable: winget
+      arguments:
+        - install
+        - --id
+        - "Microsoft.WebDeploy"
+        - --source
+        - winget
+        - --silent
+        - --accept-package-agreements
+        - --accept-source-agreements
+  - name: Install Windows App
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: "Install Windows App (workaround for DSCv3 stateAndDiff bug)"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      executable: winget
+      arguments:
+        - install
+        - --id
+        - "Microsoft.WindowsApp"
+        - --source
+        - winget
+        - --silent
+        - --accept-package-agreements
+        - --accept-source-agreements
+  - name: Install Rancher Desktop
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: "Install Rancher Desktop (workaround for DSCv3 stateAndDiff bug)"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      executable: winget
+      arguments:
+        - install
+        - --id
+        - "SUSE.RancherDesktop"
+        - --source
+        - winget
+        - --silent
+        - --accept-package-agreements
+        - --accept-source-agreements

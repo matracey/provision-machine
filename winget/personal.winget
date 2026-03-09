@@ -80,3 +80,7 @@ resources:
     type: Microsoft.DSC/Include
     properties:
       configurationFile: ./modules/fonts.dsc.yaml
+  - name: Include oh my posh personal
+    type: Microsoft.DSC/Include
+    properties:
+      configurationFile: ./modules/oh-my-posh-personal.dsc.yaml

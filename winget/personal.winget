@@ -46,3 +46,7 @@ resources:
     type: Microsoft.DSC/Include
     properties:
       configurationFile: ./modules/git-identity-personal.dsc.yaml
+  - name: Include git config
+    type: Microsoft.DSC/Include
+    properties:
+      configurationFile: ./modules/git-config.dsc.yaml

@@ -1,0 +1,30 @@
+# yaml-language-server: $schema=https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+# Shared Git configuration resources.
+$schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+resources:
+  - name: Git system core longpaths
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: "Enable git long path support at system level"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      executable: git
+      arguments:
+        - config
+        - --system
+        - core.longpaths
+        - "true"
+  - name: Git global credential helper
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: "Configure Git to use the credential manager globally"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      executable: git
+      arguments:
+        - config
+        - --global
+        - credential.helper
+        - manager

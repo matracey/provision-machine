@@ -1152,3 +1152,22 @@ resources:
         if (-not (Test-Path $nerdLink)) {
           New-Item -ItemType Junction -Path $fontBase -Name "nerd-fonts" -Value $patchedDir -Force | Out-Null
         }
+  # ============================================================
+  # Oh My Posh Theme Deployment
+  # ============================================================
+  - name: Deploy Oh My Posh config
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    properties:
+      input:
+        gistBase: "https://gist.githubusercontent.com/matracey/f4c3a9194cd190a3b3de423aad5dc7e1/raw"
+        fileName: "mojada.personal.omp.json"
+      testScript: |
+        $target = Join-Path $env:USERPROFILE '.config\oh-my-posh\mojada.omp.json'
+        @{ _inDesiredState = (Test-Path $target) } | ConvertTo-Json
+      setScript: |
+        $in = $env:DSC_RESOURCE_INPUT | ConvertFrom-Json
+        $target = Join-Path $env:USERPROFILE '.config\oh-my-posh\mojada.omp.json'
+        $dir = Split-Path $target
+        if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+        $url = "$($in.input.gistBase)/$($in.input.fileName)"
+        Invoke-WebRequest -Uri $url -OutFile $target -UseBasicParsing

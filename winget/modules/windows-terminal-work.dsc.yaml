@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+# Work Windows Terminal deployment resource.
+$schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+resources:
+  - name: Deploy Windows Terminal settings
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: "Deploy Windows Terminal settings JSON for this context"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      input:
+        gistBase: "https://gist.githubusercontent.com/matracey/f4c3a9194cd190a3b3de423aad5dc7e1/raw"
+        fileName: "windowsterminal.work.json"
+      testScript: |
+        param($inputData)
+        $wtPackages = Get-ChildItem "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal*" -Directory -ErrorAction SilentlyContinue
+        if (-not $wtPackages) { return $true }
+        $allPresent = $true
+        foreach ($pkg in $wtPackages) {
+          $settingsPath = Join-Path $pkg.FullName "LocalState\settings.json"
+          if (-not (Test-Path $settingsPath)) { $allPresent = $false; break }
+        }
+        return $allPresent
+      setScript: |
+        param($inputData)
+        $url = "$($inputData.gistBase)/$($inputData.fileName)"
+        $content = (Invoke-WebRequest -Uri $url -UseBasicParsing).Content
+        $wtPackages = Get-ChildItem "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal*" -Directory -ErrorAction SilentlyContinue
+        foreach ($pkg in $wtPackages) {
+          $localState = Join-Path $pkg.FullName "LocalState"
+          if (-not (Test-Path $localState)) { New-Item -ItemType Directory -Path $localState -Force | Out-Null }
+          $settingsPath = Join-Path $localState "settings.json"
+          Set-Content -Path $settingsPath -Value $content -Encoding UTF8 -Force
+        }

@@ -1767,3 +1767,34 @@ resources:
           $settingsPath = Join-Path $localState "settings.json"
           Set-Content -Path $settingsPath -Value $content -Encoding UTF8 -Force
         }
+  # ============================================================
+  # Mise Tool Manager
+  # ============================================================
+  - name: Deploy mise config
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: "Deploy mise configuration for language runtime management"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      input:
+        sourceUrl: "https://gist.githubusercontent.com/matracey/e3febf8a83d05ae2d7ade96fd147cd20/raw/mise.toml"
+      testScript: |
+        $target = Join-Path $env:USERPROFILE '.config\mise\config.toml'
+        @{ _inDesiredState = (Test-Path $target) } | ConvertTo-Json
+      setScript: |
+        $in = $env:DSC_RESOURCE_INPUT | ConvertFrom-Json
+        $target = Join-Path $env:USERPROFILE '.config\mise\config.toml'
+        $dir = Split-Path $target
+        if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+        Invoke-WebRequest -Uri $in.input.sourceUrl -OutFile $target -UseBasicParsing
+  - name: Run mise install
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: "Install language runtimes defined in the mise configuration"
+      module: "Microsoft.DSC.Transitional"
+    dependsOn:
+      - "Deploy mise config"
+    properties:
+      executable: mise
+      arguments:
+        - install

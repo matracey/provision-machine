@@ -296,3 +296,17 @@ resources:
       module: "Microsoft.Windows.Developer"
     properties:
       Ensure: Present
+  # ============================================================
+  # File and Printer Sharing
+  # ============================================================
+  - name: Enable File and Printer Sharing
+    type: Microsoft.Windows.Developer/AdvancedNetworkSharingSetting
+    metadata:
+      description: "Enable file and printer sharing for Domain, Private, and Public profiles"
+      module: "Microsoft.Windows.Developer"
+    properties:
+      Name: FileAndPrinterSharing
+      Profiles:
+        - Domain
+        - Private
+        - Public

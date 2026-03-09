@@ -1040,3 +1040,72 @@ resources:
     properties:
       id: "Microsoft.DotNet.Framework.Redistributable.1_1"
       source: winget
+  # ============================================================
+  # Visual Studio Installation
+  # ============================================================
+  - name: Install Visual Studio 2026 Enterprise Preview
+    type: Microsoft.WinGet.DSC/WinGetPackage
+    properties:
+      id: "Microsoft.VisualStudio.2026.Enterprise.Preview"
+      source: winget
+  - name: VS 2026 Preview Workloads
+    type: Microsoft.VisualStudio.DSC/VSComponents
+    dependsOn:
+      - "[resourceId('Microsoft.WinGet.DSC/WinGetPackage', 'Install Visual Studio 2026 Enterprise Preview')]"
+    properties:
+      ProductId: Microsoft.VisualStudio.Product.Enterprise
+      ChannelId: VisualStudio.18.Preview
+      Components:
+        - Microsoft.VisualStudio.Workload.Azure
+        - Microsoft.VisualStudio.Workload.CoreEditor
+        - Microsoft.VisualStudio.Workload.Data
+        - Microsoft.VisualStudio.Workload.ManagedDesktop
+        - Microsoft.VisualStudio.Workload.NativeDesktop
+        - Microsoft.VisualStudio.Workload.NetCrossPlat
+        - Microsoft.VisualStudio.Workload.NetWeb
+        - Microsoft.VisualStudio.Workload.Node
+      IncludeRecommended: true
+  # --- Opt-in: uncomment to install VS 2026 Release ---
+  # - name: Install Visual Studio 2026 Enterprise
+  #   type: Microsoft.WinGet.DSC/WinGetPackage
+  #   properties:
+  #     id: "Microsoft.VisualStudio.2026.Enterprise"
+  #     source: winget
+  # - name: VS 2026 Release Workloads
+  #   type: Microsoft.VisualStudio.DSC/VSComponents
+  #   dependsOn:
+  #     - "[resourceId('Microsoft.WinGet.DSC/WinGetPackage', 'Install Visual Studio 2026 Enterprise')]"
+  #   properties:
+  #     ProductId: Microsoft.VisualStudio.Product.Enterprise
+  #     ChannelId: VisualStudio.18.Release
+  #     Components:
+  #       - Microsoft.VisualStudio.Workload.Azure
+  #       - Microsoft.VisualStudio.Workload.CoreEditor
+  #       - Microsoft.VisualStudio.Workload.Data
+  #       - Microsoft.VisualStudio.Workload.ManagedDesktop
+  #       - Microsoft.VisualStudio.Workload.NativeDesktop
+  #       - Microsoft.VisualStudio.Workload.NetCrossPlat
+  #       - Microsoft.VisualStudio.Workload.NetWeb
+  #       - Microsoft.VisualStudio.Workload.Node
+  #     IncludeRecommended: true
+  # ============================================================
+  # Font Repository Cloning
+  # ============================================================
+  - name: Clone Google Fonts
+    type: GitDsc/GitClone
+    directives:
+      allowPrerelease: true
+    properties:
+      HttpsUrl: https://github.com/google/fonts.git
+      RootDirectory: "[concat(envvar('USERPROFILE'), '\\fonts')]"
+      FolderName: google-fonts
+      ExtraArgs: "--depth 1"
+  - name: Clone Nerd Fonts
+    type: GitDsc/GitClone
+    directives:
+      allowPrerelease: true
+    properties:
+      HttpsUrl: https://github.com/ryanoasis/nerd-fonts.git
+      RootDirectory: "[concat(envvar('USERPROFILE'), '\\fonts')]"
+      FolderName: nerd-fonts
+      ExtraArgs: "--depth 1"

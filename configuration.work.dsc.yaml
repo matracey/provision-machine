@@ -183,3 +183,16 @@ resources:
       allowPrerelease: true
     properties:
       Ensure: Present
+  # ============================================================
+  # File and Printer Sharing
+  # ============================================================
+  - name: Enable File and Printer Sharing
+    type: Microsoft.Windows.Developer/AdvancedNetworkSharingSetting
+    directives:
+      allowPrerelease: true
+    properties:
+      Name: FileAndPrinterSharing
+      Profiles:
+        - Domain
+        - Private
+        - Public

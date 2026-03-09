@@ -156,3 +156,12 @@ resources:
       valueName: DisableLargeMtu
       valueData:
         DWord: 0
+  # ============================================================
+  # Developer Mode
+  # ============================================================
+  - name: Enable Developer Mode
+    type: Microsoft.Windows.Developer/DeveloperMode
+    directives:
+      allowPrerelease: true
+    properties:
+      Ensure: Present

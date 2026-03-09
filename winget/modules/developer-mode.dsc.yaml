@@ -26,3 +26,15 @@ resources:
       valueName: fDenyTSConnections
       valueData:
         DWord: 0
+  - name: Enable Long Paths
+    type: Microsoft.Windows/Registry
+    requireVersion: "=1.0.0"
+    metadata:
+      description: "Enable long path support (>260 chars) for Windows"
+      winget:
+        securityContext: elevated
+    properties:
+      keyPath: HKLM\SYSTEM\CurrentControlSet\Control\FileSystem
+      valueName: LongPathsEnabled
+      valueData:
+        DWord: 1

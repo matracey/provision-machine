@@ -84,7 +84,9 @@ function AddToolModalContent({
 
   const updateEntry = (index: number, patch: Partial<MiseToolEntry>) => {
     setOpts((prev) => ({
-      entries: prev.entries.map((e, i) => (i === index ? { ...e, ...patch } : e)),
+      entries: prev.entries.map((e, i) =>
+        i === index ? { ...e, ...patch } : e,
+      ),
     }));
   };
 
@@ -188,8 +190,7 @@ function AddToolModalContent({
             )}
             {previewCategory && (
               <p className="text-base-content/50">
-                <span className="font-medium">Category:</span>{" "}
-                {previewCategory}
+                <span className="font-medium">Category:</span> {previewCategory}
               </p>
             )}
           </div>
@@ -315,9 +316,7 @@ function EntryCard({
         <label className="label py-1">
           <span className="label-text text-sm">
             Post-install{" "}
-            <span className="text-base-content/40 font-normal">
-              (optional)
-            </span>
+            <span className="text-base-content/40 font-normal">(optional)</span>
           </span>
         </label>
         <input
@@ -334,9 +333,7 @@ function EntryCard({
         <label className="label py-1">
           <span className="label-text text-sm">
             Install env{" "}
-            <span className="text-base-content/40 font-normal">
-              (optional)
-            </span>
+            <span className="text-base-content/40 font-normal">(optional)</span>
           </span>
         </label>
         {Object.entries(entry.installEnv).length > 0 && (

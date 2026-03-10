@@ -436,8 +436,8 @@ properties:
           - /SETACTIVE
           - SCHEME_CURRENT
       dependsOn:
-        - "[resourceId('Microsoft.DSC.Transitional/RunCommandOnSet', 'Lid Close AC Do Nothing')]"
-        - "[resourceId('Microsoft.DSC.Transitional/RunCommandOnSet', 'Lid Close Battery Sleep')]"
+        - Lid Close AC Do Nothing
+        - Lid Close Battery Sleep
     # ============================================================
     # Execution Policy
     # ============================================================
@@ -1065,7 +1065,7 @@ properties:
           - Microsoft.VisualStudio.Workload.Node
         IncludeRecommended: true
       dependsOn:
-        - "[resourceId('Microsoft.WinGet.DSC/WinGetPackage', 'Install Visual Studio 2026 Enterprise Preview')]"
+        - Install Visual Studio 2026 Enterprise Preview
     # --- Opt-in: uncomment to install VS 2026 Release ---
     # - resource: Microsoft.WinGet.DSC/WinGetPackage
     #   id: Install Visual Studio 2026 Enterprise
@@ -1092,7 +1092,7 @@ properties:
     #       - Microsoft.VisualStudio.Workload.Node
     #     IncludeRecommended: true
     #   dependsOn:
-    #     - "[resourceId('Microsoft.WinGet.DSC/WinGetPackage', 'Install Visual Studio 2026 Enterprise')]"
+    #     - Install Visual Studio 2026 Enterprise
     # --- Opt-in: uncomment to install VS IntPreview ---
     # - resource: Microsoft.DSC.Transitional/PowerShellScript
     #   id: Install VS IntPreview via bootstrapper
@@ -1177,8 +1177,8 @@ properties:
             New-Item -ItemType Junction -Path $fontBase -Name "nerd-fonts" -Value $patchedDir -Force | Out-Null
           }
       dependsOn:
-        - "[resourceId('GitDsc/GitClone', 'Clone Google Fonts')]"
-        - "[resourceId('GitDsc/GitClone', 'Clone Nerd Fonts')]"
+        - Clone Google Fonts
+        - Clone Nerd Fonts
     # ============================================================
     # Oh My Posh Theme Deployment
     # ============================================================
@@ -1259,7 +1259,7 @@ properties:
         arguments:
           - install
       dependsOn:
-        - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript', 'Deploy mise config')]"
+        - Deploy mise config
     # ============================================================
     # Scoop Package Manager (Hybrid Migration)
     # ============================================================

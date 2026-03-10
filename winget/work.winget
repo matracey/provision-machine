@@ -26,3 +26,7 @@ resources:
     type: Microsoft.DSC/Include
     properties:
       configurationFile: ./modules/appearance-work.dsc.yaml
+  - name: Include spotlight
+    type: Microsoft.DSC/Include
+    properties:
+      configurationFile: ./modules/spotlight.dsc.yaml

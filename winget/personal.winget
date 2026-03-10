@@ -30,3 +30,7 @@ resources:
     type: Microsoft.DSC/Include
     properties:
       configurationFile: ./modules/spotlight.dsc.yaml
+  - name: Include power plan
+    type: Microsoft.DSC/Include
+    properties:
+      configurationFile: ./modules/power-plan.dsc.yaml

@@ -1,0 +1,87 @@
+# yaml-language-server: $schema=https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+# Shared power plan resources.
+$schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+resources:
+  - name: Display Timeout AC 30 Minutes
+    type: Microsoft.Windows.Developer/PowerPlanSetting
+    metadata:
+      description: "Turn off display after 30 minutes when plugged in"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows.Developer"
+    properties:
+      Name: DisplayTimeout
+      PowerSource: PluggedIn
+      SettingValue: 1800
+  - name: Display Timeout Battery 5 Minutes
+    type: Microsoft.Windows.Developer/PowerPlanSetting
+    metadata:
+      description: "Turn off display after 5 minutes on battery"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows.Developer"
+    properties:
+      Name: DisplayTimeout
+      PowerSource: Battery
+      SettingValue: 300
+  - name: Sleep Timeout AC Never
+    type: Microsoft.Windows.Developer/PowerPlanSetting
+    metadata:
+      description: "Disable sleep when plugged in"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows.Developer"
+    properties:
+      Name: SleepTimeout
+      PowerSource: PluggedIn
+      SettingValue: 0
+  - name: Sleep Timeout Battery 15 Minutes
+    type: Microsoft.Windows.Developer/PowerPlanSetting
+    metadata:
+      description: "Sleep after 15 minutes on battery"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows.Developer"
+    properties:
+      Name: SleepTimeout
+      PowerSource: Battery
+      SettingValue: 900
+  - name: Lid Close AC Do Nothing
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: "Do nothing when laptop lid is closed while plugged in"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      executable: powercfg
+      arguments:
+        - /SETACVALUEINDEX
+        - SCHEME_CURRENT
+        - SUB_BUTTONS
+        - LIDACTION
+        - "0"
+  - name: Lid Close Battery Sleep
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: "Sleep when laptop lid is closed on battery"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      executable: powercfg
+      arguments:
+        - /SETDCVALUEINDEX
+        - SCHEME_CURRENT
+        - SUB_BUTTONS
+        - LIDACTION
+        - "1"
+  - name: Apply Power Plan Changes
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: "Apply power plan changes by setting the active scheme"
+      module: "Microsoft.DSC.Transitional"
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/RunCommandOnSet','Lid Close AC Do Nothing')]"
+      - "[resourceId('Microsoft.DSC.Transitional/RunCommandOnSet','Lid Close Battery Sleep')]"
+    properties:
+      executable: powercfg
+      arguments:
+        - /SETACTIVE
+        - SCHEME_CURRENT

@@ -46,13 +46,48 @@ jobs:
           done < <(find . -type f \( -name '*.omp.json' -o -name 'windowsterminal.*.json' \) -print0)
           exit $status
 
-      - name: Validate YAML files
+      - name: Validate DSC YAML files
         run: |
           status=0
           while IFS= read -r -d '' f; do
             echo "::group::$f"
-            if ! python3 -c "import yaml, sys; yaml.safe_load(open(sys.argv[1]))" "$f"; then
-              echo "::error file=$f::Invalid YAML"
+            python3 -c "
+          import yaml, sys, re
+          f = sys.argv[1]
+          with open(f) as fh:
+              doc = yaml.safe_load(fh)
+          errors = []
+          # Check top-level schema property
+          if '\$schema' not in doc:
+              errors.append('Missing required \$schema property')
+          # Check resources array exists
+          if 'resources' not in doc or not isinstance(doc.get('resources'), list):
+              errors.append('Missing or invalid resources array')
+          else:
+              names = []
+              for i, r in enumerate(doc['resources']):
+                  # Check required fields
+                  for key in ('name', 'type', 'properties'):
+                      if key not in r:
+                          errors.append(f'Resource [{i}]: missing required field \"{key}\"')
+                  # Validate name pattern
+                  name = r.get('name', '')
+                  if name and not re.match(r'^[a-zA-Z0-9 ]+$', name):
+                      errors.append(f'Resource \"{name}\": name must match ^[a-zA-Z0-9 ]+$')
+                  names.append(name)
+              # Check for duplicate names
+              seen = set()
+              for n in names:
+                  if n in seen:
+                      errors.append(f'Duplicate resource name: \"{n}\"')
+                  seen.add(n)
+          if errors:
+              for e in errors:
+                  print(f'::error file={f}::{e}')
+              sys.exit(1)
+          print(f'{len(doc.get(\"resources\", []))} resources validated OK')
+          " "$f"
+            if [ $? -ne 0 ]; then
               status=1
             fi
             echo "::endgroup::"

@@ -65,13 +65,14 @@ jobs:
           $dotnetIds = @($pkgs.dotnet)
           $vcredistIds = @($pkgs.vcredist)
 
-          # Build DSC resource blocks for the resolved packages (DSCv3 format)
+          # Build DSC resource blocks for the resolved packages (WinGet 0.2 format)
           function New-DscEntry {
             param([string]$Id, [string]$Description)
             return [ordered]@{
-              name       = $Description
-              type       = 'Microsoft.WinGet.DSC/WinGetPackage'
-              properties = [ordered]@{ id = $Id; source = 'winget' }
+              resource   = 'Microsoft.WinGet.DSC/WinGetPackage'
+              id         = $Description
+              directives = [ordered]@{ description = $Description }
+              settings   = [ordered]@{ id = $Id; source = 'winget' }
             }
           }
 
@@ -91,12 +92,12 @@ jobs:
           foreach ($file in @('configuration.personal.dsc.yaml', 'configuration.work.dsc.yaml')) {
             $raw = Get-Content $file -Raw
             $yaml = $raw | ConvertFrom-Yaml -Ordered
-            $resources = [System.Collections.ArrayList]@($yaml.resources)
+            $resources = [System.Collections.ArrayList]@($yaml.properties.resources)
 
-            # Remove existing dynamic entries (DSCv3 format uses properties.id)
+            # Remove existing dynamic entries (WinGet 0.2 format uses settings.id)
             $static = [System.Collections.ArrayList]@()
             foreach ($r in $resources) {
-              if ($r.properties.id -notmatch $dynamicIdPattern) {
+              if ($r.settings.id -notmatch $dynamicIdPattern) {
                 [void]$static.Add($r)
               }
             }
@@ -106,7 +107,7 @@ jobs:
               [void]$static.Add($entry)
             }
 
-            $yaml.resources = @($static)
+            $yaml.properties.resources = @($static)
 
             # Serialize back to YAML
             $newYaml = ($yaml | ConvertTo-Yaml).TrimEnd()

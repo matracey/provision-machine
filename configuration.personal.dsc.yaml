@@ -1,1332 +1,1655 @@
-# yaml-language-server: $schema=https://aka.ms/dsc/schemas/v3/bundled/config/document.json
-# Personal context DSCv3 configuration document
-# Apply with: dsc config set --path configuration.personal.dsc.yaml
-$schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
-metadata:
-  Microsoft.DSC:
-    securityContext: elevated
-resources:
-  # ============================================================
-  # TurboRDP — RDP session optimization registry values
-  # ============================================================
-  - name: RDP Select UDP TCP transport
-    type: Microsoft.Windows/Registry
-    properties:
-      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
-      valueName: SelectTransport
-      valueData:
-        DWord: 0
-  - name: RDP Enumerate HW before SW
-    type: Microsoft.Windows/Registry
-    properties:
-      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
-      valueName: bEnumerateHWBeforeSW
-      valueData:
-        DWord: 1
-  - name: RDP AVC444 mode preferred
-    type: Microsoft.Windows/Registry
-    properties:
-      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
-      valueName: AVC444ModePreferred
-      valueData:
-        DWord: 1
-  - name: RDP AVC hardware encode preferred
-    type: Microsoft.Windows/Registry
-    properties:
-      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
-      valueName: AVCHardwareEncodePreferred
-      valueData:
-        DWord: 1
-  - name: RDP Max compression level
-    type: Microsoft.Windows/Registry
-    properties:
-      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
-      valueName: MaxCompressionLevel
-      valueData:
-        DWord: 0
-  - name: RDP Image quality
-    type: Microsoft.Windows/Registry
-    properties:
-      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
-      valueName: ImageQuality
-      valueData:
-        DWord: 2
-  - name: RDP Enable virtualized graphics
-    type: Microsoft.Windows/Registry
-    properties:
-      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
-      valueName: fEnableVirtualizedGraphics
-      valueData:
-        DWord: 1
-  - name: RDP VG capture frame rate
-    type: Microsoft.Windows/Registry
-    properties:
-      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
-      valueName: VGOptimization_CaptureFrameRate
-      valueData:
-        DWord: 1
-  - name: RDP VG compression ratio
-    type: Microsoft.Windows/Registry
-    properties:
-      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
-      valueName: VGOptimization_CompressionRatio
-      valueData:
-        DWord: 1
-  - name: RDP Visual experience policy
-    type: Microsoft.Windows/Registry
-    properties:
-      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
-      valueName: VisualExperiencePolicy
-      valueData:
-        DWord: 1
-  - name: RDP Disable WDDM driver
-    type: Microsoft.Windows/Registry
-    properties:
-      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
-      valueName: fEnableWddmDriver
-      valueData:
-        DWord: 0
-  - name: RDP USB redirection mode
-    type: Microsoft.Windows/Registry
-    properties:
-      keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services\Client
-      valueName: fUsbRedirectionEnableMode
-      valueData:
-        DWord: 2
-  - name: RDP DWM frame interval
-    type: Microsoft.Windows/Registry
-    properties:
-      keyPath: HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations
-      valueName: DWMFRAMEINTERVAL
-      valueData:
-        DWord: 15
-  - name: RDP System responsiveness
-    type: Microsoft.Windows/Registry
-    properties:
-      keyPath: HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile
-      valueName: SystemResponsiveness
-      valueData:
-        DWord: 0
-  - name: RDP Flow control disable
-    type: Microsoft.Windows/Registry
-    properties:
-      keyPath: HKLM\SYSTEM\CurrentControlSet\Services\TermDD
-      valueName: FlowControlDisable
-      valueData:
-        DWord: 1
-  - name: RDP Flow control display bandwidth
-    type: Microsoft.Windows/Registry
-    properties:
-      keyPath: HKLM\SYSTEM\CurrentControlSet\Services\TermDD
-      valueName: FlowControlDisplayBandwidth
-      valueData:
-        DWord: 16
-  - name: RDP Flow control channel bandwidth
-    type: Microsoft.Windows/Registry
-    properties:
-      keyPath: HKLM\SYSTEM\CurrentControlSet\Services\TermDD
-      valueName: FlowControlChannelBandwidth
-      valueData:
-        DWord: 144
-  - name: RDP Flow control charge post compression
-    type: Microsoft.Windows/Registry
-    properties:
-      keyPath: HKLM\SYSTEM\CurrentControlSet\Services\TermDD
-      valueName: FlowControlChargePostCompression
-      valueData:
-        DWord: 0
-  - name: RDP Interactive delay
-    type: Microsoft.Windows/Registry
-    properties:
-      keyPath: HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp
-      valueName: InteractiveDelay
-      valueData:
-        DWord: 0
-  - name: RDP Disable bandwidth throttling
-    type: Microsoft.Windows/Registry
-    properties:
-      keyPath: HKLM\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters
-      valueName: DisableBandwidthThrottling
-      valueData:
-        DWord: 1
-  - name: RDP Disable large MTU
-    type: Microsoft.Windows/Registry
-    properties:
-      keyPath: HKLM\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters
-      valueName: DisableLargeMtu
-      valueData:
-        DWord: 0
-  # ============================================================
-  # Developer Mode
-  # ============================================================
-  - name: Enable Developer Mode
-    type: Microsoft.Windows.Developer/DeveloperMode
-    directives:
-      allowPrerelease: true
-    properties:
-      Ensure: Present
-  # ============================================================
-  # Remote Desktop
-  # ============================================================
-  - name: Enable Remote Desktop
-    type: Microsoft.Windows.Developer/EnableRemoteDesktop
-    directives:
-      allowPrerelease: true
-    properties:
-      Ensure: Present
-  # ============================================================
-  # Long Path Support
-  # ============================================================
-  - name: Enable Long Paths
-    type: Microsoft.Windows.Developer/EnableLongPathSupport
-    directives:
-      allowPrerelease: true
-    properties:
-      Ensure: Present
-  # ============================================================
-  # File and Printer Sharing
-  # ============================================================
-  - name: Enable File and Printer Sharing
-    type: Microsoft.Windows.Developer/AdvancedNetworkSharingSetting
-    directives:
-      allowPrerelease: true
-    properties:
-      Name: FileAndPrinterSharing
-      Profiles:
-        - Domain
-        - Private
-        - Public
-  # ============================================================
-  # UAC Configuration
-  # ============================================================
-  - name: UAC Consent prompt behavior Admin
-    type: Microsoft.Windows.Developer/UserAccessControl
-    directives:
-      allowPrerelease: true
-    properties:
-      AdminConsentPromptBehavior: RequireConsentForNonWindowsBinaries
-  - name: UAC Consent prompt behavior User
-    type: Microsoft.Windows/Registry
-    properties:
-      keyPath: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
-      valueName: ConsentPromptBehaviorUser
-      valueData:
-        DWord: 3
-  - name: UAC Enable installer detection
-    type: Microsoft.Windows/Registry
-    properties:
-      keyPath: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
-      valueName: EnableInstallerDetection
-      valueData:
-        DWord: 1
-  - name: UAC Enable LUA
-    type: Microsoft.Windows/Registry
-    properties:
-      keyPath: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
-      valueName: EnableLUA
-      valueData:
-        DWord: 1
-  - name: UAC Enable virtualization
-    type: Microsoft.Windows/Registry
-    properties:
-      keyPath: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
-      valueName: EnableVirtualization
-      valueData:
-        DWord: 1
-  - name: UAC Prompt on secure desktop
-    type: Microsoft.Windows/Registry
-    properties:
-      keyPath: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
-      valueName: PromptOnSecureDesktop
-      valueData:
-        DWord: 0
-  - name: UAC Validate admin code signatures
-    type: Microsoft.Windows/Registry
-    properties:
-      keyPath: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
-      valueName: ValidateAdminCodeSignatures
-      valueData:
-        DWord: 0
-  - name: UAC Filter administrator token
-    type: Microsoft.Windows/Registry
-    properties:
-      keyPath: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
-      valueName: FilterAdministratorToken
-      valueData:
-        DWord: 0
-  # ============================================================
-  # Windows Settings — Appearance and Behavior
-  # ============================================================
-  - name: Enable Dark Mode
-    type: Microsoft.Windows.Developer/EnableDarkMode
-    directives:
-      allowPrerelease: true
-    properties:
-      Ensure: Present
-      RestartExplorer: true
-  - name: Taskbar Settings
-    type: Microsoft.Windows.Developer/Taskbar
-    directives:
-      allowPrerelease: true
-    properties:
-      Alignment: Left
-      HideLabelsMode: Always
-      SearchboxMode: Hide
-      TaskViewButton: Show
-      WidgetsButton: Hide
-      RestartExplorer: true
-  - name: Windows Explorer Settings
-    type: Microsoft.Windows.Developer/WindowsExplorer
-    directives:
-      allowPrerelease: true
-    properties:
-      FileExtensions: Show
-      ItemCheckBoxes: Hide
-  - name: Show Seconds In Clock
-    type: Microsoft.Windows.Developer/ShowSecondsInClock
-    directives:
-      allowPrerelease: true
-    properties:
-      Ensure: Present
-  # ============================================================
-  # Desktop Background — Windows Spotlight (requires Win11 22H2+)
-  # ============================================================
-  - name: Desktop Background Spotlight
-    type: Microsoft.Windows/Registry
-    properties:
-      keyPath: HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Wallpapers
-      valueName: BackgroundType
-      valueData:
-        DWord: 3
-  # ============================================================
-  # Power Plan Settings
-  # ============================================================
-  - name: Display Timeout AC 30 Minutes
-    type: Microsoft.Windows.Developer/PowerPlanSetting
-    directives:
-      allowPrerelease: true
-    properties:
-      Name: DisplayTimeout
-      PowerSource: PluggedIn
-      SettingValue: 30
-  - name: Display Timeout Battery 5 Minutes
-    type: Microsoft.Windows.Developer/PowerPlanSetting
-    directives:
-      allowPrerelease: true
-    properties:
-      Name: DisplayTimeout
-      PowerSource: Battery
-      SettingValue: 5
-  - name: Sleep Timeout AC Never
-    type: Microsoft.Windows.Developer/PowerPlanSetting
-    directives:
-      allowPrerelease: true
-    properties:
-      Name: SleepTimeout
-      PowerSource: PluggedIn
-      SettingValue: 0
-  - name: Sleep Timeout Battery 15 Minutes
-    type: Microsoft.Windows.Developer/PowerPlanSetting
-    directives:
-      allowPrerelease: true
-    properties:
-      Name: SleepTimeout
-      PowerSource: Battery
-      SettingValue: 15
-  - name: Lid Close AC Do Nothing
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
-    properties:
-      executable: powercfg
-      arguments:
-        - /SETACVALUEINDEX
-        - SCHEME_CURRENT
-        - SUB_BUTTONS
-        - LIDACTION
-        - "0"
-  - name: Lid Close Battery Sleep
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
-    properties:
-      executable: powercfg
-      arguments:
-        - /SETDCVALUEINDEX
-        - SCHEME_CURRENT
-        - SUB_BUTTONS
-        - LIDACTION
-        - "1"
-  - name: Apply Power Plan Changes
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
-    dependsOn:
-      - "[resourceId('Microsoft.DSC.Transitional/RunCommandOnSet', 'Lid Close AC Do Nothing')]"
-      - "[resourceId('Microsoft.DSC.Transitional/RunCommandOnSet', 'Lid Close Battery Sleep')]"
-    properties:
-      executable: powercfg
-      arguments:
-        - /SETACTIVE
-        - SCHEME_CURRENT
-  # ============================================================
-  # Execution Policy
-  # ============================================================
-  - name: Set ExecutionPolicy Unrestricted CurrentUser
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
-    properties:
-      executable: pwsh
-      arguments:
-        - -NoProfile
-        - -Command
-        - Set-ExecutionPolicy Unrestricted -Scope CurrentUser -Force
-  - name: Set ExecutionPolicy Unrestricted LocalMachine
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
-    properties:
-      executable: pwsh
-      arguments:
-        - -NoProfile
-        - -Command
-        - Set-ExecutionPolicy Unrestricted -Scope LocalMachine -Force
-  # ============================================================
-  # Windows Defender Exclusions
-  # ============================================================
-  - name: Windows Defender Exclusions
-    type: Microsoft.DSC.Transitional/PowerShellScript
-    properties:
-      input:
-        processExclusions:
-          - bash.exe
-          - Blend.exe
-          - Code - Insiders.exe
-          - Code.exe
-          - DDConfigCA.exe
-          - devenv.exe
-          - dotnet.exe
-          - FeedbackCollector.exe
-          - git-bash.exe
-          - git.exe
-          - java.exe
-          - java64.exe
-          - Microsoft.VisualStudio.Web.Host.exe
-          - mono-sgen.exe
-          - mono.exe
-          - msbuild.exe
-          - mspdbsrv.exe
-          - MSTest.exe
-          - node.exe
-          - node.js
-          - nuget.exe
-          - PerfWatson2.exe
-          - perfwatson2.exe
-          - powershell.exe
-          - Publicize.exe
-          - pwsh.exe
-          - QTAgent_35.exe
-          - QTAgent_40.exe
-          - QTAgent.exe
-          - QTAgent32_35.exe
-          - QTAgent32_40.exe
-          - QTAgent32.exe
-          - QTDCAgent.exe
-          - QTDCAgent32.exe
-          - ServiceHub.Host.Node.x86.exe
-          - StorePID.exe
-          - T4VSHostProcess.exe
-          - TailoredDeploy.exe
-          - TCM.exe
-          - TextTransform.exe
-          - TfsLabConfig.exe
-          - UserControlTestContainer.exe
-          - vb7to8.exe
-          - vbcscompiler.exe
-          - VcxprojReader.exe
-          - VsDebugWERHelper.exe
-          - VSFinalizer.exe
-          - VsGa.exe
-          - VSHiveStub.exe
-          - vshost-clr2.exe
-          - vshost.exe
-          - vshost32-clr2.exe
-          - vshost32.exe
-          - VSInitializer.exe
-          - VSIXInstaller.exe
-          - VSLaunchBrowser.exe
-          - vsn.exe
-          - VsRegEdit.exe
-          - VSWebHandler.exe
-          - VSWebLauncher.exe
-          - wsl.exe
-          - XDesProc.exe
-        projectsFolder: "D:\\Developer"
-      testScript: |
-        $input = $env:DSC_RESOURCE_INPUT | ConvertFrom-Json
-        $current = Get-MpPreference
-        $missingProcesses = $input.input.processExclusions |
-          Where-Object { $_ -notin $current.ExclusionProcess }
-        $missingPaths = @()
-        if ($input.input.projectsFolder -and
-            $input.input.projectsFolder -notin $current.ExclusionPath) {
-          $missingPaths += $input.input.projectsFolder
-        }
-        @{ _inDesiredState = ($missingProcesses.Count -eq 0 -and $missingPaths.Count -eq 0) } |
-          ConvertTo-Json
-      setScript: |
-        $input = $env:DSC_RESOURCE_INPUT | ConvertFrom-Json
-        foreach ($p in $input.input.processExclusions) {
-          Add-MpPreference -ExclusionProcess $p -ErrorAction SilentlyContinue
-        }
-        if ($input.input.projectsFolder) {
-          Add-MpPreference -ExclusionPath $input.input.projectsFolder -ErrorAction SilentlyContinue
-        }
-  # ============================================================
-  # Git User Identity
-  # ============================================================
-  - name: Git user name
-    type: GitDsc/GitConfigUserName
-    directives:
-      allowPrerelease: true
-    properties:
-      UserName: Martin Tracey
-      ConfigLocation: global
-  - name: Git user email
-    type: GitDsc/GitConfigUserEmail
-    directives:
-      allowPrerelease: true
-    properties:
-      UserEmail: matracey@outlook.ie
-      ConfigLocation: global
-  # ============================================================
-  # Git Configuration
-  # ============================================================
-  - name: Git system core longpaths
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
-    properties:
-      executable: git
-      arguments:
-        - config
-        - --system
-        - core.longpaths
-        - "true"
-  - name: Git global credential helper
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
-    properties:
-      executable: git
-      arguments:
-        - config
-        - --global
-        - credential.helper
-        - manager
-
-  # ============================================================
-  # WinGet Packages
-  # ============================================================
-  - name: Install Affinity Designer 2
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "9N2D0P16C80H"
-      source: msstore
-  - name: Install WhatsApp Beta
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "9NBDXK71NK08"
-      source: msstore
-  - name: Install Affinity Publisher 2
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "9NTV2DZ11KD9"
-      source: msstore
-  - name: Install Affinity Photo 2
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "9P8DVF1XW02V"
-      source: msstore
-  - name: Install Amazon Games
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Amazon.Games"
-      source: winget
-  - name: Install Apple Music
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "9PFHDD62MXS1"
-      source: msstore
-  - name: Install Adobe Acrobat Reader 64 bit
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Adobe.Acrobat.Reader.64-bit"
-      source: winget
-  - name: Install 1Password
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "AgileBits.1Password"
-      source: winget
-  - name: Install ATLauncher
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "ATLauncher.ATLauncher"
-      source: winget
-  - name: Install WizTree
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "AntibodySoftware.WizTree"
-      source: winget
-  - name: Install Ubuntu
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Canonical.Ubuntu"
-      source: winget
-  - name: Install DB Browser for SQLite
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "DBBrowserForSQLite.DBBrowserForSQLite"
-      source: winget
-  - name: Install EarTrumpet
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "File-New-Project.EarTrumpet"
-      source: winget
-  - name: Install Audacity
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Audacity.Audacity"
-      source: winget
-  - name: Install Mp3tag
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "FlorianHeidenreich.Mp3tag"
-      source: winget
-  - name: Install Avidemux
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Avidemux.Avidemux"
-      source: winget
-  - name: Install calibre
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "calibre.calibre"
-      source: winget
-  - name: Install Universal ADB Driver
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "ClockworkMod.UniversalADBDriver"
-      source: winget
-  - name: Install K Lite Codec Pack Full
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "CodecGuide.K-LiteCodecPack.Full"
-      source: winget
-  - name: Install Git Credential Manager
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Git.GCM"
-      source: winget
-  - name: Install Borderless Gaming
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Codeusa.BorderlessGaming"
-      source: winget
-  - name: Install CPU Z MSI
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "CPUID.CPU-Z.MSI"
-      source: winget
-  - name: Install HWMonitor
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "CPUID.HWMonitor"
-      source: winget
-  - name: Install CrystalDiskInfo
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "CrystalDewWorld.CrystalDiskInfo"
-      source: winget
-  - name: Install Das Keyboard
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "DasKeyboard.DasKeyboard"
-      source: winget
-  - name: Install Discord
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Discord.Discord"
-      source: winget
-  - name: Install Discord PTB
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Discord.Discord.PTB"
-      source: winget
-  - name: Install Git
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Git.Git"
-      source: winget
-  - name: Install Docker Desktop
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Docker.DockerDesktop"
-      source: winget
-  - name: Install Dolphin Emulator
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "DolphinEmulator.Dolphin"
-      source: winget
-  - name: Install EA Desktop
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "ElectronicArts.EADesktop"
-      source: winget
-  - name: Install Remote Mouse
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "EmoteInteractive.RemoteMouse"
-      source: winget
-  - name: Install Epic Games Launcher
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "EpicGames.EpicGamesLauncher"
-      source: winget
-  - name: Install MacintoshJS
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "FelixRieseberg.MacintoshJS"
-      source: winget
-  - name: Install Windows95
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "FelixRieseberg.Windows95"
-      source: winget
-  - name: Install GOG Galaxy
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "GOG.Galaxy"
-      source: winget
-  - name: Install Android Studio
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Google.AndroidStudio"
-      source: winget
-  - name: Install GitHub Desktop
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "GitHub.GitHubDesktop"
-      source: winget
-  - name: Install Git LFS
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "GitHub.GitLFS"
-      source: winget
-  - name: Install Dual Monitor Tools
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "GNE.DualMonitorTools"
-      source: winget
-  - name: Install Google Chrome
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Google.Chrome"
-      source: winget
-  - name: Install Google Quick Share
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Google.QuickShare"
-      source: winget
-  - name: Install Cyberduck
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Iterate.Cyberduck"
-      source: winget
-  - name: Install Oh My Posh
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "JanDeDobbeleer.OhMyPosh"
-      source: winget
-  - name: Install HandBrake
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "HandBrake.HandBrake"
-      source: winget
-  - name: Install AutoHotkey
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Lexikos.AutoHotkey"
-      source: winget
-  - name: Install mise
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "jdx.mise"
-      source: winget
-  - name: Install FontBase
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Levitsky.FontBase"
-      source: winget
-  - name: Install RetroArch
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Libretro.RetroArch"
-      source: winget
-  - name: Install LLVM
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "LLVM.LLVM"
-      source: winget
-  - name: Install NanaZip
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "M2Team.NanaZip"
-      source: winget
-  - name: Install UniGetUI
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "MartiCliment.UniGetUI"
-      source: winget
-  - name: Install Logitech G HUB
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Logitech.GHUB"
-      source: winget
-  - name: Install MediaInfo GUI
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "MediaArea.MediaInfo.GUI"
-      source: winget
-  - name: Install Microsoft App Installer
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Microsoft.AppInstaller"
-      source: winget
-  - name: Install Microsoft Office
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Microsoft.Office"
-      source: winget
-  - name: Install Microsoft Edge
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Microsoft.Edge"
-      source: winget
-  - name: Install Microsoft Edge Beta
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Microsoft.Edge.Beta"
-      source: winget
-  - name: Install Microsoft Remote Desktop Client
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Microsoft.RemoteDesktopClient"
-      source: winget
-  - name: Install MKVToolNix
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "MoritzBunkus.MKVToolNix"
-      source: winget
-  - name: Install Edge WebView2 Runtime
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Microsoft.EdgeWebView2Runtime"
-      source: winget
-  - name: Install NordPass
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "NordPassTeam.NordPass"
-      source: winget
-  - name: Install NordVPN
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "NordVPN.NordVPN"
-      source: winget
-  - name: Install Microsoft OneDrive
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Microsoft.OneDrive"
-      source: winget
-  - name: Install NVIDIA Broadcast
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Nvidia.Broadcast"
-      source: winget
-  - name: Install GeForce Experience
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Nvidia.GeForceExperience"
-      source: winget
-  - name: Install NVIDIA PhysX
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Nvidia.PhysX"
-      source: winget
-  - name: Install NZXT CAM
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "NZXT.CAM"
-      source: winget
-  - name: Install OBS Studio
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "OBSProject.OBSStudio"
-      source: winget
-  - name: Install PowerShell
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Microsoft.PowerShell"
-      source: winget
-  - name: Install Signal
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "OpenWhisperSystems.Signal"
-      source: winget
-  - name: Install foobar2000
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "PeterPawlowski.foobar2000"
-      source: winget
-  - name: Install Plex
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Plex.Plex"
-      source: winget
-  - name: Install Plex Media Server
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Plex.PlexMediaServer"
-      source: winget
-  - name: Install Postman
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Postman.Postman"
-      source: winget
-  - name: Install qBittorrent
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "qBittorrent.qBittorrent"
-      source: winget
-  - name: Install HWiNFO
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "REALiX.HWiNFO"
-      source: winget
-  - name: Install Rufus
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Rufus.Rufus"
-      source: winget
-  - name: Install SABnzbd
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "SABnzbdTeam.SABnzbd"
-      source: winget
-  - name: Install ElevenClock
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "SomePythonThings.ElevenClock"
-      source: winget
-  - name: Install PowerToys
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Microsoft.PowerToys"
-      source: winget
-  - name: Install Tailscale
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "tailscale.tailscale"
-      source: winget
-  - name: Install Prowlarr
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "TeamProwlarr.Prowlarr"
-      source: winget
-  - name: Install Radarr
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "TeamRadarr.Radarr"
-      source: winget
-  - name: Install Sonarr
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "TeamSonarr.Sonarr"
-      source: winget
-  - name: Install TIDAL
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "TIDALMusicAS.TIDAL"
-      source: winget
-  - name: Install Ubisoft Connect
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Ubisoft.Connect"
-      source: winget
-  - name: Install Steam
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Valve.Steam"
-      source: winget
-  - name: Install Windows Terminal Preview
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Microsoft.WindowsTerminal.Preview"
-      source: winget
-  - name: Install Windows Subsystem for Linux
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Microsoft.WSL"
-      source: winget
-  - name: Install Mozilla Firefox
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Mozilla.Firefox"
-      source: winget
-  - name: Install Notepad Plus Plus
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Notepad++.Notepad++"
-      source: winget
-  - name: Install Obsidian
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Obsidian.Obsidian"
-      source: winget
-  - name: Install Spotify
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Spotify.Spotify"
-      source: winget
-  - name: Install VLC
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "VideoLAN.VLC"
-      source: winget
-  - name: Install WinSCP
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "WinSCP.WinSCP"
-      source: winget
-  - name: Install DotNet SDK 8
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Microsoft.DotNet.SDK.8"
-      source: winget
-  - name: Install DotNet SDK 9
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Microsoft.DotNet.SDK.9"
-      source: winget
-  - name: Install VCRedist 2015 plus x64
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Microsoft.VCRedist.2015+.x64"
-      source: winget
-  - name: Install VCRedist 2013 x64
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Microsoft.VCRedist.2013.x64"
-      source: winget
-  - name: Install VCRedist 2012 x64
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Microsoft.VCRedist.2012.x64"
-      source: winget
-  - name: Install VCRedist 2010 x64
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Microsoft.VCRedist.2010.x64"
-      source: winget
-  - name: Install VCRedist 2008 x64
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Microsoft.VCRedist.2008.x64"
-      source: winget
-  - name: Install VCRedist 2005 x64
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Microsoft.VCRedist.2005.x64"
-      source: winget
-  - name: Install DotNet Framework Redistributable 1 1
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Microsoft.DotNet.Framework.Redistributable.1_1"
-      source: winget
-  # ============================================================
-  # Visual Studio Installation
-  # ============================================================
-  - name: Install Visual Studio 2026 Enterprise Preview
-    type: Microsoft.WinGet.DSC/WinGetPackage
-    properties:
-      id: "Microsoft.VisualStudio.2026.Enterprise.Preview"
-      source: winget
-  - name: VS 2026 Preview Workloads
-    type: Microsoft.VisualStudio.DSC/VSComponents
-    dependsOn:
-      - "[resourceId('Microsoft.WinGet.DSC/WinGetPackage', 'Install Visual Studio 2026 Enterprise Preview')]"
-    properties:
-      ProductId: Microsoft.VisualStudio.Product.Enterprise
-      ChannelId: VisualStudio.18.Preview
-      Components:
-        - Microsoft.VisualStudio.Workload.Azure
-        - Microsoft.VisualStudio.Workload.CoreEditor
-        - Microsoft.VisualStudio.Workload.Data
-        - Microsoft.VisualStudio.Workload.ManagedDesktop
-        - Microsoft.VisualStudio.Workload.NativeDesktop
-        - Microsoft.VisualStudio.Workload.NetCrossPlat
-        - Microsoft.VisualStudio.Workload.NetWeb
-        - Microsoft.VisualStudio.Workload.Node
-      IncludeRecommended: true
-  # --- Opt-in: uncomment to install VS 2026 Release ---
-  # - name: Install Visual Studio 2026 Enterprise
-  #   type: Microsoft.WinGet.DSC/WinGetPackage
-  #   properties:
-  #     id: "Microsoft.VisualStudio.2026.Enterprise"
-  #     source: winget
-  # - name: VS 2026 Release Workloads
-  #   type: Microsoft.VisualStudio.DSC/VSComponents
-  #   dependsOn:
-  #     - "[resourceId('Microsoft.WinGet.DSC/WinGetPackage', 'Install Visual Studio 2026 Enterprise')]"
-  #   properties:
-  #     ProductId: Microsoft.VisualStudio.Product.Enterprise
-  #     ChannelId: VisualStudio.18.Release
-  #     Components:
-  #       - Microsoft.VisualStudio.Workload.Azure
-  #       - Microsoft.VisualStudio.Workload.CoreEditor
-  #       - Microsoft.VisualStudio.Workload.Data
-  #       - Microsoft.VisualStudio.Workload.ManagedDesktop
-  #       - Microsoft.VisualStudio.Workload.NativeDesktop
-  #       - Microsoft.VisualStudio.Workload.NetCrossPlat
-  #       - Microsoft.VisualStudio.Workload.NetWeb
-  #       - Microsoft.VisualStudio.Workload.Node
-  #     IncludeRecommended: true
-  # ============================================================
-  # Font Repository Cloning
-  # ============================================================
-  - name: Clone Google Fonts
-    type: GitDsc/GitClone
-    directives:
-      allowPrerelease: true
-    properties:
-      HttpsUrl: https://github.com/google/fonts.git
-      RootDirectory: "[concat(envvar('USERPROFILE'), '\\fonts')]"
-      FolderName: google-fonts
-      ExtraArgs: "--depth 1"
-  - name: Clone Nerd Fonts
-    type: GitDsc/GitClone
-    directives:
-      allowPrerelease: true
-    properties:
-      HttpsUrl: https://github.com/ryanoasis/nerd-fonts.git
-      RootDirectory: "[concat(envvar('USERPROFILE'), '\\fonts')]"
-      FolderName: nerd-fonts
-      ExtraArgs: "--depth 1"
-  # ============================================================
-  # Font Directory Junctions (FontBase)
-  # ============================================================
-  - name: Create font junctions for FontBase
-    type: Microsoft.DSC.Transitional/PowerShellScript
-    dependsOn:
-      - "[resourceId('GitDsc/GitClone', 'Clone Google Fonts')]"
-      - "[resourceId('GitDsc/GitClone', 'Clone Nerd Fonts')]"
-    properties:
-      testScript: |
-        $fontBase = Join-Path $env:USERPROFILE "FontBase"
-        $googleLink = Join-Path $fontBase "google-fonts"
-        $nerdLink = Join-Path $fontBase "nerd-fonts"
-        $ok = (Test-Path $googleLink) -and (Test-Path $nerdLink)
-        @{ _inDesiredState = $ok } | ConvertTo-Json
-      setScript: |
-        $fontsDir = Join-Path $env:USERPROFILE "fonts"
-        $fontBase = Join-Path $env:USERPROFILE "FontBase"
-        if (-not (Test-Path $fontBase)) { New-Item -ItemType Directory -Path $fontBase -Force | Out-Null }
-        $googleFontsDir = Join-Path $fontsDir "google-fonts"
-        $allDir = Join-Path $googleFontsDir "all"
-        if (-not (Test-Path $allDir)) { New-Item -ItemType Directory -Path $allDir -Force | Out-Null }
-        foreach ($sub in @("apache", "ofl", "ufl")) {
-          $subDir = Join-Path $googleFontsDir $sub
-          if (Test-Path $subDir) {
-            Get-ChildItem -Path $subDir -Directory | ForEach-Object {
-              $target = Join-Path $allDir $_.Name
-              if (-not (Test-Path $target)) {
-                New-Item -ItemType Junction -Path $allDir -Name $_.Name -Value $_.FullName -Force | Out-Null
+# yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema/0.2
+# Personal context WinGet configuration document
+# Apply with: winget configure -f configuration.personal.dsc.yaml
+properties:
+  configurationVersion: 0.2.0
+  resources:
+    # ============================================================
+    # TurboRDP — RDP session optimization registry values
+    # ============================================================
+    - resource: Microsoft.Windows/Registry
+      id: RDP Select UDP TCP transport
+      directives:
+        description: RDP Select UDP TCP transport
+      settings:
+        keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+        valueName: SelectTransport
+        valueData:
+          DWord: 0
+    - resource: Microsoft.Windows/Registry
+      id: RDP Enumerate HW before SW
+      directives:
+        description: RDP Enumerate HW before SW
+      settings:
+        keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+        valueName: bEnumerateHWBeforeSW
+        valueData:
+          DWord: 1
+    - resource: Microsoft.Windows/Registry
+      id: RDP AVC444 mode preferred
+      directives:
+        description: RDP AVC444 mode preferred
+      settings:
+        keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+        valueName: AVC444ModePreferred
+        valueData:
+          DWord: 1
+    - resource: Microsoft.Windows/Registry
+      id: RDP AVC hardware encode preferred
+      directives:
+        description: RDP AVC hardware encode preferred
+      settings:
+        keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+        valueName: AVCHardwareEncodePreferred
+        valueData:
+          DWord: 1
+    - resource: Microsoft.Windows/Registry
+      id: RDP Max compression level
+      directives:
+        description: RDP Max compression level
+      settings:
+        keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+        valueName: MaxCompressionLevel
+        valueData:
+          DWord: 0
+    - resource: Microsoft.Windows/Registry
+      id: RDP Image quality
+      directives:
+        description: RDP Image quality
+      settings:
+        keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+        valueName: ImageQuality
+        valueData:
+          DWord: 2
+    - resource: Microsoft.Windows/Registry
+      id: RDP Enable virtualized graphics
+      directives:
+        description: RDP Enable virtualized graphics
+      settings:
+        keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+        valueName: fEnableVirtualizedGraphics
+        valueData:
+          DWord: 1
+    - resource: Microsoft.Windows/Registry
+      id: RDP VG capture frame rate
+      directives:
+        description: RDP VG capture frame rate
+      settings:
+        keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+        valueName: VGOptimization_CaptureFrameRate
+        valueData:
+          DWord: 1
+    - resource: Microsoft.Windows/Registry
+      id: RDP VG compression ratio
+      directives:
+        description: RDP VG compression ratio
+      settings:
+        keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+        valueName: VGOptimization_CompressionRatio
+        valueData:
+          DWord: 1
+    - resource: Microsoft.Windows/Registry
+      id: RDP Visual experience policy
+      directives:
+        description: RDP Visual experience policy
+      settings:
+        keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+        valueName: VisualExperiencePolicy
+        valueData:
+          DWord: 1
+    - resource: Microsoft.Windows/Registry
+      id: RDP Disable WDDM driver
+      directives:
+        description: RDP Disable WDDM driver
+      settings:
+        keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+        valueName: fEnableWddmDriver
+        valueData:
+          DWord: 0
+    - resource: Microsoft.Windows/Registry
+      id: RDP USB redirection mode
+      directives:
+        description: RDP USB redirection mode
+      settings:
+        keyPath: HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services\Client
+        valueName: fUsbRedirectionEnableMode
+        valueData:
+          DWord: 2
+    - resource: Microsoft.Windows/Registry
+      id: RDP DWM frame interval
+      directives:
+        description: RDP DWM frame interval
+      settings:
+        keyPath: HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations
+        valueName: DWMFRAMEINTERVAL
+        valueData:
+          DWord: 15
+    - resource: Microsoft.Windows/Registry
+      id: RDP System responsiveness
+      directives:
+        description: RDP System responsiveness
+      settings:
+        keyPath: HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile
+        valueName: SystemResponsiveness
+        valueData:
+          DWord: 0
+    - resource: Microsoft.Windows/Registry
+      id: RDP Flow control disable
+      directives:
+        description: RDP Flow control disable
+      settings:
+        keyPath: HKLM\SYSTEM\CurrentControlSet\Services\TermDD
+        valueName: FlowControlDisable
+        valueData:
+          DWord: 1
+    - resource: Microsoft.Windows/Registry
+      id: RDP Flow control display bandwidth
+      directives:
+        description: RDP Flow control display bandwidth
+      settings:
+        keyPath: HKLM\SYSTEM\CurrentControlSet\Services\TermDD
+        valueName: FlowControlDisplayBandwidth
+        valueData:
+          DWord: 16
+    - resource: Microsoft.Windows/Registry
+      id: RDP Flow control channel bandwidth
+      directives:
+        description: RDP Flow control channel bandwidth
+      settings:
+        keyPath: HKLM\SYSTEM\CurrentControlSet\Services\TermDD
+        valueName: FlowControlChannelBandwidth
+        valueData:
+          DWord: 144
+    - resource: Microsoft.Windows/Registry
+      id: RDP Flow control charge post compression
+      directives:
+        description: RDP Flow control charge post compression
+      settings:
+        keyPath: HKLM\SYSTEM\CurrentControlSet\Services\TermDD
+        valueName: FlowControlChargePostCompression
+        valueData:
+          DWord: 0
+    - resource: Microsoft.Windows/Registry
+      id: RDP Interactive delay
+      directives:
+        description: RDP Interactive delay
+      settings:
+        keyPath: HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp
+        valueName: InteractiveDelay
+        valueData:
+          DWord: 0
+    - resource: Microsoft.Windows/Registry
+      id: RDP Disable bandwidth throttling
+      directives:
+        description: RDP Disable bandwidth throttling
+      settings:
+        keyPath: HKLM\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters
+        valueName: DisableBandwidthThrottling
+        valueData:
+          DWord: 1
+    - resource: Microsoft.Windows/Registry
+      id: RDP Disable large MTU
+      directives:
+        description: RDP Disable large MTU
+      settings:
+        keyPath: HKLM\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters
+        valueName: DisableLargeMtu
+        valueData:
+          DWord: 0
+    # ============================================================
+    # Developer Mode
+    # ============================================================
+    - resource: Microsoft.Windows.Developer/DeveloperMode
+      id: Enable Developer Mode
+      directives:
+        description: Enable Developer Mode
+        allowPrerelease: true
+      settings:
+        Ensure: Present
+    # ============================================================
+    # Remote Desktop
+    # ============================================================
+    - resource: Microsoft.Windows.Developer/EnableRemoteDesktop
+      id: Enable Remote Desktop
+      directives:
+        description: Enable Remote Desktop
+        allowPrerelease: true
+      settings:
+        Ensure: Present
+    # ============================================================
+    # Long Path Support
+    # ============================================================
+    - resource: Microsoft.Windows.Developer/EnableLongPathSupport
+      id: Enable Long Paths
+      directives:
+        description: Enable Long Paths
+        allowPrerelease: true
+      settings:
+        Ensure: Present
+    # ============================================================
+    # File and Printer Sharing
+    # ============================================================
+    - resource: Microsoft.Windows.Developer/AdvancedNetworkSharingSetting
+      id: Enable File and Printer Sharing
+      directives:
+        description: Enable File and Printer Sharing
+        allowPrerelease: true
+      settings:
+        Name: FileAndPrinterSharing
+        Profiles:
+          - Domain
+          - Private
+          - Public
+    # ============================================================
+    # UAC Configuration
+    # ============================================================
+    - resource: Microsoft.Windows.Developer/UserAccessControl
+      id: UAC Consent prompt behavior Admin
+      directives:
+        description: UAC Consent prompt behavior Admin
+        allowPrerelease: true
+      settings:
+        AdminConsentPromptBehavior: RequireConsentForNonWindowsBinaries
+    - resource: Microsoft.Windows/Registry
+      id: UAC Consent prompt behavior User
+      directives:
+        description: UAC Consent prompt behavior User
+      settings:
+        keyPath: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+        valueName: ConsentPromptBehaviorUser
+        valueData:
+          DWord: 3
+    - resource: Microsoft.Windows/Registry
+      id: UAC Enable installer detection
+      directives:
+        description: UAC Enable installer detection
+      settings:
+        keyPath: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+        valueName: EnableInstallerDetection
+        valueData:
+          DWord: 1
+    - resource: Microsoft.Windows/Registry
+      id: UAC Enable LUA
+      directives:
+        description: UAC Enable LUA
+      settings:
+        keyPath: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+        valueName: EnableLUA
+        valueData:
+          DWord: 1
+    - resource: Microsoft.Windows/Registry
+      id: UAC Enable virtualization
+      directives:
+        description: UAC Enable virtualization
+      settings:
+        keyPath: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+        valueName: EnableVirtualization
+        valueData:
+          DWord: 1
+    - resource: Microsoft.Windows/Registry
+      id: UAC Prompt on secure desktop
+      directives:
+        description: UAC Prompt on secure desktop
+      settings:
+        keyPath: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+        valueName: PromptOnSecureDesktop
+        valueData:
+          DWord: 0
+    - resource: Microsoft.Windows/Registry
+      id: UAC Validate admin code signatures
+      directives:
+        description: UAC Validate admin code signatures
+      settings:
+        keyPath: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+        valueName: ValidateAdminCodeSignatures
+        valueData:
+          DWord: 0
+    - resource: Microsoft.Windows/Registry
+      id: UAC Filter administrator token
+      directives:
+        description: UAC Filter administrator token
+      settings:
+        keyPath: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+        valueName: FilterAdministratorToken
+        valueData:
+          DWord: 0
+    # ============================================================
+    # Windows Settings — Appearance and Behavior
+    # ============================================================
+    - resource: Microsoft.Windows.Developer/EnableDarkMode
+      id: Enable Dark Mode
+      directives:
+        description: Enable Dark Mode
+        allowPrerelease: true
+      settings:
+        Ensure: Present
+        RestartExplorer: true
+    - resource: Microsoft.Windows.Developer/Taskbar
+      id: Taskbar Settings
+      directives:
+        description: Taskbar Settings
+        allowPrerelease: true
+      settings:
+        Alignment: Left
+        HideLabelsMode: Always
+        SearchboxMode: Hide
+        TaskViewButton: Show
+        WidgetsButton: Hide
+        RestartExplorer: true
+    - resource: Microsoft.Windows.Developer/WindowsExplorer
+      id: Windows Explorer Settings
+      directives:
+        description: Windows Explorer Settings
+        allowPrerelease: true
+      settings:
+        FileExtensions: Show
+        ItemCheckBoxes: Hide
+    - resource: Microsoft.Windows.Developer/ShowSecondsInClock
+      id: Show Seconds In Clock
+      directives:
+        description: Show Seconds In Clock
+        allowPrerelease: true
+      settings:
+        Ensure: Present
+    # ============================================================
+    # Desktop Background — Windows Spotlight (requires Win11 22H2+)
+    # ============================================================
+    - resource: Microsoft.Windows/Registry
+      id: Desktop Background Spotlight
+      directives:
+        description: Desktop Background Spotlight
+      settings:
+        keyPath: HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Wallpapers
+        valueName: BackgroundType
+        valueData:
+          DWord: 3
+    # ============================================================
+    # Power Plan Settings
+    # ============================================================
+    - resource: Microsoft.Windows.Developer/PowerPlanSetting
+      id: Display Timeout AC 30 Minutes
+      directives:
+        description: Display Timeout AC 30 Minutes
+        allowPrerelease: true
+      settings:
+        Name: DisplayTimeout
+        PowerSource: PluggedIn
+        SettingValue: 30
+    - resource: Microsoft.Windows.Developer/PowerPlanSetting
+      id: Display Timeout Battery 5 Minutes
+      directives:
+        description: Display Timeout Battery 5 Minutes
+        allowPrerelease: true
+      settings:
+        Name: DisplayTimeout
+        PowerSource: Battery
+        SettingValue: 5
+    - resource: Microsoft.Windows.Developer/PowerPlanSetting
+      id: Sleep Timeout AC Never
+      directives:
+        description: Sleep Timeout AC Never
+        allowPrerelease: true
+      settings:
+        Name: SleepTimeout
+        PowerSource: PluggedIn
+        SettingValue: 0
+    - resource: Microsoft.Windows.Developer/PowerPlanSetting
+      id: Sleep Timeout Battery 15 Minutes
+      directives:
+        description: Sleep Timeout Battery 15 Minutes
+        allowPrerelease: true
+      settings:
+        Name: SleepTimeout
+        PowerSource: Battery
+        SettingValue: 15
+    - resource: Microsoft.DSC.Transitional/RunCommandOnSet
+      id: Lid Close AC Do Nothing
+      directives:
+        description: Lid Close AC Do Nothing
+      settings:
+        executable: powercfg
+        arguments:
+          - /SETACVALUEINDEX
+          - SCHEME_CURRENT
+          - SUB_BUTTONS
+          - LIDACTION
+          - "0"
+    - resource: Microsoft.DSC.Transitional/RunCommandOnSet
+      id: Lid Close Battery Sleep
+      directives:
+        description: Lid Close Battery Sleep
+      settings:
+        executable: powercfg
+        arguments:
+          - /SETDCVALUEINDEX
+          - SCHEME_CURRENT
+          - SUB_BUTTONS
+          - LIDACTION
+          - "1"
+    - resource: Microsoft.DSC.Transitional/RunCommandOnSet
+      id: Apply Power Plan Changes
+      directives:
+        description: Apply Power Plan Changes
+      settings:
+        executable: powercfg
+        arguments:
+          - /SETACTIVE
+          - SCHEME_CURRENT
+      dependsOn:
+        - "[resourceId('Microsoft.DSC.Transitional/RunCommandOnSet', 'Lid Close AC Do Nothing')]"
+        - "[resourceId('Microsoft.DSC.Transitional/RunCommandOnSet', 'Lid Close Battery Sleep')]"
+    # ============================================================
+    # Execution Policy
+    # ============================================================
+    - resource: Microsoft.DSC.Transitional/RunCommandOnSet
+      id: Set ExecutionPolicy Unrestricted CurrentUser
+      directives:
+        description: Set ExecutionPolicy Unrestricted CurrentUser
+      settings:
+        executable: pwsh
+        arguments:
+          - -NoProfile
+          - -Command
+          - Set-ExecutionPolicy Unrestricted -Scope CurrentUser -Force
+    - resource: Microsoft.DSC.Transitional/RunCommandOnSet
+      id: Set ExecutionPolicy Unrestricted LocalMachine
+      directives:
+        description: Set ExecutionPolicy Unrestricted LocalMachine
+      settings:
+        executable: pwsh
+        arguments:
+          - -NoProfile
+          - -Command
+          - Set-ExecutionPolicy Unrestricted -Scope LocalMachine -Force
+    # ============================================================
+    # Windows Defender Exclusions
+    # ============================================================
+    - resource: Microsoft.DSC.Transitional/PowerShellScript
+      id: Windows Defender Exclusions
+      directives:
+        description: Windows Defender Exclusions
+      settings:
+        input:
+          processExclusions:
+            - bash.exe
+            - Blend.exe
+            - Code - Insiders.exe
+            - Code.exe
+            - DDConfigCA.exe
+            - devenv.exe
+            - dotnet.exe
+            - FeedbackCollector.exe
+            - git-bash.exe
+            - git.exe
+            - java.exe
+            - java64.exe
+            - Microsoft.VisualStudio.Web.Host.exe
+            - mono-sgen.exe
+            - mono.exe
+            - msbuild.exe
+            - mspdbsrv.exe
+            - MSTest.exe
+            - node.exe
+            - node.js
+            - nuget.exe
+            - PerfWatson2.exe
+            - perfwatson2.exe
+            - powershell.exe
+            - Publicize.exe
+            - pwsh.exe
+            - QTAgent_35.exe
+            - QTAgent_40.exe
+            - QTAgent.exe
+            - QTAgent32_35.exe
+            - QTAgent32_40.exe
+            - QTAgent32.exe
+            - QTDCAgent.exe
+            - QTDCAgent32.exe
+            - ServiceHub.Host.Node.x86.exe
+            - StorePID.exe
+            - T4VSHostProcess.exe
+            - TailoredDeploy.exe
+            - TCM.exe
+            - TextTransform.exe
+            - TfsLabConfig.exe
+            - UserControlTestContainer.exe
+            - vb7to8.exe
+            - vbcscompiler.exe
+            - VcxprojReader.exe
+            - VsDebugWERHelper.exe
+            - VSFinalizer.exe
+            - VsGa.exe
+            - VSHiveStub.exe
+            - vshost-clr2.exe
+            - vshost.exe
+            - vshost32-clr2.exe
+            - vshost32.exe
+            - VSInitializer.exe
+            - VSIXInstaller.exe
+            - VSLaunchBrowser.exe
+            - vsn.exe
+            - VsRegEdit.exe
+            - VSWebHandler.exe
+            - VSWebLauncher.exe
+            - wsl.exe
+            - XDesProc.exe
+          projectsFolder: "D:\\Developer"
+        testScript: |
+          $input = $env:DSC_RESOURCE_INPUT | ConvertFrom-Json
+          $current = Get-MpPreference
+          $missingProcesses = $input.input.processExclusions |
+            Where-Object { $_ -notin $current.ExclusionProcess }
+          $missingPaths = @()
+          if ($input.input.projectsFolder -and
+              $input.input.projectsFolder -notin $current.ExclusionPath) {
+            $missingPaths += $input.input.projectsFolder
+          }
+          @{ _inDesiredState = ($missingProcesses.Count -eq 0 -and $missingPaths.Count -eq 0) } |
+            ConvertTo-Json
+        setScript: |
+          $input = $env:DSC_RESOURCE_INPUT | ConvertFrom-Json
+          foreach ($p in $input.input.processExclusions) {
+            Add-MpPreference -ExclusionProcess $p -ErrorAction SilentlyContinue
+          }
+          if ($input.input.projectsFolder) {
+            Add-MpPreference -ExclusionPath $input.input.projectsFolder -ErrorAction SilentlyContinue
+          }
+    # ============================================================
+    # Git User Identity
+    # ============================================================
+    - resource: GitDsc/GitConfigUserName
+      id: Git user name
+      directives:
+        description: Git user name
+        allowPrerelease: true
+      settings:
+        UserName: Martin Tracey
+        ConfigLocation: global
+    - resource: GitDsc/GitConfigUserEmail
+      id: Git user email
+      directives:
+        description: Git user email
+        allowPrerelease: true
+      settings:
+        UserEmail: "matracey@outlook.ie"
+        ConfigLocation: global
+    # ============================================================
+    # Git Configuration
+    # ============================================================
+    - resource: Microsoft.DSC.Transitional/RunCommandOnSet
+      id: Git system core longpaths
+      directives:
+        description: Git system core longpaths
+      settings:
+        executable: git
+        arguments:
+          - config
+          - --system
+          - core.longpaths
+          - "true"
+    - resource: Microsoft.DSC.Transitional/RunCommandOnSet
+      id: Git global credential helper
+      directives:
+        description: Git global credential helper
+      settings:
+        executable: git
+        arguments:
+          - config
+          - --global
+          - credential.helper
+          - manager
+    # ============================================================
+    # WinGet Packages
+    # ============================================================
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Affinity Designer 2
+      directives:
+        description: Install Affinity Designer 2
+      settings:
+        id: 9N2D0P16C80H
+        source: msstore
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install WhatsApp Beta
+      directives:
+        description: Install WhatsApp Beta
+      settings:
+        id: 9NBDXK71NK08
+        source: msstore
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Affinity Publisher 2
+      directives:
+        description: Install Affinity Publisher 2
+      settings:
+        id: 9NTV2DZ11KD9
+        source: msstore
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Affinity Photo 2
+      directives:
+        description: Install Affinity Photo 2
+      settings:
+        id: 9P8DVF1XW02V
+        source: msstore
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Amazon Games
+      directives:
+        description: Install Amazon Games
+      settings:
+        id: Amazon.Games
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Apple Music
+      directives:
+        description: Install Apple Music
+      settings:
+        id: 9PFHDD62MXS1
+        source: msstore
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Adobe Acrobat Reader 64 bit
+      directives:
+        description: Install Adobe Acrobat Reader 64 bit
+      settings:
+        id: Adobe.Acrobat.Reader.64-bit
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install 1Password
+      directives:
+        description: Install 1Password
+      settings:
+        id: AgileBits.1Password
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install ATLauncher
+      directives:
+        description: Install ATLauncher
+      settings:
+        id: ATLauncher.ATLauncher
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install WizTree
+      directives:
+        description: Install WizTree
+      settings:
+        id: AntibodySoftware.WizTree
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Ubuntu
+      directives:
+        description: Install Ubuntu
+      settings:
+        id: Canonical.Ubuntu
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install DB Browser for SQLite
+      directives:
+        description: Install DB Browser for SQLite
+      settings:
+        id: DBBrowserForSQLite.DBBrowserForSQLite
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install EarTrumpet
+      directives:
+        description: Install EarTrumpet
+      settings:
+        id: File-New-Project.EarTrumpet
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Audacity
+      directives:
+        description: Install Audacity
+      settings:
+        id: Audacity.Audacity
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Mp3tag
+      directives:
+        description: Install Mp3tag
+      settings:
+        id: FlorianHeidenreich.Mp3tag
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Avidemux
+      directives:
+        description: Install Avidemux
+      settings:
+        id: Avidemux.Avidemux
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install calibre
+      directives:
+        description: Install calibre
+      settings:
+        id: calibre.calibre
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Universal ADB Driver
+      directives:
+        description: Install Universal ADB Driver
+      settings:
+        id: ClockworkMod.UniversalADBDriver
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install K Lite Codec Pack Full
+      directives:
+        description: Install K Lite Codec Pack Full
+      settings:
+        id: CodecGuide.K-LiteCodecPack.Full
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Git Credential Manager
+      directives:
+        description: Install Git Credential Manager
+      settings:
+        id: Git.GCM
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Borderless Gaming
+      directives:
+        description: Install Borderless Gaming
+      settings:
+        id: Codeusa.BorderlessGaming
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install CPU Z MSI
+      directives:
+        description: Install CPU Z MSI
+      settings:
+        id: CPUID.CPU-Z.MSI
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install HWMonitor
+      directives:
+        description: Install HWMonitor
+      settings:
+        id: CPUID.HWMonitor
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install CrystalDiskInfo
+      directives:
+        description: Install CrystalDiskInfo
+      settings:
+        id: CrystalDewWorld.CrystalDiskInfo
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Das Keyboard
+      directives:
+        description: Install Das Keyboard
+      settings:
+        id: DasKeyboard.DasKeyboard
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Discord
+      directives:
+        description: Install Discord
+      settings:
+        id: Discord.Discord
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Discord PTB
+      directives:
+        description: Install Discord PTB
+      settings:
+        id: Discord.Discord.PTB
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Git
+      directives:
+        description: Install Git
+      settings:
+        id: Git.Git
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Docker Desktop
+      directives:
+        description: Install Docker Desktop
+      settings:
+        id: Docker.DockerDesktop
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Dolphin Emulator
+      directives:
+        description: Install Dolphin Emulator
+      settings:
+        id: DolphinEmulator.Dolphin
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install EA Desktop
+      directives:
+        description: Install EA Desktop
+      settings:
+        id: ElectronicArts.EADesktop
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Remote Mouse
+      directives:
+        description: Install Remote Mouse
+      settings:
+        id: EmoteInteractive.RemoteMouse
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Epic Games Launcher
+      directives:
+        description: Install Epic Games Launcher
+      settings:
+        id: EpicGames.EpicGamesLauncher
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install MacintoshJS
+      directives:
+        description: Install MacintoshJS
+      settings:
+        id: FelixRieseberg.MacintoshJS
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Windows95
+      directives:
+        description: Install Windows95
+      settings:
+        id: FelixRieseberg.Windows95
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install GOG Galaxy
+      directives:
+        description: Install GOG Galaxy
+      settings:
+        id: GOG.Galaxy
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Android Studio
+      directives:
+        description: Install Android Studio
+      settings:
+        id: Google.AndroidStudio
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install GitHub Desktop
+      directives:
+        description: Install GitHub Desktop
+      settings:
+        id: GitHub.GitHubDesktop
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Git LFS
+      directives:
+        description: Install Git LFS
+      settings:
+        id: GitHub.GitLFS
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Dual Monitor Tools
+      directives:
+        description: Install Dual Monitor Tools
+      settings:
+        id: GNE.DualMonitorTools
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Google Chrome
+      directives:
+        description: Install Google Chrome
+      settings:
+        id: Google.Chrome
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Google Quick Share
+      directives:
+        description: Install Google Quick Share
+      settings:
+        id: Google.QuickShare
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Cyberduck
+      directives:
+        description: Install Cyberduck
+      settings:
+        id: Iterate.Cyberduck
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Oh My Posh
+      directives:
+        description: Install Oh My Posh
+      settings:
+        id: JanDeDobbeleer.OhMyPosh
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install HandBrake
+      directives:
+        description: Install HandBrake
+      settings:
+        id: HandBrake.HandBrake
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install AutoHotkey
+      directives:
+        description: Install AutoHotkey
+      settings:
+        id: Lexikos.AutoHotkey
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install mise
+      directives:
+        description: Install mise
+      settings:
+        id: jdx.mise
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install FontBase
+      directives:
+        description: Install FontBase
+      settings:
+        id: Levitsky.FontBase
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install RetroArch
+      directives:
+        description: Install RetroArch
+      settings:
+        id: Libretro.RetroArch
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install LLVM
+      directives:
+        description: Install LLVM
+      settings:
+        id: LLVM.LLVM
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install NanaZip
+      directives:
+        description: Install NanaZip
+      settings:
+        id: M2Team.NanaZip
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install UniGetUI
+      directives:
+        description: Install UniGetUI
+      settings:
+        id: MartiCliment.UniGetUI
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Logitech G HUB
+      directives:
+        description: Install Logitech G HUB
+      settings:
+        id: Logitech.GHUB
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install MediaInfo GUI
+      directives:
+        description: Install MediaInfo GUI
+      settings:
+        id: MediaArea.MediaInfo.GUI
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Microsoft App Installer
+      directives:
+        description: Install Microsoft App Installer
+      settings:
+        id: Microsoft.AppInstaller
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Microsoft Office
+      directives:
+        description: Install Microsoft Office
+      settings:
+        id: Microsoft.Office
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Microsoft Edge
+      directives:
+        description: Install Microsoft Edge
+      settings:
+        id: Microsoft.Edge
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Microsoft Edge Beta
+      directives:
+        description: Install Microsoft Edge Beta
+      settings:
+        id: Microsoft.Edge.Beta
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Microsoft Remote Desktop Client
+      directives:
+        description: Install Microsoft Remote Desktop Client
+      settings:
+        id: Microsoft.RemoteDesktopClient
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install MKVToolNix
+      directives:
+        description: Install MKVToolNix
+      settings:
+        id: MoritzBunkus.MKVToolNix
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Edge WebView2 Runtime
+      directives:
+        description: Install Edge WebView2 Runtime
+      settings:
+        id: Microsoft.EdgeWebView2Runtime
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install NordPass
+      directives:
+        description: Install NordPass
+      settings:
+        id: NordPassTeam.NordPass
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install NordVPN
+      directives:
+        description: Install NordVPN
+      settings:
+        id: NordVPN.NordVPN
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Microsoft OneDrive
+      directives:
+        description: Install Microsoft OneDrive
+      settings:
+        id: Microsoft.OneDrive
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install NVIDIA Broadcast
+      directives:
+        description: Install NVIDIA Broadcast
+      settings:
+        id: Nvidia.Broadcast
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install GeForce Experience
+      directives:
+        description: Install GeForce Experience
+      settings:
+        id: Nvidia.GeForceExperience
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install NVIDIA PhysX
+      directives:
+        description: Install NVIDIA PhysX
+      settings:
+        id: Nvidia.PhysX
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install NZXT CAM
+      directives:
+        description: Install NZXT CAM
+      settings:
+        id: NZXT.CAM
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install OBS Studio
+      directives:
+        description: Install OBS Studio
+      settings:
+        id: OBSProject.OBSStudio
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install PowerShell
+      directives:
+        description: Install PowerShell
+      settings:
+        id: Microsoft.PowerShell
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Signal
+      directives:
+        description: Install Signal
+      settings:
+        id: OpenWhisperSystems.Signal
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install foobar2000
+      directives:
+        description: Install foobar2000
+      settings:
+        id: PeterPawlowski.foobar2000
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Plex
+      directives:
+        description: Install Plex
+      settings:
+        id: Plex.Plex
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Plex Media Server
+      directives:
+        description: Install Plex Media Server
+      settings:
+        id: Plex.PlexMediaServer
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Postman
+      directives:
+        description: Install Postman
+      settings:
+        id: Postman.Postman
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install qBittorrent
+      directives:
+        description: Install qBittorrent
+      settings:
+        id: qBittorrent.qBittorrent
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install HWiNFO
+      directives:
+        description: Install HWiNFO
+      settings:
+        id: REALiX.HWiNFO
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Rufus
+      directives:
+        description: Install Rufus
+      settings:
+        id: Rufus.Rufus
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install SABnzbd
+      directives:
+        description: Install SABnzbd
+      settings:
+        id: SABnzbdTeam.SABnzbd
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install ElevenClock
+      directives:
+        description: Install ElevenClock
+      settings:
+        id: SomePythonThings.ElevenClock
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install PowerToys
+      directives:
+        description: Install PowerToys
+      settings:
+        id: Microsoft.PowerToys
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Tailscale
+      directives:
+        description: Install Tailscale
+      settings:
+        id: tailscale.tailscale
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Prowlarr
+      directives:
+        description: Install Prowlarr
+      settings:
+        id: TeamProwlarr.Prowlarr
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Radarr
+      directives:
+        description: Install Radarr
+      settings:
+        id: TeamRadarr.Radarr
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Sonarr
+      directives:
+        description: Install Sonarr
+      settings:
+        id: TeamSonarr.Sonarr
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install TIDAL
+      directives:
+        description: Install TIDAL
+      settings:
+        id: TIDALMusicAS.TIDAL
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Ubisoft Connect
+      directives:
+        description: Install Ubisoft Connect
+      settings:
+        id: Ubisoft.Connect
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Steam
+      directives:
+        description: Install Steam
+      settings:
+        id: Valve.Steam
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Windows Terminal Preview
+      directives:
+        description: Install Windows Terminal Preview
+      settings:
+        id: Microsoft.WindowsTerminal.Preview
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Windows Subsystem for Linux
+      directives:
+        description: Install Windows Subsystem for Linux
+      settings:
+        id: Microsoft.WSL
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Mozilla Firefox
+      directives:
+        description: Install Mozilla Firefox
+      settings:
+        id: Mozilla.Firefox
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Notepad Plus Plus
+      directives:
+        description: Install Notepad Plus Plus
+      settings:
+        id: Notepad++.Notepad++
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Obsidian
+      directives:
+        description: Install Obsidian
+      settings:
+        id: Obsidian.Obsidian
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Spotify
+      directives:
+        description: Install Spotify
+      settings:
+        id: Spotify.Spotify
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install VLC
+      directives:
+        description: Install VLC
+      settings:
+        id: VideoLAN.VLC
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install WinSCP
+      directives:
+        description: Install WinSCP
+      settings:
+        id: WinSCP.WinSCP
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install DotNet SDK 8
+      directives:
+        description: Install DotNet SDK 8
+      settings:
+        id: Microsoft.DotNet.SDK.8
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install DotNet SDK 9
+      directives:
+        description: Install DotNet SDK 9
+      settings:
+        id: Microsoft.DotNet.SDK.9
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install VCRedist 2015 plus x64
+      directives:
+        description: Install VCRedist 2015 plus x64
+      settings:
+        id: Microsoft.VCRedist.2015+.x64
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install VCRedist 2013 x64
+      directives:
+        description: Install VCRedist 2013 x64
+      settings:
+        id: Microsoft.VCRedist.2013.x64
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install VCRedist 2012 x64
+      directives:
+        description: Install VCRedist 2012 x64
+      settings:
+        id: Microsoft.VCRedist.2012.x64
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install VCRedist 2010 x64
+      directives:
+        description: Install VCRedist 2010 x64
+      settings:
+        id: Microsoft.VCRedist.2010.x64
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install VCRedist 2008 x64
+      directives:
+        description: Install VCRedist 2008 x64
+      settings:
+        id: Microsoft.VCRedist.2008.x64
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install VCRedist 2005 x64
+      directives:
+        description: Install VCRedist 2005 x64
+      settings:
+        id: Microsoft.VCRedist.2005.x64
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install DotNet Framework Redistributable 1 1
+      directives:
+        description: Install DotNet Framework Redistributable 1 1
+      settings:
+        id: Microsoft.DotNet.Framework.Redistributable.1_1
+        source: winget
+    # ============================================================
+    # Visual Studio Installation
+    # ============================================================
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install Visual Studio 2026 Enterprise Preview
+      directives:
+        description: Install Visual Studio 2026 Enterprise Preview
+      settings:
+        id: Microsoft.VisualStudio.2026.Enterprise.Preview
+        source: winget
+    - resource: Microsoft.VisualStudio.DSC/VSComponents
+      id: VS 2026 Preview Workloads
+      directives:
+        description: VS 2026 Preview Workloads
+      settings:
+        ProductId: Microsoft.VisualStudio.Product.Enterprise
+        ChannelId: VisualStudio.18.Preview
+        Components:
+          - Microsoft.VisualStudio.Workload.Azure
+          - Microsoft.VisualStudio.Workload.CoreEditor
+          - Microsoft.VisualStudio.Workload.Data
+          - Microsoft.VisualStudio.Workload.ManagedDesktop
+          - Microsoft.VisualStudio.Workload.NativeDesktop
+          - Microsoft.VisualStudio.Workload.NetCrossPlat
+          - Microsoft.VisualStudio.Workload.NetWeb
+          - Microsoft.VisualStudio.Workload.Node
+        IncludeRecommended: true
+      dependsOn:
+        - "[resourceId('Microsoft.WinGet.DSC/WinGetPackage', 'Install Visual Studio 2026 Enterprise Preview')]"
+    # --- Opt-in: uncomment to install VS 2026 Release ---
+    # - resource: Microsoft.WinGet.DSC/WinGetPackage
+    #   id: Install Visual Studio 2026 Enterprise
+    #   directives:
+    #     description: Install Visual Studio 2026 Enterprise
+    #   settings:
+    #     id: "Microsoft.VisualStudio.2026.Enterprise"
+    #     source: winget
+    # - resource: Microsoft.VisualStudio.DSC/VSComponents
+    #   id: VS 2026 Release Workloads
+    #   directives:
+    #     description: VS 2026 Release Workloads
+    #   settings:
+    #     ProductId: Microsoft.VisualStudio.Product.Enterprise
+    #     ChannelId: VisualStudio.18.Release
+    #     Components:
+    #       - Microsoft.VisualStudio.Workload.Azure
+    #       - Microsoft.VisualStudio.Workload.CoreEditor
+    #       - Microsoft.VisualStudio.Workload.Data
+    #       - Microsoft.VisualStudio.Workload.ManagedDesktop
+    #       - Microsoft.VisualStudio.Workload.NativeDesktop
+    #       - Microsoft.VisualStudio.Workload.NetCrossPlat
+    #       - Microsoft.VisualStudio.Workload.NetWeb
+    #       - Microsoft.VisualStudio.Workload.Node
+    #     IncludeRecommended: true
+    #   dependsOn:
+    #     - "[resourceId('Microsoft.WinGet.DSC/WinGetPackage', 'Install Visual Studio 2026 Enterprise')]"
+    # ============================================================
+    # Font Repository Cloning
+    # ============================================================
+    - resource: GitDsc/GitClone
+      id: Clone Google Fonts
+      directives:
+        description: Clone Google Fonts
+        allowPrerelease: true
+      settings:
+        HttpsUrl: "https://github.com/google/fonts.git"
+        RootDirectory: "[concat(envvar('USERPROFILE'), '\\fonts')]"
+        FolderName: google-fonts
+        ExtraArgs: --depth 1
+    - resource: GitDsc/GitClone
+      id: Clone Nerd Fonts
+      directives:
+        description: Clone Nerd Fonts
+        allowPrerelease: true
+      settings:
+        HttpsUrl: "https://github.com/ryanoasis/nerd-fonts.git"
+        RootDirectory: "[concat(envvar('USERPROFILE'), '\\fonts')]"
+        FolderName: nerd-fonts
+        ExtraArgs: --depth 1
+    # ============================================================
+    # Font Directory Junctions (FontBase)
+    # ============================================================
+    - resource: Microsoft.DSC.Transitional/PowerShellScript
+      id: Create font junctions for FontBase
+      directives:
+        description: Create font junctions for FontBase
+      settings:
+        testScript: |
+          $fontBase = Join-Path $env:USERPROFILE "FontBase"
+          $googleLink = Join-Path $fontBase "google-fonts"
+          $nerdLink = Join-Path $fontBase "nerd-fonts"
+          $ok = (Test-Path $googleLink) -and (Test-Path $nerdLink)
+          @{ _inDesiredState = $ok } | ConvertTo-Json
+        setScript: |
+          $fontsDir = Join-Path $env:USERPROFILE "fonts"
+          $fontBase = Join-Path $env:USERPROFILE "FontBase"
+          if (-not (Test-Path $fontBase)) { New-Item -ItemType Directory -Path $fontBase -Force | Out-Null }
+          $googleFontsDir = Join-Path $fontsDir "google-fonts"
+          $allDir = Join-Path $googleFontsDir "all"
+          if (-not (Test-Path $allDir)) { New-Item -ItemType Directory -Path $allDir -Force | Out-Null }
+          foreach ($sub in @("apache", "ofl", "ufl")) {
+            $subDir = Join-Path $googleFontsDir $sub
+            if (Test-Path $subDir) {
+              Get-ChildItem -Path $subDir -Directory | ForEach-Object {
+                $target = Join-Path $allDir $_.Name
+                if (-not (Test-Path $target)) {
+                  New-Item -ItemType Junction -Path $allDir -Name $_.Name -Value $_.FullName -Force | Out-Null
+                }
               }
             }
           }
-        }
-        $googleLink = Join-Path $fontBase "google-fonts"
-        if (-not (Test-Path $googleLink)) {
-          New-Item -ItemType Junction -Path $fontBase -Name "google-fonts" -Value $allDir -Force | Out-Null
-        }
-        $nerdFontsDir = Join-Path $fontsDir "nerd-fonts"
-        $patchedDir = Join-Path $nerdFontsDir "patched-fonts"
-        $nerdLink = Join-Path $fontBase "nerd-fonts"
-        if (-not (Test-Path $nerdLink)) {
-          New-Item -ItemType Junction -Path $fontBase -Name "nerd-fonts" -Value $patchedDir -Force | Out-Null
-        }
-  # ============================================================
-  # Oh My Posh Theme Deployment
-  # ============================================================
-  - name: Deploy Oh My Posh config
-    type: Microsoft.DSC.Transitional/PowerShellScript
-    properties:
-      input:
-        gistBase: "https://gist.githubusercontent.com/matracey/f4c3a9194cd190a3b3de423aad5dc7e1/raw"
-        fileName: "mojada.personal.omp.json"
-      testScript: |
-        $target = Join-Path $env:USERPROFILE '.config\oh-my-posh\mojada.omp.json'
-        @{ _inDesiredState = (Test-Path $target) } | ConvertTo-Json
-      setScript: |
-        $in = $env:DSC_RESOURCE_INPUT | ConvertFrom-Json
-        $target = Join-Path $env:USERPROFILE '.config\oh-my-posh\mojada.omp.json'
-        $dir = Split-Path $target
-        if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
-        $url = "$($in.input.gistBase)/$($in.input.fileName)"
-        Invoke-WebRequest -Uri $url -OutFile $target -UseBasicParsing
-  # ============================================================
-  # Windows Terminal Settings Deployment
-  # ============================================================
-  - name: Deploy Windows Terminal settings
-    type: Microsoft.DSC.Transitional/PowerShellScript
-    properties:
-      input:
-        gistBase: "https://gist.githubusercontent.com/matracey/f4c3a9194cd190a3b3de423aad5dc7e1/raw"
-        fileName: "windowsterminal.personal.json"
-      testScript: |
-        $wtPackages = Get-ChildItem "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal*" -Directory -ErrorAction SilentlyContinue
-        if (-not $wtPackages) { @{ _inDesiredState = $true } | ConvertTo-Json; return }
-        $allPresent = $true
-        foreach ($pkg in $wtPackages) {
-          $settingsPath = Join-Path $pkg.FullName "LocalState\settings.json"
-          if (-not (Test-Path $settingsPath)) { $allPresent = $false; break }
-        }
-        @{ _inDesiredState = $allPresent } | ConvertTo-Json
-      setScript: |
-        $in = $env:DSC_RESOURCE_INPUT | ConvertFrom-Json
-        $url = "$($in.input.gistBase)/$($in.input.fileName)"
-        $content = (Invoke-WebRequest -Uri $url -UseBasicParsing).Content
-        $wtPackages = Get-ChildItem "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal*" -Directory -ErrorAction SilentlyContinue
-        foreach ($pkg in $wtPackages) {
-          $localState = Join-Path $pkg.FullName "LocalState"
-          if (-not (Test-Path $localState)) { New-Item -ItemType Directory -Path $localState -Force | Out-Null }
-          $settingsPath = Join-Path $localState "settings.json"
-          Set-Content -Path $settingsPath -Value $content -Encoding UTF8 -Force
-        }
-  # ============================================================
-  # Mise Tool Manager
-  # ============================================================
-  - name: Deploy mise config
-    type: Microsoft.DSC.Transitional/PowerShellScript
-    properties:
-      input:
-        sourceUrl: "https://gist.githubusercontent.com/matracey/e3febf8a83d05ae2d7ade96fd147cd20/raw/mise.toml"
-      testScript: |
-        $target = Join-Path $env:USERPROFILE '.config\mise\config.toml'
-        @{ _inDesiredState = (Test-Path $target) } | ConvertTo-Json
-      setScript: |
-        $in = $env:DSC_RESOURCE_INPUT | ConvertFrom-Json
-        $target = Join-Path $env:USERPROFILE '.config\mise\config.toml'
-        $dir = Split-Path $target
-        if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
-        Invoke-WebRequest -Uri $in.input.sourceUrl -OutFile $target -UseBasicParsing
-  - name: Run mise install
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
-    dependsOn:
-      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript', 'Deploy mise config')]"
-    properties:
-      executable: mise
-      arguments:
-        - install
-  # ============================================================
-  # Scoop Package Manager (Hybrid Migration)
-  # ============================================================
-  - name: Scoop Install and configure
-    type: Microsoft.DSC.Transitional/PowerShellScript
-    properties:
-      input:
-        prereqs:
-          - 7zip
-          - aria2
-          - dark
-          - git
-          - innounp
-          - lessmsi
-          - wixtoolset
-        buckets:
-          - name: extras
-            url: https://github.com/ScoopInstaller/Extras
-          - name: main
-            url: https://github.com/ScoopInstaller/Main.git
-          - name: matracey
-            url: https://github.com/matracey/scoop-bucket
-          - name: sysinternals
-            url: https://github.com/niheaven/scoop-sysinternals
-          - name: ash258
-            url: https://github.com/Ash258/Shovel-Ash258.git
-          - name: emulators
-            url: https://github.com/hermanjustnu/scoop-emulators.git
-          - name: games
-            url: https://github.com/Calinou/scoop-games
-        packages:
-          - extras/cru
-          - extras/git-credential-manager
-          - extras/scoop-completion
-          - extras/sysinternals
-          - main/7zip
-          - main/aria2
-          - main/azure-functions-core-tools
-          - main/cacert
-          - main/chromedriver
-          - main/coreutils
-          - main/curl
-          - main/dark
-          - main/edgedriver
-          - main/ffmpeg
-          - main/geckodriver
-          - main/git
-          - main/grep
-          - main/gsudo
-          - main/innounp
-          - main/lessmsi
-          - main/pester
-          - main/powershell-beautifier
-          - main/scoop-search
-          - main/vim
-          - main/vimtutor
-          - main/wget
-          - main/winget-ps
-          - main/wixtoolset
-          - matracey/pswindowsupdate
-          - adb
-          - android-clt
-          - dnsjumper
-          - duckstation
-          - GameSaveManager
-          - git-filter-repo
-          - gog-galaxy-plugin-downloader
-          - mediainfo
-          - msiafterburner
-          - msikombustor
-          - nuget
-          - pcsx2
-          - potrace
-          - sqlite
-          - xemu
-        aliases:
-          clean: "scoop cleanup *; scoop cache rm *;"
-          reinstall: "scoop uninstall ; scoop install ;"
-          upgrade: "scoop update; scoop update *;"
-      testScript: |
-        $scoopCmd = Get-Command scoop -ErrorAction SilentlyContinue
-        @{ _inDesiredState = ($null -ne $scoopCmd) } | ConvertTo-Json
-      setScript: |
-        $input = $env:DSC_RESOURCE_INPUT | ConvertFrom-Json
-        # Install Scoop if missing
-        if (-not (Get-Command scoop -ErrorAction SilentlyContinue)) {
-          $installer = Join-Path $env:TEMP "install-scoop.ps1"
-          Invoke-WebRequest -Uri "https://get.scoop.sh" -OutFile $installer -UseBasicParsing
-          & $installer -RunAsAdmin
-          Remove-Item $installer -ErrorAction SilentlyContinue
-          $env:Path = "$env:USERPROFILE\scoop\shims;$env:Path"
-        }
-        # Install prerequisites
-        foreach ($pkg in $input.input.prereqs) { scoop install $pkg }
-        # Add buckets
-        foreach ($bucket in $input.input.buckets) {
-          scoop bucket add $bucket.name $bucket.url 2>$null
-        }
-        # Install packages
-        foreach ($pkg in $input.input.packages) { scoop install $pkg }
-        # Add aliases
-        $aliases = $input.input.aliases
-        foreach ($name in $aliases.PSObject.Properties.Name) {
-          scoop alias add $name $aliases.$name "" 2>$null
-        }
+          $googleLink = Join-Path $fontBase "google-fonts"
+          if (-not (Test-Path $googleLink)) {
+            New-Item -ItemType Junction -Path $fontBase -Name "google-fonts" -Value $allDir -Force | Out-Null
+          }
+          $nerdFontsDir = Join-Path $fontsDir "nerd-fonts"
+          $patchedDir = Join-Path $nerdFontsDir "patched-fonts"
+          $nerdLink = Join-Path $fontBase "nerd-fonts"
+          if (-not (Test-Path $nerdLink)) {
+            New-Item -ItemType Junction -Path $fontBase -Name "nerd-fonts" -Value $patchedDir -Force | Out-Null
+          }
+      dependsOn:
+        - "[resourceId('GitDsc/GitClone', 'Clone Google Fonts')]"
+        - "[resourceId('GitDsc/GitClone', 'Clone Nerd Fonts')]"
+    # ============================================================
+    # Oh My Posh Theme Deployment
+    # ============================================================
+    - resource: Microsoft.DSC.Transitional/PowerShellScript
+      id: Deploy Oh My Posh config
+      directives:
+        description: Deploy Oh My Posh config
+      settings:
+        input:
+          gistBase: "https://gist.githubusercontent.com/matracey/f4c3a9194cd190a3b3de423aad5dc7e1/raw"
+          fileName: mojada.personal.omp.json
+        testScript: |
+          $target = Join-Path $env:USERPROFILE '.config\oh-my-posh\mojada.omp.json'
+          @{ _inDesiredState = (Test-Path $target) } | ConvertTo-Json
+        setScript: |
+          $in = $env:DSC_RESOURCE_INPUT | ConvertFrom-Json
+          $target = Join-Path $env:USERPROFILE '.config\oh-my-posh\mojada.omp.json'
+          $dir = Split-Path $target
+          if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+          $url = "$($in.input.gistBase)/$($in.input.fileName)"
+          Invoke-WebRequest -Uri $url -OutFile $target -UseBasicParsing
+    # ============================================================
+    # Windows Terminal Settings Deployment
+    # ============================================================
+    - resource: Microsoft.DSC.Transitional/PowerShellScript
+      id: Deploy Windows Terminal settings
+      directives:
+        description: Deploy Windows Terminal settings
+      settings:
+        input:
+          gistBase: "https://gist.githubusercontent.com/matracey/f4c3a9194cd190a3b3de423aad5dc7e1/raw"
+          fileName: windowsterminal.personal.json
+        testScript: |
+          $wtPackages = Get-ChildItem "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal*" -Directory -ErrorAction SilentlyContinue
+          if (-not $wtPackages) { @{ _inDesiredState = $true } | ConvertTo-Json; return }
+          $allPresent = $true
+          foreach ($pkg in $wtPackages) {
+            $settingsPath = Join-Path $pkg.FullName "LocalState\settings.json"
+            if (-not (Test-Path $settingsPath)) { $allPresent = $false; break }
+          }
+          @{ _inDesiredState = $allPresent } | ConvertTo-Json
+        setScript: |
+          $in = $env:DSC_RESOURCE_INPUT | ConvertFrom-Json
+          $url = "$($in.input.gistBase)/$($in.input.fileName)"
+          $content = (Invoke-WebRequest -Uri $url -UseBasicParsing).Content
+          $wtPackages = Get-ChildItem "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal*" -Directory -ErrorAction SilentlyContinue
+          foreach ($pkg in $wtPackages) {
+            $localState = Join-Path $pkg.FullName "LocalState"
+            if (-not (Test-Path $localState)) { New-Item -ItemType Directory -Path $localState -Force | Out-Null }
+            $settingsPath = Join-Path $localState "settings.json"
+            Set-Content -Path $settingsPath -Value $content -Encoding UTF8 -Force
+          }
+    # ============================================================
+    # Mise Tool Manager
+    # ============================================================
+    - resource: Microsoft.DSC.Transitional/PowerShellScript
+      id: Deploy mise config
+      directives:
+        description: Deploy mise config
+      settings:
+        input:
+          sourceUrl: "https://gist.githubusercontent.com/matracey/e3febf8a83d05ae2d7ade96fd147cd20/raw/mise.toml"
+        testScript: |
+          $target = Join-Path $env:USERPROFILE '.config\mise\config.toml'
+          @{ _inDesiredState = (Test-Path $target) } | ConvertTo-Json
+        setScript: |
+          $in = $env:DSC_RESOURCE_INPUT | ConvertFrom-Json
+          $target = Join-Path $env:USERPROFILE '.config\mise\config.toml'
+          $dir = Split-Path $target
+          if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+          Invoke-WebRequest -Uri $in.input.sourceUrl -OutFile $target -UseBasicParsing
+    - resource: Microsoft.DSC.Transitional/RunCommandOnSet
+      id: Run mise install
+      directives:
+        description: Run mise install
+      settings:
+        executable: mise
+        arguments:
+          - install
+      dependsOn:
+        - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript', 'Deploy mise config')]"
+    # ============================================================
+    # Scoop Package Manager (Hybrid Migration)
+    # ============================================================
+    - resource: Microsoft.DSC.Transitional/PowerShellScript
+      id: Scoop Install and configure
+      directives:
+        description: Scoop Install and configure
+      settings:
+        input:
+          prereqs:
+            - 7zip
+            - aria2
+            - dark
+            - git
+            - innounp
+            - lessmsi
+            - wixtoolset
+          buckets:
+            - name: extras
+              url: "https://github.com/ScoopInstaller/Extras"
+            - name: main
+              url: "https://github.com/ScoopInstaller/Main.git"
+            - name: matracey
+              url: "https://github.com/matracey/scoop-bucket"
+            - name: sysinternals
+              url: "https://github.com/niheaven/scoop-sysinternals"
+            - name: ash258
+              url: "https://github.com/Ash258/Shovel-Ash258.git"
+            - name: emulators
+              url: "https://github.com/hermanjustnu/scoop-emulators.git"
+            - name: games
+              url: "https://github.com/Calinou/scoop-games"
+          packages:
+            - extras/cru
+            - extras/git-credential-manager
+            - extras/scoop-completion
+            - extras/sysinternals
+            - main/7zip
+            - main/aria2
+            - main/azure-functions-core-tools
+            - main/cacert
+            - main/chromedriver
+            - main/coreutils
+            - main/curl
+            - main/dark
+            - main/edgedriver
+            - main/ffmpeg
+            - main/geckodriver
+            - main/git
+            - main/grep
+            - main/gsudo
+            - main/innounp
+            - main/lessmsi
+            - main/pester
+            - main/powershell-beautifier
+            - main/scoop-search
+            - main/vim
+            - main/vimtutor
+            - main/wget
+            - main/winget-ps
+            - main/wixtoolset
+            - matracey/pswindowsupdate
+            - adb
+            - android-clt
+            - dnsjumper
+            - duckstation
+            - GameSaveManager
+            - git-filter-repo
+            - gog-galaxy-plugin-downloader
+            - mediainfo
+            - msiafterburner
+            - msikombustor
+            - nuget
+            - pcsx2
+            - potrace
+            - sqlite
+            - xemu
+          aliases:
+            clean: "scoop cleanup *; scoop cache rm *;"
+            reinstall: scoop uninstall ; scoop install ;
+            upgrade: "scoop update; scoop update *;"
+        testScript: |
+          $scoopCmd = Get-Command scoop -ErrorAction SilentlyContinue
+          @{ _inDesiredState = ($null -ne $scoopCmd) } | ConvertTo-Json
+        setScript: |
+          $input = $env:DSC_RESOURCE_INPUT | ConvertFrom-Json
+          # Install Scoop if missing
+          if (-not (Get-Command scoop -ErrorAction SilentlyContinue)) {
+            $installer = Join-Path $env:TEMP "install-scoop.ps1"
+            Invoke-WebRequest -Uri "https://get.scoop.sh" -OutFile $installer -UseBasicParsing
+            & $installer -RunAsAdmin
+            Remove-Item $installer -ErrorAction SilentlyContinue
+            $env:Path = "$env:USERPROFILE\scoop\shims;$env:Path"
+          }
+          # Install prerequisites
+          foreach ($pkg in $input.input.prereqs) { scoop install $pkg }
+          # Add buckets
+          foreach ($bucket in $input.input.buckets) {
+            scoop bucket add $bucket.name $bucket.url 2>$null
+          }
+          # Install packages
+          foreach ($pkg in $input.input.packages) { scoop install $pkg }
+          # Add aliases
+          $aliases = $input.input.aliases
+          foreach ($name in $aliases.PSObject.Properties.Name) {
+            scoop alias add $name $aliases.$name "" 2>$null
+          }
+  # Install Scoop if missing
+  # Install prerequisites
+  # Add buckets
+  # Install packages
+  # Add aliases

@@ -1,11 +1,10 @@
 <#
 .SYNOPSIS
-    Thin launcher for DSCv3-based machine provisioning.
+    Thin launcher for WinGet-based machine provisioning.
 
 .DESCRIPTION
-    Fetches the appropriate DSCv3 configuration document (Personal or Work)
-    and applies it using `dsc config set`. Supports both local file paths
-    and remote Gist URLs.
+    Applies the appropriate WinGet configuration document (Personal or Work)
+    using `winget configure`. Supports both remote Gist URLs and local file paths.
 
 .PARAMETER Personal
     Apply the Personal context configuration.
@@ -13,11 +12,8 @@
 .PARAMETER Work
     Apply the Work context configuration.
 
-.PARAMETER DryRun
-    Show current state without making changes (runs `dsc config get`).
-
 .PARAMETER Test
-    Show configuration drift (runs `dsc config test`).
+    Show configuration drift (runs `winget configure test`).
 
 .PARAMETER Local
     Use local configuration files instead of fetching from Gist.
@@ -30,7 +26,6 @@ param(
     [Parameter(ParameterSetName = 'Work')]
     [switch]$Work,
 
-    [switch]$DryRun,
     [switch]$Test,
     [switch]$Local
 )
@@ -52,7 +47,17 @@ if (-not $Personal -and -not $Work) {
 $context = if ($Personal) { 'personal' } else { 'work' }
 $fileName = "configuration.$context.dsc.yaml"
 
-# Resolve configuration file
+# Verify winget is available
+if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
+    Write-Error @"
+The 'winget' command is not available. Install Windows Package Manager:
+  https://learn.microsoft.com/windows/package-manager/winget/#install-winget
+Then restart your shell and try again.
+"@
+    exit 1
+}
+
+# Apply configuration
 if ($Local) {
     $configPath = Join-Path $PSScriptRoot "..\$fileName"
     if (-not (Test-Path $configPath)) {
@@ -63,32 +68,23 @@ if ($Local) {
         exit 1
     }
     Write-Host "Using local file: $configPath" -ForegroundColor Cyan
+
+    if ($Test) {
+        Write-Host "`nRunning winget configure test..." -ForegroundColor Yellow
+        winget configure test -f $configPath --accept-configuration-agreements
+    } else {
+        Write-Host "`nApplying $context configuration..." -ForegroundColor Green
+        winget configure -f $configPath --accept-configuration-agreements
+    }
 } else {
-    $configPath = Join-Path $env:TEMP $fileName
     $url = "$GistBase/$fileName"
-    Write-Host "Fetching configuration from Gist..." -ForegroundColor Cyan
-    Invoke-WebRequest -Uri $url -OutFile $configPath -UseBasicParsing
-    Write-Host "Downloaded: $configPath" -ForegroundColor Green
-}
+    Write-Host "Applying $context configuration from Gist..." -ForegroundColor Cyan
 
-# Verify dsc is available
-if (-not (Get-Command dsc -ErrorAction SilentlyContinue)) {
-    Write-Error @"
-The 'dsc' command is not available. Install DSCv3:
-  winget install Microsoft.DSC
-Then restart your shell and try again.
-"@
-    exit 1
-}
-
-# Apply configuration
-if ($DryRun) {
-    Write-Host "`nRunning dsc config get (dry-run)..." -ForegroundColor Yellow
-    dsc config get --path $configPath
-} elseif ($Test) {
-    Write-Host "`nRunning dsc config test (drift detection)..." -ForegroundColor Yellow
-    dsc config test --path $configPath
-} else {
-    Write-Host "`nApplying $context configuration..." -ForegroundColor Green
-    dsc config set --path $configPath
+    if ($Test) {
+        Write-Host "`nRunning winget configure test..." -ForegroundColor Yellow
+        winget configure test -f $url --accept-configuration-agreements
+    } else {
+        Write-Host "`nApplying $context configuration..." -ForegroundColor Green
+        winget configure -f $url --accept-configuration-agreements
+    }
 }

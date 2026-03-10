@@ -1,0 +1,14 @@
+# yaml-language-server: $schema=https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+# Shared Windows Spotlight wallpaper resource.
+$schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+resources:
+  - name: Desktop Background Spotlight
+    type: Microsoft.Windows/Registry
+    metadata:
+      description: "Set desktop background to Windows Spotlight"
+      module: "Microsoft.Windows"
+    properties:
+      keyPath: HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Wallpapers
+      valueName: BackgroundType
+      valueData:
+        DWord: 3

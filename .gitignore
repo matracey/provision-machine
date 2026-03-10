@@ -8,6 +8,7 @@ Desktop.ini
 *.swo
 *~
 .vscode/
+!.vscode/settings.json
 .idea/
 
 # PowerShell

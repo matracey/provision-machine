@@ -121,12 +121,16 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GIST_TOKEN }}
         run: |
-          files_json='{}'
+          payload=$(mktemp)
+          # Build the files object by piping through jq (avoids ARG_MAX limits)
+          echo '{}' > "$payload"
           while IFS= read -r -d '' f; do
             name=$(basename "$f")
             echo "Adding $name"
-            files_json=$(jq --rawfile content "$f" --arg name "$name" \
-              '. + {($name): {content: $content}}' <<< "$files_json")
+            jq --rawfile content "$f" --arg name "$name" \
+              '. + {($name): {content: $content}}' "$payload" > "${payload}.tmp" \
+              && mv "${payload}.tmp" "$payload"
           done < <(find . -type f \( -name '*.omp.json' -o -name '*.dsc.yaml' -o -name 'windowsterminal.*.json' \) -print0)
-          jq -n --argjson files "$files_json" '{files: $files}' |
-            gh api --method PATCH "/gists/${{ vars.GIST_ID }}" --input -
+          jq -n --slurpfile files "$payload" '{files: $files[0]}' > "${payload}.body"
+          gh api --method PATCH "/gists/${{ vars.GIST_ID }}" --input "${payload}.body" > /dev/null
+          rm -f "$payload" "${payload}.tmp" "${payload}.body"

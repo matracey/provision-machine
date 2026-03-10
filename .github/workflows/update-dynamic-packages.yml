@@ -123,6 +123,10 @@ jobs:
 
           "changed=$($changed.ToString().ToLower())" >> $env:GITHUB_OUTPUT
 
+      - name: Format with Prettier
+        if: steps.update.outputs.changed == 'true'
+        run: npx prettier --write personal.winget work.winget
+
       - name: Commit and push changes
         if: steps.update.outputs.changed == 'true'
         run: |

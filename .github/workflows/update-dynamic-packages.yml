@@ -124,6 +124,10 @@ jobs:
 
           "changed=$($changed.ToString().ToLower())" >> $env:GITHUB_OUTPUT
 
+      - name: Format with Prettier
+        if: steps.update.outputs.changed == 'true'
+        run: npx prettier --write configuration.personal.dsc.yaml configuration.work.dsc.yaml
+
       - name: Commit and push changes
         if: steps.update.outputs.changed == 'true'
         run: |

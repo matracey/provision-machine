@@ -146,7 +146,11 @@ export function SectionGroup({
       });
     }
 
-    if (type === "alias-object" && typeof value === "object" && value !== null) {
+    if (
+      type === "alias-object" &&
+      typeof value === "object" &&
+      value !== null
+    ) {
       return Object.entries(value as Record<string, unknown>).map(
         ([k, v], i) => {
           const arr = Array.isArray(v) ? v : [String(v), ""];

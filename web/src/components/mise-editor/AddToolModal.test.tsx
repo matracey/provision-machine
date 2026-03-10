@@ -118,9 +118,7 @@ describe("AddToolModal", () => {
 
   it("shows postinstall field", () => {
     render(<AddToolModal {...defaultProps} />);
-    expect(
-      screen.getByPlaceholderText(/corepack enable/),
-    ).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/corepack enable/)).toBeInTheDocument();
   });
 
   it("pre-fills OS and postinstall in edit mode", () => {
@@ -137,14 +135,14 @@ describe("AddToolModal", () => {
       />,
     );
     const checkboxes = screen.getAllByRole("checkbox", { hidden: true });
-    const linuxCheckbox = checkboxes.find(
-      (cb) => cb.closest("label")?.textContent?.includes("linux"),
+    const linuxCheckbox = checkboxes.find((cb) =>
+      cb.closest("label")?.textContent?.includes("linux"),
     ) as HTMLInputElement;
-    const macosCheckbox = checkboxes.find(
-      (cb) => cb.closest("label")?.textContent?.includes("macos"),
+    const macosCheckbox = checkboxes.find((cb) =>
+      cb.closest("label")?.textContent?.includes("macos"),
     ) as HTMLInputElement;
-    const windowsCheckbox = checkboxes.find(
-      (cb) => cb.closest("label")?.textContent?.includes("windows"),
+    const windowsCheckbox = checkboxes.find((cb) =>
+      cb.closest("label")?.textContent?.includes("windows"),
     ) as HTMLInputElement;
     expect(linuxCheckbox.checked).toBe(true);
     expect(macosCheckbox.checked).toBe(true);

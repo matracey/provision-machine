@@ -87,12 +87,7 @@ describe("MiseToolItem", () => {
     const onEdit = vi.fn();
     const user = userEvent.setup();
     render(
-      <MiseToolItem
-        tool={tool}
-        onEdit={onEdit}
-        onDelete={vi.fn()}
-        filter=""
-      />,
+      <MiseToolItem tool={tool} onEdit={onEdit} onDelete={vi.fn()} filter="" />,
     );
     await user.click(screen.getByTitle("Edit"));
     expect(onEdit).toHaveBeenCalledOnce();

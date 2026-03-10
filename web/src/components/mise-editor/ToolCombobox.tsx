@@ -50,9 +50,7 @@ export function ToolCombobox({
       onToolInfo?.(null);
       return;
     }
-    const match = tools.find(
-      (t) => t.name === value.trim(),
-    );
+    const match = tools.find((t) => t.name === value.trim());
     if (!match) {
       onToolInfo(null);
       return;

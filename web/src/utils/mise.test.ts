@@ -499,9 +499,7 @@ describe("serializeMiseToolValue", () => {
         { version: "latest", os: ["linux"], postinstall: "", installEnv: {} },
       ],
     });
-    expect(result).toBe(
-      '["lts", { version = "latest", os = ["linux"] }]',
-    );
+    expect(result).toBe('["lts", { version = "latest", os = ["linux"] }]');
   });
 
   it("serializes empty entries as latest", () => {

@@ -28,9 +28,10 @@ export function MiseKeyValueSection({
     const key = newKey.trim();
     const value = newValue.trim();
     if (!key || !value) return;
-    const quoted = value.startsWith('"') || value.startsWith("[") || value.startsWith("{")
-      ? value
-      : `"${value}"`;
+    const quoted =
+      value.startsWith('"') || value.startsWith("[") || value.startsWith("{")
+        ? value
+        : `"${value}"`;
     onChange({ ...data, [key]: quoted });
     setNewKey("");
     setNewValue("");
@@ -41,9 +42,10 @@ export function MiseKeyValueSection({
     const key = editKey.trim();
     const value = editValue.trim();
     if (!key || !value) return;
-    const quoted = value.startsWith('"') || value.startsWith("[") || value.startsWith("{")
-      ? value
-      : `"${value}"`;
+    const quoted =
+      value.startsWith('"') || value.startsWith("[") || value.startsWith("{")
+        ? value
+        : `"${value}"`;
     const newData = { ...data };
     if (key !== originalKey) delete newData[originalKey];
     newData[key] = quoted;
@@ -131,10 +133,7 @@ export function MiseKeyValueSection({
                 >
                   ✓
                 </button>
-                <button
-                  className="btn btn-ghost btn-xs"
-                  onClick={cancelEdit}
-                >
+                <button className="btn btn-ghost btn-xs" onClick={cancelEdit}>
                   ✕
                 </button>
               </div>
@@ -200,10 +199,7 @@ export function MiseKeyValueSection({
               >
                 ✓
               </button>
-              <button
-                className="btn btn-ghost btn-xs"
-                onClick={cancelEdit}
-              >
+              <button className="btn btn-ghost btn-xs" onClick={cancelEdit}>
                 ✕
               </button>
             </div>

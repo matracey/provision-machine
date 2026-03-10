@@ -197,9 +197,7 @@ export function parseRegistryToml(
   const descMatch = content.match(/description\s*=\s*"([^"]*)"/);
   if (descMatch) entry.description = descMatch[1];
 
-  const backendsMatch = content.match(
-    /backends\s*=\s*\[([\s\S]*?)\]/,
-  );
+  const backendsMatch = content.match(/backends\s*=\s*\[([\s\S]*?)\]/);
   if (backendsMatch) {
     entry.backends = backendsMatch[1]
       .match(/"([^"]*)"/g)

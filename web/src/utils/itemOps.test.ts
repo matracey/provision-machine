@@ -153,9 +153,7 @@ describe("moveYamlResource", () => {
     const { work, personal } = makeYaml();
     const result = moveYamlResource(work, personal, "Git", "Work", "Personal");
     expect(
-      result.work?.properties?.resources?.some(
-        (r) => r.settings?.id === "Git",
-      ),
+      result.work?.properties?.resources?.some((r) => r.settings?.id === "Git"),
     ).toBe(false);
     expect(
       result.personal?.properties?.resources?.some(
@@ -179,17 +177,9 @@ describe("moveYamlResource", () => {
 
   it("moves resource to Common (both contexts)", () => {
     const { work, personal } = makeYaml();
-    const result = moveYamlResource(
-      work,
-      personal,
-      "Git",
-      "Work",
-      "Common",
-    );
+    const result = moveYamlResource(work, personal, "Git", "Work", "Common");
     expect(
-      result.work?.properties?.resources?.some(
-        (r) => r.settings?.id === "Git",
-      ),
+      result.work?.properties?.resources?.some((r) => r.settings?.id === "Git"),
     ).toBe(true);
     expect(
       result.personal?.properties?.resources?.some(

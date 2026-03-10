@@ -254,3 +254,112 @@ resources:
       valueName: FilterAdministratorToken
       valueData:
         DWord: 0
+  # ============================================================
+  # Windows Settings — Appearance and Behavior
+  # ============================================================
+  - name: Enable Dark Mode
+    type: Microsoft.Windows.Developer/EnableDarkMode
+    directives:
+      allowPrerelease: true
+    properties:
+      Ensure: Present
+      RestartExplorer: true
+  - name: Taskbar Settings
+    type: Microsoft.Windows.Developer/Taskbar
+    directives:
+      allowPrerelease: true
+    properties:
+      Alignment: Left
+      HideLabelsMode: Always
+      SearchboxMode: Hide
+      TaskViewButton: Show
+      WidgetsButton: Hide
+      RestartExplorer: true
+  - name: Windows Explorer Settings
+    type: Microsoft.Windows.Developer/WindowsExplorer
+    directives:
+      allowPrerelease: true
+    properties:
+      FileExtensions: Show
+      ItemCheckBoxes: Hide
+  - name: Show Seconds In Clock
+    type: Microsoft.Windows.Developer/ShowSecondsInClock
+    directives:
+      allowPrerelease: true
+    properties:
+      Ensure: Present
+  # ============================================================
+  # Desktop Background — Windows Spotlight (requires Win11 22H2+)
+  # ============================================================
+  - name: Desktop Background Spotlight
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Wallpapers
+      valueName: BackgroundType
+      valueData:
+        DWord: 3
+  # ============================================================
+  # Power Plan Settings
+  # ============================================================
+  - name: Display Timeout AC 30 Minutes
+    type: Microsoft.Windows.Developer/PowerPlanSetting
+    directives:
+      allowPrerelease: true
+    properties:
+      Name: DisplayTimeout
+      PowerSource: PluggedIn
+      SettingValue: 30
+  - name: Display Timeout Battery 5 Minutes
+    type: Microsoft.Windows.Developer/PowerPlanSetting
+    directives:
+      allowPrerelease: true
+    properties:
+      Name: DisplayTimeout
+      PowerSource: Battery
+      SettingValue: 5
+  - name: Sleep Timeout AC Never
+    type: Microsoft.Windows.Developer/PowerPlanSetting
+    directives:
+      allowPrerelease: true
+    properties:
+      Name: SleepTimeout
+      PowerSource: PluggedIn
+      SettingValue: 0
+  - name: Sleep Timeout Battery 15 Minutes
+    type: Microsoft.Windows.Developer/PowerPlanSetting
+    directives:
+      allowPrerelease: true
+    properties:
+      Name: SleepTimeout
+      PowerSource: Battery
+      SettingValue: 15
+  - name: Lid Close AC Do Nothing
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    properties:
+      executable: powercfg
+      arguments:
+        - /SETACVALUEINDEX
+        - SCHEME_CURRENT
+        - SUB_BUTTONS
+        - LIDACTION
+        - "0"
+  - name: Lid Close Battery Sleep
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    properties:
+      executable: powercfg
+      arguments:
+        - /SETDCVALUEINDEX
+        - SCHEME_CURRENT
+        - SUB_BUTTONS
+        - LIDACTION
+        - "1"
+  - name: Apply Power Plan Changes
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/RunCommandOnSet', 'Lid Close AC Do Nothing')]"
+      - "[resourceId('Microsoft.DSC.Transitional/RunCommandOnSet', 'Lid Close Battery Sleep')]"
+    properties:
+      executable: powercfg
+      arguments:
+        - /SETACTIVE
+        - SCHEME_CURRENT

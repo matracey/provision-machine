@@ -1,0 +1,60 @@
+# yaml-language-server: $schema=https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+# Personal appearance resources.
+$schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+resources:
+  - name: Personal appearance
+    type: Microsoft.Windows/RegistryList
+    requireVersion: "=1.0.0"
+    properties:
+      registryEntries:
+        - keyPath: HKCU\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize
+          valueName: AppsUseLightTheme
+          valueData:
+            DWord: 0
+        - keyPath: HKCU\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize
+          valueName: SystemUsesLightTheme
+          valueData:
+            DWord: 0
+        - keyPath: HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+          valueName: TaskbarAl
+          valueData:
+            DWord: 0
+        - keyPath: HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+          valueName: TaskbarGlomLevel
+          valueData:
+            DWord: 0
+        - keyPath: HKCU\Software\Microsoft\Windows\CurrentVersion\Search
+          valueName: SearchboxTaskbarMode
+          valueData:
+            DWord: 0
+        - keyPath: HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+          valueName: ShowTaskViewButton
+          valueData:
+            DWord: 1
+        - keyPath: HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+          valueName: TaskbarDa
+          valueData:
+            DWord: 0
+        - keyPath: HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+          valueName: HideFileExt
+          valueData:
+            DWord: 0
+        - keyPath: HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+          valueName: AutoCheckSelect
+          valueData:
+            DWord: 0
+        - keyPath: HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+          valueName: ShowSecondsInSystemClock
+          valueData:
+            DWord: 1
+  - name: Refresh personal appearance
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    dependsOn:
+      - "[resourceId('Microsoft.Windows/RegistryList', 'Personal appearance')]"
+    properties:
+      executable: pwsh
+      arguments:
+        - -NoProfile
+        - -NonInteractive
+        - -Command
+        - "$ErrorActionPreference = 'Stop'; $session = (Get-Process -Id $PID).SessionId; Get-Process explorer -ErrorAction SilentlyContinue | Where-Object SessionId -EQ $session | ForEach-Object { Stop-Process -Id $_.Id -Force }; Start-Process explorer.exe"

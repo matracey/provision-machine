@@ -57,35 +57,41 @@ jobs:
           with open(f) as fh:
               doc = yaml.safe_load(fh)
           errors = []
-          # Check top-level schema property
-          if '\$schema' not in doc:
-              errors.append('Missing required \$schema property')
-          # Check resources array exists
-          if 'resources' not in doc or not isinstance(doc.get('resources'), list):
-              errors.append('Missing or invalid resources array')
+          # Check WinGet 0.2 format: properties.configurationVersion and properties.resources
+          props = doc.get('properties')
+          if not isinstance(props, dict):
+              errors.append('Missing required properties object')
           else:
-              names = []
-              for i, r in enumerate(doc['resources']):
-                  # Check required fields
-                  for key in ('name', 'type', 'properties'):
-                      if key not in r:
-                          errors.append(f'Resource [{i}]: missing required field \"{key}\"')
-                  # Validate name pattern
-                  name = r.get('name', '')
-                  if name and not re.match(r'^[a-zA-Z0-9 ]+$', name):
-                      errors.append(f'Resource \"{name}\": name must match ^[a-zA-Z0-9 ]+$')
-                  names.append(name)
-              # Check for duplicate names
-              seen = set()
-              for n in names:
-                  if n in seen:
-                      errors.append(f'Duplicate resource name: \"{n}\"')
-                  seen.add(n)
+              ver = props.get('configurationVersion')
+              if ver != '0.2.0':
+                  errors.append(f'Expected configurationVersion 0.2.0, got {ver}')
+              resources = props.get('resources')
+              if not isinstance(resources, list):
+                  errors.append('Missing or invalid properties.resources array')
+              else:
+                  ids = []
+                  for i, r in enumerate(resources):
+                      # Check required fields
+                      for key in ('resource', 'id', 'directives'):
+                          if key not in r:
+                              errors.append(f'Resource [{i}]: missing required field \"{key}\"')
+                      # Validate id pattern (winget uses same name constraints)
+                      rid = r.get('id', '')
+                      if rid and not re.match(r'^[a-zA-Z0-9 ]+$', rid):
+                          errors.append(f'Resource \"{rid}\": id must match ^[a-zA-Z0-9 ]+$')
+                      ids.append(rid)
+                  # Check for duplicate ids
+                  seen = set()
+                  for n in ids:
+                      if n in seen:
+                          errors.append(f'Duplicate resource id: \"{n}\"')
+                      seen.add(n)
           if errors:
               for e in errors:
                   print(f'::error file={f}::{e}')
               sys.exit(1)
-          print(f'{len(doc.get(\"resources\", []))} resources validated OK')
+          res_count = len(doc.get('properties', {}).get('resources', []))
+          print(f'{res_count} resources validated OK')
           " "$f"
             if [ $? -ne 0 ]; then
               status=1

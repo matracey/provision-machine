@@ -1,0 +1,41 @@
+# yaml-language-server: $schema=https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+# Work appearance resources.
+$schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+resources:
+  - name: Enable Dark Mode
+    type: Microsoft.Windows.Developer/EnableDarkMode
+    metadata:
+      description: "Enable system-wide dark mode and restart Explorer"
+      module: "Microsoft.Windows.Developer"
+    properties:
+      Ensure: Present
+      RestartExplorer: true
+  - name: Taskbar Settings
+    type: Microsoft.Windows.Developer/Taskbar
+    metadata:
+      description: "Configure taskbar alignment, labels, search box, and widget visibility"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows.Developer"
+    properties:
+      Alignment: Left
+      HideLabelsMode: Always
+      SearchboxMode: Hide
+      TaskViewButton: Show
+      WidgetsButton: Hide
+      RestartExplorer: true
+  - name: Windows Explorer Settings
+    type: Microsoft.Windows.Developer/WindowsExplorer
+    metadata:
+      description: "Show file extensions and hide item checkboxes in File Explorer"
+      module: "Microsoft.Windows.Developer"
+    properties:
+      FileExtensions: Show
+      ItemCheckBoxes: Hide
+  - name: Show Seconds In Clock
+    type: Microsoft.Windows.Developer/ShowSecondsInClock
+    metadata:
+      description: "Display seconds in the system tray clock"
+      module: "Microsoft.Windows.Developer"
+    properties:
+      Ensure: Present

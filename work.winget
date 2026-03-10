@@ -404,3 +404,134 @@ resources:
       valueName: FilterAdministratorToken
       valueData:
         DWord: 0
+  # ============================================================
+  # Windows Settings — Appearance and Behavior
+  # ============================================================
+  - name: Enable Dark Mode
+    type: Microsoft.Windows.Developer/EnableDarkMode
+    metadata:
+      description: "Enable system-wide dark mode and restart Explorer"
+      module: "Microsoft.Windows.Developer"
+    properties:
+      Ensure: Present
+      RestartExplorer: true
+  - name: Taskbar Settings
+    type: Microsoft.Windows.Developer/Taskbar
+    metadata:
+      description: "Configure taskbar alignment, labels, search box, and widget visibility"
+      module: "Microsoft.Windows.Developer"
+    properties:
+      Alignment: Left
+      HideLabelsMode: Always
+      SearchboxMode: Hide
+      TaskViewButton: Show
+      WidgetsButton: Hide
+      RestartExplorer: true
+  - name: Windows Explorer Settings
+    type: Microsoft.Windows.Developer/WindowsExplorer
+    metadata:
+      description: "Show file extensions and hide item checkboxes in File Explorer"
+      module: "Microsoft.Windows.Developer"
+    properties:
+      FileExtensions: Show
+      ItemCheckBoxes: Hide
+  - name: Show Seconds In Clock
+    type: Microsoft.Windows.Developer/ShowSecondsInClock
+    metadata:
+      description: "Display seconds in the system tray clock"
+      module: "Microsoft.Windows.Developer"
+    properties:
+      Ensure: Present
+  # ============================================================
+  # Desktop Background — Windows Spotlight (requires Win11 22H2+)
+  # ============================================================
+  - name: Desktop Background Spotlight
+    type: Microsoft.Windows/Registry
+    metadata:
+      description: "Set desktop background to Windows Spotlight"
+      module: "Microsoft.Windows"
+    properties:
+      keyPath: HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Wallpapers
+      valueName: BackgroundType
+      valueData:
+        DWord: 3
+  # ============================================================
+  # Power Plan Settings
+  # ============================================================
+  - name: Display Timeout AC 30 Minutes
+    type: Microsoft.Windows.Developer/PowerPlanSetting
+    metadata:
+      description: "Turn off display after 30 minutes when plugged in"
+      module: "Microsoft.Windows.Developer"
+    properties:
+      Name: DisplayTimeout
+      PowerSource: PluggedIn
+      SettingValue: 1800
+  - name: Display Timeout Battery 5 Minutes
+    type: Microsoft.Windows.Developer/PowerPlanSetting
+    metadata:
+      description: "Turn off display after 5 minutes on battery"
+      module: "Microsoft.Windows.Developer"
+    properties:
+      Name: DisplayTimeout
+      PowerSource: Battery
+      SettingValue: 300
+  - name: Sleep Timeout AC Never
+    type: Microsoft.Windows.Developer/PowerPlanSetting
+    metadata:
+      description: "Disable sleep when plugged in"
+      module: "Microsoft.Windows.Developer"
+    properties:
+      Name: SleepTimeout
+      PowerSource: PluggedIn
+      SettingValue: 0
+  - name: Sleep Timeout Battery 15 Minutes
+    type: Microsoft.Windows.Developer/PowerPlanSetting
+    metadata:
+      description: "Sleep after 15 minutes on battery"
+      module: "Microsoft.Windows.Developer"
+    properties:
+      Name: SleepTimeout
+      PowerSource: Battery
+      SettingValue: 900
+  # Requires module: Microsoft.DSC.Transitional
+  # Ships with DSCv3. See: https://learn.microsoft.com/powershell/dsc
+  - name: Lid Close AC Do Nothing
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: "Do nothing when laptop lid is closed while plugged in"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      executable: powercfg
+      arguments:
+        - /SETACVALUEINDEX
+        - SCHEME_CURRENT
+        - SUB_BUTTONS
+        - LIDACTION
+        - "0"
+  - name: Lid Close Battery Sleep
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: "Sleep when laptop lid is closed on battery"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      executable: powercfg
+      arguments:
+        - /SETDCVALUEINDEX
+        - SCHEME_CURRENT
+        - SUB_BUTTONS
+        - LIDACTION
+        - "1"
+  - name: Apply Power Plan Changes
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: "Apply power plan changes by setting the active scheme"
+      module: "Microsoft.DSC.Transitional"
+    dependsOn:
+      - "Lid Close AC Do Nothing"
+      - "Lid Close Battery Sleep"
+    properties:
+      executable: powercfg
+      arguments:
+        - /SETACTIVE
+        - SCHEME_CURRENT

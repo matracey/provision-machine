@@ -22,3 +22,7 @@ resources:
     type: Microsoft.DSC/Include
     properties:
       configurationFile: ./modules/uac.dsc.yaml
+  - name: Include appearance personal
+    type: Microsoft.DSC/Include
+    properties:
+      configurationFile: ./modules/appearance-personal.dsc.yaml

@@ -54,6 +54,8 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $GistBase = 'https://gist.githubusercontent.com/matracey/f4c3a9194cd190a3b3de423aad5dc7e1/raw'
+$GistId = 'f4c3a9194cd190a3b3de423aad5dc7e1'
+$DscGistPrefix = 'winget__'
 
 # --- Prerequisites -----------------------------------------------------------
 
@@ -157,11 +159,24 @@ if ($useLocal) {
     }
     Write-Host "Using local file: $configPath" -ForegroundColor Cyan
 } else {
-    $configPath = Join-Path $env:TEMP $fileName
-    $url = "$GistBase/$fileName"
-    Write-Host "Fetching configuration from Gist..." -ForegroundColor Cyan
-    Invoke-WebRequest -Uri $url -OutFile $configPath -UseBasicParsing
-    Write-Host "Downloaded: $configPath" -ForegroundColor Green
+    $tempRoot = Join-Path $env:TEMP "provision-machine-gist"
+    if (Test-Path $tempRoot) { Remove-Item -Path $tempRoot -Recurse -Force }
+    New-Item -ItemType Directory -Path $tempRoot -Force | Out-Null
+
+    Write-Host "Fetching DSC configuration bundle from Gist..." -ForegroundColor Cyan
+    $gist = Invoke-RestMethod -Uri "https://api.github.com/gists/$GistId" -Headers @{ 'User-Agent' = 'Provision-Machine' }
+    $gistFiles = @($gist.files.PSObject.Properties) | Where-Object { $_.Name -like "$DscGistPrefix*" }
+    if ($gistFiles.Count -eq 0) { Write-Error "No DSC files found in Gist."; exit 1 }
+    foreach ($gistFile in $gistFiles) {
+        $relativePath = ($gistFile.Name -split '__') -join '\'
+        $targetPath = Join-Path $tempRoot $relativePath
+        $targetDir = Split-Path $targetPath -Parent
+        if (-not (Test-Path $targetDir)) { New-Item -ItemType Directory -Path $targetDir -Force | Out-Null }
+        Invoke-WebRequest -Uri $gistFile.Value.raw_url -OutFile $targetPath -UseBasicParsing
+    }
+    $configPath = Join-Path $tempRoot "winget\$fileName"
+    if (-not (Test-Path $configPath)) { Write-Error "Config not found after Gist reconstruction: winget\$fileName"; exit 1 }
+    Write-Host "Downloaded and reconstructed: $configPath" -ForegroundColor Green
 }
 
 # Verify dsc is available

@@ -21,6 +21,9 @@
 
 .PARAMETER Local
     Use local configuration files instead of fetching from Gist.
+
+.PARAMETER InstallPrereqs
+    Install prerequisite DSC modules and DSCv3 Preview, then exit.
 #>
 [CmdletBinding(DefaultParameterSetName = 'Interactive')]
 param(
@@ -30,6 +33,9 @@ param(
     [Parameter(ParameterSetName = 'Work')]
     [switch]$Work,
 
+    [Parameter(ParameterSetName = 'Prereqs')]
+    [switch]$InstallPrereqs,
+
     [switch]$DryRun,
     [switch]$Test,
     [switch]$Local
@@ -38,6 +44,76 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $GistBase = 'https://gist.githubusercontent.com/matracey/f4c3a9194cd190a3b3de423aad5dc7e1/raw'
+
+# --- Prerequisites -----------------------------------------------------------
+
+# Ensure DSCv3 Preview is installed.
+# The stable release (Microsoft.DSC / 3.1.x) does not include resources like
+# Microsoft.DSC.Transitional/PowerShellScript that our configs require.
+# WinGet's FindDscPackageStateMachine always installs/uses stable, so we pass
+# --processor-path to override the DSC executable when using winget configure.
+$previewPkg = Get-AppxPackage -Name 'Microsoft.DesiredStateConfiguration-Preview' -ErrorAction SilentlyContinue |
+    Where-Object { $_.PackageFamilyName -eq 'Microsoft.DesiredStateConfiguration-Preview_8wekyb3d8bbwe' }
+
+if (-not $previewPkg) {
+    Write-Host "Installing DSCv3 Preview..." -ForegroundColor Cyan
+    winget install --id Microsoft.DSC.Preview --source winget --silent --accept-package-agreements --accept-source-agreements
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Failed to install DSCv3 Preview. Exit code: $LASTEXITCODE"
+        exit 1
+    }
+    $previewPkg = Get-AppxPackage -Name 'Microsoft.DesiredStateConfiguration-Preview' -ErrorAction SilentlyContinue |
+        Where-Object { $_.PackageFamilyName -eq 'Microsoft.DesiredStateConfiguration-Preview_8wekyb3d8bbwe' }
+    if (-not $previewPkg) {
+        Write-Error "DSCv3 Preview package not found after installation."
+        exit 1
+    }
+    Write-Host "DSCv3 Preview installed." -ForegroundColor Green
+}
+
+$DscExePath = Join-Path $previewPkg.InstallLocation 'dsc.exe'
+if (-not (Test-Path $DscExePath)) {
+    Write-Error "dsc.exe not found at expected path: $DscExePath"
+    exit 1
+}
+Write-Host "Using DSCv3 Preview ($($previewPkg.Version)): $DscExePath" -ForegroundColor Cyan
+
+# Ensure required DSC modules are installed
+# Resources that ship with DSCv3 are not checked here:
+#   Microsoft.DSC.Transitional (RunCommandOnSet, PowerShellScript)
+# Modules that ship with Windows/WinGet are not checked here:
+#   Microsoft.Windows, Microsoft.WinGet, Microsoft.WinGet.DSC
+# Modules installed by their parent app are not checked here:
+#   Microsoft.PowerToys (ships with PowerToys), Microsoft.VisualStudio.DSC (ships with VS)
+$requiredModules = @(
+    @{ Name = 'Microsoft.Windows.Developer'; Params = @{} }
+    @{ Name = 'Microsoft.Windows.Settings';  Params = @{ AllowPrerelease = $true } }
+    @{ Name = 'GitDsc';                      Params = @{} }
+)
+
+$missing = @()
+foreach ($mod in $requiredModules) {
+    if (-not (Get-Module -ListAvailable -Name $mod.Name)) {
+        $missing += $mod
+    }
+}
+
+if ($missing.Count -gt 0) {
+    Write-Host "`nInstalling $($missing.Count) required DSC module(s)..." -ForegroundColor Yellow
+    foreach ($mod in $missing) {
+        Write-Host "  Installing $($mod.Name)..." -ForegroundColor Cyan
+        $installParams = @{ Name = $mod.Name; Force = $true; Scope = 'CurrentUser' } + $mod.Params
+        Install-Module @installParams
+    }
+    Write-Host "All required modules installed.`n" -ForegroundColor Green
+}
+
+if ($InstallPrereqs) {
+    Write-Host "All prerequisites are installed." -ForegroundColor Green
+    exit 0
+}
+
+# --- Configuration -----------------------------------------------------------
 
 # Determine context
 if (-not $Personal -and -not $Work) {
@@ -71,24 +147,14 @@ if ($Local) {
     Write-Host "Downloaded: $configPath" -ForegroundColor Green
 }
 
-# Verify dsc is available
-if (-not (Get-Command dsc -ErrorAction SilentlyContinue)) {
-    Write-Error @"
-The 'dsc' command is not available. Install DSCv3:
-  winget install Microsoft.DSC
-Then restart your shell and try again.
-"@
-    exit 1
-}
-
 # Apply configuration
 if ($DryRun) {
     Write-Host "`nRunning dsc config get (dry-run)..." -ForegroundColor Yellow
-    dsc config get --path $configPath
+    & $DscExePath config get --path $configPath
 } elseif ($Test) {
     Write-Host "`nRunning dsc config test (drift detection)..." -ForegroundColor Yellow
-    dsc config test --path $configPath
+    & $DscExePath config test --path $configPath
 } else {
     Write-Host "`nApplying $context configuration..." -ForegroundColor Green
-    dsc config set --path $configPath
+    & $DscExePath config set --path $configPath
 }

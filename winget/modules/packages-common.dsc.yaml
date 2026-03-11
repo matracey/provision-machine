@@ -443,3 +443,12 @@ resources:
       id: "Microsoft.VisualStudio.Locator"
       source: winget
       acceptAgreements: true
+  - name: Install croc
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install croc
+      module: "Microsoft.WinGet"
+    properties:
+      id: "schollz.croc"
+      source: winget
+      acceptAgreements: true

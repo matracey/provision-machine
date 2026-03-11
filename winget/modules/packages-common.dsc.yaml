@@ -425,3 +425,12 @@ resources:
       id: "GitHub.Copilot"
       source: winget
       acceptAgreements: true
+  - name: Install ILSpy
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install ILSpy
+      module: "Microsoft.WinGet"
+    properties:
+      id: "icsharpcode.ILSpy"
+      source: winget
+      acceptAgreements: true

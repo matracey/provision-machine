@@ -1608,6 +1608,14 @@ resources:
     properties:
       id: "Microsoft.VisualStudio.Locator"
       source: winget
+  - name: Install croc
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install croc
+      module: "Microsoft.WinGet"
+    properties:
+      id: "schollz.croc"
+      source: winget
   # ============================================================
   # Visual Studio Installation
   # Requires module: Microsoft.WinGet.DSC

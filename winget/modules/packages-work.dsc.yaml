@@ -274,3 +274,19 @@ resources:
         - --silent
         - --accept-package-agreements
         - --accept-source-agreements
+  - name: Install Microsoft Loop
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: "Install Microsoft Loop (workaround for DSCv3 stateAndDiff bug)"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      executable: winget
+      arguments:
+        - install
+        - --id
+        - "9P1HQ5TQZMGD"
+        - --source
+        - msstore
+        - --silent
+        - --accept-package-agreements
+        - --accept-source-agreements

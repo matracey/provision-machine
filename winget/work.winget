@@ -104,3 +104,7 @@ resources:
     type: Microsoft.DSC/Include
     properties:
       configurationFile: ./modules/windows-settings-work.dsc.yaml
+  - name: Include powertoys
+    type: Microsoft.DSC/Include
+    properties:
+      configurationFile: ./modules/powertoys.dsc.yaml

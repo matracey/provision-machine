@@ -2435,6 +2435,36 @@ resources:
         BypassCertificatePinningForMicrosoftStore: false
         InstallerHashOverride: false
         LocalArchiveMalwareScanOverride: false
+  - name: Microsoft.DSC.Transitional/RunCommandOnSet_avqrff5m
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: Microsoft.DSC.Transitional/RunCommandOnSet_avqrff5m
+      module: "Microsoft.DSC.Transitional"
+    dependsOn:
+      - Install PowerShell
+    properties:
+      arguments:
+        - "-NoProfile"
+        - "-NoLogo"
+        - "-Command"
+        - "if (-not (Get-Module -ListAvailable -Name Microsoft.Windows.Settings)) { Install-Module -Name Microsoft.Windows.Settings -Confirm:$False -Force -AllowPrerelease -AllowClobber }"
+      executable: "pwsh"
+  # Requires module: Microsoft.Windows.Settings (prerelease)
+  # Install with: Install-Module Microsoft.Windows.Settings -AllowPrerelease
+  - name: Microsoft.Windows.Settings/WindowsSettings_6vbsnuc7
+    type: Microsoft.Windows.Settings/WindowsSettings
+    metadata:
+      description: "Configure Microsoft.Windows.Settings/WindowsSettings"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows.Settings"
+    dependsOn:
+      - Microsoft.DSC.Transitional/RunCommandOnSet_avqrff5m
+    properties:
+      SystemColorMode: "Dark"
+      DeveloperMode: true
+      TaskbarAlignment: "Left"
+      AppColorMode: "Dark"
   # ============================================================
   # Visual Studio Installation
   # Requires module: Microsoft.WinGet.DSC

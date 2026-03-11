@@ -1584,6 +1584,14 @@ resources:
     properties:
       id: "GitHub.cli"
       source: winget
+  - name: Install GitHub Copilot
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install GitHub Copilot
+      module: "Microsoft.WinGet"
+    properties:
+      id: "GitHub.Copilot"
+      source: winget
   # ============================================================
   # Visual Studio Installation
   # Requires module: Microsoft.WinGet.DSC

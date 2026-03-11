@@ -407,3 +407,12 @@ resources:
       id: "Microsoft.DotNet.Framework.Redistributable.1_1"
       source: winget
       acceptAgreements: true
+  - name: Install GitHub CLI
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install GitHub CLI
+      module: "Microsoft.WinGet"
+    properties:
+      id: "GitHub.cli"
+      source: winget
+      acceptAgreements: true

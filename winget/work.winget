@@ -100,3 +100,7 @@ resources:
     type: Microsoft.DSC/Include
     properties:
       configurationFile: ./modules/winget-settings-work.dsc.yaml
+  - name: Include windows settings work
+    type: Microsoft.DSC/Include
+    properties:
+      configurationFile: ./modules/windows-settings-work.dsc.yaml

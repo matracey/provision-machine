@@ -1,0 +1,44 @@
+# yaml-language-server: $schema=https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+# Work-only Microsoft.Windows.Settings resources and prerequisite module install.
+$schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+resources:
+  - name: Install PowerShell
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install PowerShell
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.PowerShell"
+      source: winget
+      acceptAgreements: true
+  - name: Microsoft.DSC.Transitional/RunCommandOnSet_avqrff5m
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: Microsoft.DSC.Transitional/RunCommandOnSet_avqrff5m
+      module: "Microsoft.DSC.Transitional"
+    dependsOn:
+      - "[resourceId('Microsoft.WinGet/Package','Install PowerShell')]"
+    properties:
+      arguments:
+        - "-NoProfile"
+        - "-NoLogo"
+        - "-Command"
+        # -Scope AllUsers avoids installing into the user's Documents\PowerShell\Modules
+        # folder, which is redirected to OneDrive on corporate machines and
+        # flagged by org policy. Requires the DSC apply to run elevated.
+        - "if (-not (Get-Module -ListAvailable -Name Microsoft.Windows.Settings)) { Install-Module -Name Microsoft.Windows.Settings -Scope AllUsers -Confirm:$False -Force -AllowPrerelease -AllowClobber }"
+      executable: "pwsh"
+  - name: Microsoft.Windows.Settings/WindowsSettings_6vbsnuc7
+    type: Microsoft.Windows.Settings/WindowsSettings
+    metadata:
+      description: "Configure Microsoft.Windows.Settings/WindowsSettings"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.Windows.Settings"
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/RunCommandOnSet','Microsoft.DSC.Transitional/RunCommandOnSet_avqrff5m')]"
+    properties:
+      SystemColorMode: "Dark"
+      DeveloperMode: true
+      TaskbarAlignment: "Left"
+      AppColorMode: "Dark"

@@ -18,7 +18,6 @@ jobs:
         shell: pwsh
         run: |
           Install-Module -Name Microsoft.WinGet.Client -Force -Scope CurrentUser
-          Install-Module -Name powershell-yaml -Force -Scope CurrentUser
 
       - name: Query WinGet for current packages
         id: query
@@ -55,77 +54,96 @@ jobs:
 
           "packages=$pkgs" >> $env:GITHUB_OUTPUT
 
+      - name: Install Python dependencies
+        run: pip install ruamel.yaml
+
       - name: Update DSC configuration files
         id: update
-        shell: pwsh
+        shell: python
+        env:
+          PACKAGES_JSON: ${{ steps.query.outputs.packages }}
         run: |
-          Import-Module powershell-yaml
+          import json
+          import os
+          import re
+          from ruamel.yaml import YAML
+          from ruamel.yaml.comments import CommentedMap
 
-          $pkgs = '${{ steps.query.outputs.packages }}' | ConvertFrom-Json
-          $dotnetIds = @($pkgs.dotnet)
-          $vcredistIds = @($pkgs.vcredist)
+          pkgs = json.loads(os.environ["PACKAGES_JSON"])
+          dotnet_ids = pkgs["dotnet"]
+          vcredist_ids = pkgs["vcredist"]
 
-          # Build DSC resource blocks for the resolved packages (DSCv3 format)
-          function New-DscEntry {
-            param([string]$Id, [string]$Description)
-            return [ordered]@{
-              name       = $Description
-              type       = 'Microsoft.WinGet.DSC/WinGetPackage'
-              properties = [ordered]@{ id = $Id; source = 'winget' }
-            }
-          }
+          DYNAMIC_ID_RE = re.compile(r"^Microsoft\.(DotNet\.SDK\.\d|VCRedist\.)")
 
-          $newEntries = @()
-          foreach ($id in $dotnetIds) {
-            $ver = $id -replace '^Microsoft\.DotNet\.SDK\.', ''
-            $newEntries += New-DscEntry -Id $id -Description "Install .NET SDK $ver"
-          }
-          foreach ($id in $vcredistIds) {
-            $label = ($id -replace '^Microsoft\.', '') -replace '\.', ' '
-            $newEntries += New-DscEntry -Id $id -Description "Install $label"
-          }
+          yaml = YAML()
+          yaml.preserve_quotes = True
 
-          $dynamicIdPattern = '^Microsoft\.(DotNet\.SDK\.\d|VCRedist\.)'
+          def make_entry(pkg_id, description):
+              entry = CommentedMap()
+              entry["name"] = description
+              entry["type"] = "Microsoft.WinGet/Package"
+              meta = CommentedMap()
+              meta["description"] = description
+              meta["module"] = "Microsoft.WinGet"
+              entry["metadata"] = meta
+              props = CommentedMap()
+              props["id"] = pkg_id
+              props["source"] = "winget"
+              entry["properties"] = props
+              return entry
 
-          $changed = $false
-          foreach ($file in @('personal.winget', 'work.winget')) {
-            $raw = Get-Content $file -Raw
-            $yaml = $raw | ConvertFrom-Yaml -Ordered
-            $resources = [System.Collections.ArrayList]@($yaml.resources)
+          # Build replacement entries
+          new_entries = []
+          for pkg_id in dotnet_ids:
+              ver = re.sub(r"^Microsoft\.DotNet\.SDK\.", "", pkg_id)
+              new_entries.append(make_entry(pkg_id, f"Install DotNet SDK {ver}"))
+          for pkg_id in vcredist_ids:
+              label = re.sub(r"^Microsoft\.VCRedist\.", "VCRedist ", pkg_id).replace(".", " ")
+              new_entries.append(make_entry(pkg_id, f"Install {label}"))
 
-            # Remove existing dynamic entries (DSCv3 format uses properties.id)
-            $static = [System.Collections.ArrayList]@()
-            foreach ($r in $resources) {
-              if ($r.properties.id -notmatch $dynamicIdPattern) {
-                [void]$static.Add($r)
-              }
-            }
+          changed = False
+          for filename in ("personal.winget", "work.winget"):
+              with open(filename, encoding="utf-8") as f:
+                  original = f.read()
 
-            # Append new entries
-            foreach ($entry in $newEntries) {
-              [void]$static.Add($entry)
-            }
+              doc = yaml.load(original)
+              resources = doc["resources"]
 
-            $yaml.resources = @($static)
+              # Find dynamic entry indices
+              dynamic_indices = [
+                  i for i, r in enumerate(resources)
+                  if DYNAMIC_ID_RE.match(r.get("properties", {}).get("id", ""))
+              ]
 
-            # Serialize back to YAML
-            $newYaml = ($yaml | ConvertTo-Yaml).TrimEnd()
+              if not dynamic_indices:
+                  print(f"No dynamic entries found in {filename} — skipping")
+                  continue
 
-            # Compare
-            if ($newYaml -ne $raw.TrimEnd()) {
-              $changed = $true
-              $newYaml | Set-Content $file -Encoding UTF8 -NoNewline
-              Write-Host "Updated $file"
-            } else {
-              Write-Host "No changes needed for $file"
-            }
-          }
+              # Remove old entries (reverse order to preserve indices)
+              for i in reversed(dynamic_indices):
+                  del resources[i]
 
-          "changed=$($changed.ToString().ToLower())" >> $env:GITHUB_OUTPUT
+              # Insert new entries at the position of the first removed entry
+              insert_at = dynamic_indices[0]
+              for j, entry in enumerate(new_entries):
+                  resources.insert(insert_at + j, entry)
 
-      - name: Format with Prettier
-        if: steps.update.outputs.changed == 'true'
-        run: npx prettier --write personal.winget work.winget
+              # Write back (ruamel.yaml preserves comments)
+              from io import StringIO
+              buf = StringIO()
+              yaml.dump(doc, buf)
+              result = buf.getvalue()
+
+              if result.rstrip() != original.rstrip():
+                  changed = True
+                  with open(filename, "w", encoding="utf-8", newline="") as f:
+                      f.write(result)
+                  print(f"Updated {filename}")
+              else:
+                  print(f"No changes needed for {filename}")
+
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              f.write(f"changed={'true' if changed else 'false'}\n")
 
       - name: Commit and push changes
         if: steps.update.outputs.changed == 'true'

@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+# Work-only Windows settings, using native registry resources.
+$schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+resources:
+  - name: Work user settings
+    type: Microsoft.Windows/RegistryList
+    requireVersion: "=1.0.0"
+    properties:
+      registryEntries:
+        - keyPath: HKCU\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize
+          valueName: SystemUsesLightTheme
+          valueData:
+            DWord: 0
+        - keyPath: HKCU\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize
+          valueName: AppsUseLightTheme
+          valueData:
+            DWord: 0
+        - keyPath: HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+          valueName: TaskbarAl
+          valueData:
+            DWord: 0
+  - name: Work developer mode
+    type: Microsoft.Windows/Registry
+    requireVersion: "=1.0.0"
+    metadata:
+      winget:
+        securityContext: elevated
+    properties:
+      keyPath: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock
+      valueName: AllowDevelopmentWithoutDevLicense
+      valueData:
+        DWord: 1

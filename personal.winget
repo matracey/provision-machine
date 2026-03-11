@@ -1577,6 +1577,14 @@ resources:
       setScript: |
         $in = $env:DSC_RESOURCE_INPUT | ConvertFrom-Json
         & winget install --id $in.input.id --source $in.input.source --silent --accept-package-agreements --accept-source-agreements --override $in.input.override
+  - name: Install GitHub CLI
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install GitHub CLI
+      module: "Microsoft.WinGet"
+    properties:
+      id: "GitHub.cli"
+      source: winget
   # ============================================================
   # Visual Studio Installation
   # Requires module: Microsoft.WinGet.DSC

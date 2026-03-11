@@ -2414,6 +2414,27 @@ resources:
         - --silent
         - --accept-package-agreements
         - --accept-source-agreements
+  - name: Microsoft.WinGet/UserSettingsFile-0
+    type: Microsoft.WinGet/UserSettingsFile
+    metadata:
+      description: "Configure WinGet user settings"
+      module: "Microsoft.WinGet"
+    properties:
+      settings: {}
+  - name: Microsoft.WinGet/AdminSettings-0
+    type: Microsoft.WinGet/AdminSettings
+    metadata:
+      description: "Configure WinGet admin settings (requires elevation)"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.WinGet"
+    properties:
+      settings:
+        LocalManifestFiles: false
+        ProxyCommandLineOptions: false
+        BypassCertificatePinningForMicrosoftStore: false
+        InstallerHashOverride: false
+        LocalArchiveMalwareScanOverride: false
   # ============================================================
   # Visual Studio Installation
   # Requires module: Microsoft.WinGet.DSC

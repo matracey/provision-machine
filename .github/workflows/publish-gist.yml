@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths:
       - "**/*.omp.json"
-      - "**/*.dsc.yaml"
+      - "**/*.winget"
       - "**/windowsterminal.*.json"
   workflow_dispatch:
 
@@ -52,30 +52,23 @@ jobs:
           while IFS= read -r -d '' f; do
             echo "::group::$f"
             python3 -c "
-          import yaml, sys, re
+          import yaml, sys
           f = sys.argv[1]
           with open(f) as fh:
               doc = yaml.safe_load(fh)
           errors = []
-          # Check top-level schema property
           if '\$schema' not in doc:
               errors.append('Missing required \$schema property')
-          # Check resources array exists
           if 'resources' not in doc or not isinstance(doc.get('resources'), list):
               errors.append('Missing or invalid resources array')
           else:
               names = []
               for i, r in enumerate(doc['resources']):
-                  # Check required fields
                   for key in ('name', 'type', 'properties'):
                       if key not in r:
                           errors.append(f'Resource [{i}]: missing required field \"{key}\"')
-                  # Validate name pattern
                   name = r.get('name', '')
-                  if name and not re.match(r'^[a-zA-Z0-9 ]+$', name):
-                      errors.append(f'Resource \"{name}\": name must match ^[a-zA-Z0-9 ]+$')
                   names.append(name)
-              # Check for duplicate names
               seen = set()
               for n in names:
                   if n in seen:
@@ -91,46 +84,43 @@ jobs:
               status=1
             fi
             echo "::endgroup::"
-          done < <(find . -type f -name '*.dsc.yaml' -print0)
+          done < <(find . -type f -name '*.winget' ! -name '*.new.winget' -print0)
           exit $status
 
-      - name: Check for changes
-        id: diff
-        env:
-          GH_TOKEN: ${{ secrets.GIST_TOKEN }}
-        run: |
-          # Clone the gist repo for reliable content comparison
-          git clone "https://x-access-token:${GH_TOKEN}@gist.github.com/${{ vars.GIST_ID }}.git" /tmp/gist
-
-          changed=false
-          while IFS= read -r -d '' f; do
-            name=$(basename "$f")
-            if [ ! -f "/tmp/gist/$name" ] || ! diff -q "$f" "/tmp/gist/$name" > /dev/null 2>&1; then
-              echo "Changed: $name"
-              changed=true
-            fi
-          done < <(find . -type f \( -name '*.omp.json' -o -name '*.dsc.yaml' -o -name 'windowsterminal.*.json' \) -print0)
-
-          echo "changed=$changed" >> "$GITHUB_OUTPUT"
-          if [ "$changed" = "false" ]; then
-            echo "No changes detected, skipping gist update."
-          fi
-
       - name: Update Gist
-        if: steps.diff.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ secrets.GIST_TOKEN }}
         run: |
-          payload=$(mktemp)
-          # Build the files object by piping through jq (avoids ARG_MAX limits)
-          echo '{}' > "$payload"
+          # Clone the gist as a git repo
+          gh gist clone "${{ vars.GIST_ID }}" /tmp/gist
+          cd /tmp/gist
+
+          # Configure auth for push
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@gist.github.com/${{ vars.GIST_ID }}.git"
+
+          # Clear all files (preserves .git)
+          find . -maxdepth 1 -type f -delete
+
+          # Copy all matching files into the gist (flattened)
           while IFS= read -r -d '' f; do
             name=$(basename "$f")
             echo "Adding $name"
-            jq --rawfile content "$f" --arg name "$name" \
-              '. + {($name): {content: $content}}' "$payload" > "${payload}.tmp" \
-              && mv "${payload}.tmp" "$payload"
-          done < <(find . -type f \( -name '*.omp.json' -o -name '*.dsc.yaml' -o -name 'windowsterminal.*.json' \) -print0)
-          jq -n --slurpfile files "$payload" '{files: $files[0]}' > "${payload}.body"
-          gh api --method PATCH "/gists/${{ vars.GIST_ID }}" --input "${payload}.body" > /dev/null
-          rm -f "$payload" "${payload}.tmp" "${payload}.body"
+            cp "$f" "/tmp/gist/$name"
+          done < <(find "$GITHUB_WORKSPACE" -type f \( -name '*.omp.json' -o -name '*.winget' -o -name 'windowsterminal.*.json' \) ! -name '*.new.winget' -print0)
+
+          # Commit and push if there are changes
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "No changes detected, skipping gist update."
+            exit 0
+          fi
+
+          echo "Changes detected:"
+          git diff --cached --stat
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Sync config files from provision-machine"
+          git push
+          echo "Gist updated successfully."

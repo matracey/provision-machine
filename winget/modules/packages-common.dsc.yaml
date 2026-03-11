@@ -434,3 +434,12 @@ resources:
       id: "icsharpcode.ILSpy"
       source: winget
       acceptAgreements: true
+  - name: Install Visual Studio Locator
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Visual Studio Locator
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.VisualStudio.Locator"
+      source: winget
+      acceptAgreements: true

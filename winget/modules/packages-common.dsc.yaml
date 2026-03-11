@@ -254,15 +254,6 @@ resources:
       id: "Microsoft.PowerShell"
       source: winget
       acceptAgreements: true
-  - name: Install PowerToys
-    type: Microsoft.WinGet/Package
-    metadata:
-      description: Install PowerToys
-      module: "Microsoft.WinGet"
-    properties:
-      id: "Microsoft.PowerToys"
-      source: winget
-      acceptAgreements: true
   - name: Install Windows Terminal Preview
     type: Microsoft.WinGet/Package
     metadata:

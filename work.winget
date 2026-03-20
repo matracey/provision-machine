@@ -694,1329 +694,453 @@ resources:
   # Requires module: Microsoft.WinGet
   # Ships with WinGet. See: https://learn.microsoft.com/windows/package-manager
   # ============================================================
-  #   - name: Install Canva Affinity 3
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Canva Affinity 3
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Canva.Affinity"
-  #       source: winget
   - name: Install Canva Affinity 3
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Canva Affinity 3 (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Canva Affinity 3
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Canva.Affinity"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Bruno
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Bruno
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Bruno.Bruno"
-  #       source: winget
+      id: "Canva.Affinity"
+      source: winget
   - name: Install Bruno
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Bruno (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Bruno
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Bruno.Bruno"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install K Lite Codec Pack Mega
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install K Lite Codec Pack Mega
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "CodecGuide.K-LiteCodecPack.Mega"
-  #       source: winget
+      id: "Bruno.Bruno"
+      source: winget
   - name: Install K Lite Codec Pack Mega
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install K Lite Codec Pack Mega (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install K Lite Codec Pack Mega
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "CodecGuide.K-LiteCodecPack.Mega"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Azure AzCopy
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Azure AzCopy
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Microsoft.Azure.AZCopy.10"
-  #       source: winget
+      id: "CodecGuide.K-LiteCodecPack.Mega"
+      source: winget
   - name: Install Azure AzCopy
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Azure AzCopy (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Azure AzCopy
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Microsoft.Azure.AZCopy.10"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Azure Functions Core Tools
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Azure Functions Core Tools
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Microsoft.Azure.FunctionsCoreTools"
-  #       source: winget
+      id: "Microsoft.Azure.AZCopy.10"
+      source: winget
   - name: Install Azure Functions Core Tools
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Azure Functions Core Tools (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Azure Functions Core Tools
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Microsoft.Azure.FunctionsCoreTools"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Azure Storage Emulator
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Azure Storage Emulator
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Microsoft.Azure.StorageEmulator"
-  #       source: winget
+      id: "Microsoft.Azure.FunctionsCoreTools"
+      source: winget
   - name: Install Azure Storage Emulator
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Azure Storage Emulator (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Azure Storage Emulator
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Microsoft.Azure.StorageEmulator"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Azure Storage Explorer
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Azure Storage Explorer
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Microsoft.Azure.StorageExplorer"
-  #       source: winget
+      id: "Microsoft.Azure.StorageEmulator"
+      source: winget
   - name: Install Azure Storage Explorer
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Azure Storage Explorer (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Azure Storage Explorer
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Microsoft.Azure.StorageExplorer"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Azure CLI
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Azure CLI
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Microsoft.AzureCLI"
-  #       source: winget
+      id: "Microsoft.Azure.StorageExplorer"
+      source: winget
   - name: Install Azure CLI
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Azure CLI (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Azure CLI
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Microsoft.AzureCLI"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install WhatsApp Beta
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install WhatsApp Beta
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "9NBDXK71NK08"
-  #       source: msstore
+      id: "Microsoft.AzureCLI"
+      source: winget
   - name: Install WhatsApp Beta
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install WhatsApp Beta (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install WhatsApp Beta
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "9NBDXK71NK08"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install CLR Types for SQL Server 2019
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install CLR Types for SQL Server 2019
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Microsoft.CLRTypesSQLServer.2019"
-  #       source: winget
+      id: "9NBDXK71NK08"
+      source: msstore
   - name: Install CLR Types for SQL Server 2019
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install CLR Types for SQL Server 2019 (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install CLR Types for SQL Server 2019
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Microsoft.CLRTypesSQLServer.2019"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Apple Music
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Apple Music
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "9PFHDD62MXS1"
-  #       source: msstore
+      id: "Microsoft.CLRTypesSQLServer.2019"
+      source: winget
   - name: Install Apple Music
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Apple Music (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Apple Music
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "9PFHDD62MXS1"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Microsoft Edge Dev
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Microsoft Edge Dev
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Microsoft.Edge.Dev"
-  #       source: winget
+      id: "9PFHDD62MXS1"
+      source: msstore
   - name: Install Microsoft Edge Dev
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Microsoft Edge Dev (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Microsoft Edge Dev
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Microsoft.Edge.Dev"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Adobe Acrobat Reader 64 bit
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Adobe Acrobat Reader 64 bit
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Adobe.Acrobat.Reader.64-bit"
-  #       source: winget
+      id: "Microsoft.Edge.Dev"
+      source: winget
   - name: Install Adobe Acrobat Reader 64 bit
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Adobe Acrobat Reader 64 bit (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Adobe Acrobat Reader 64 bit
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Adobe.Acrobat.Reader.64-bit"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install 1Password
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install 1Password
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "AgileBits.1Password"
-  #       source: winget
+      id: "Adobe.Acrobat.Reader.64-bit"
+      source: winget
   - name: Install 1Password
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install 1Password (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install 1Password
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "AgileBits.1Password"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Microsoft ODBC Driver 17 for SQL Server
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Microsoft ODBC Driver 17 for SQL Server
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Microsoft.msodbcsql.17"
-  #       source: winget
+      id: "AgileBits.1Password"
+      source: winget
   - name: Install Microsoft ODBC Driver 17 for SQL Server
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Microsoft ODBC Driver 17 for SQL Server (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Microsoft ODBC Driver 17 for SQL Server
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Microsoft.msodbcsql.17"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Power Automate Desktop
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Power Automate Desktop
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Microsoft.PowerAutomateDesktop"
-  #       source: winget
+      id: "Microsoft.msodbcsql.17"
+      source: winget
   - name: Install Power Automate Desktop
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Power Automate Desktop (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Power Automate Desktop
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Microsoft.PowerAutomateDesktop"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Remote Help
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Remote Help
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Microsoft.RemoteHelp"
-  #       source: winget
+      id: "Microsoft.PowerAutomateDesktop"
+      source: winget
   - name: Install Remote Help
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Remote Help (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Remote Help
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Microsoft.RemoteHelp"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install SQL Server Management Studio 22 Preview
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install SQL Server Management Studio 22 Preview
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Microsoft.SQLServerManagementStudio.22.Preview"
-  #       source: winget
+      id: "Microsoft.RemoteHelp"
+      source: winget
   - name: Install SQL Server Management Studio 22 Preview
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install SQL Server Management Studio 22 Preview (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install SQL Server Management Studio 22 Preview
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Microsoft.SQLServerManagementStudio.22.Preview"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Microsoft Teams
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Microsoft Teams
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Microsoft.Teams"
-  #       source: winget
+      id: "Microsoft.SQLServerManagementStudio.22.Preview"
+      source: winget
   - name: Install Microsoft Teams
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Microsoft Teams (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Microsoft Teams
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Microsoft.Teams"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install WizTree
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install WizTree
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "AntibodySoftware.WizTree"
-  #       source: winget
+      id: "Microsoft.Teams"
+      source: winget
   - name: Install WizTree
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install WizTree (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install WizTree
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "AntibodySoftware.WizTree"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Ubuntu
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Ubuntu
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Canonical.Ubuntu"
-  #       source: winget
+      id: "AntibodySoftware.WizTree"
+      source: winget
   - name: Install Ubuntu
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Ubuntu (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Ubuntu
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Canonical.Ubuntu"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install DB Browser for SQLite
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install DB Browser for SQLite
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "DBBrowserForSQLite.DBBrowserForSQLite"
-  #       source: winget
+      id: "Canonical.Ubuntu"
+      source: winget
   - name: Install DB Browser for SQLite
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install DB Browser for SQLite (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install DB Browser for SQLite
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "DBBrowserForSQLite.DBBrowserForSQLite"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install EarTrumpet
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install EarTrumpet
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "File-New-Project.EarTrumpet"
-  #       source: winget
+      id: "DBBrowserForSQLite.DBBrowserForSQLite"
+      source: winget
   - name: Install EarTrumpet
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install EarTrumpet (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install EarTrumpet
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "File-New-Project.EarTrumpet"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Mp3tag
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Mp3tag
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "FlorianHeidenreich.Mp3tag"
-  #       source: winget
+      id: "File-New-Project.EarTrumpet"
+      source: winget
   - name: Install Mp3tag
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Mp3tag (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Mp3tag
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "FlorianHeidenreich.Mp3tag"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Web Deploy
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Web Deploy
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Microsoft.WebDeploy"
-  #       source: winget
+      id: "FlorianHeidenreich.Mp3tag"
+      source: winget
   - name: Install Web Deploy
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Web Deploy (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Web Deploy
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Microsoft.WebDeploy"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Git Credential Manager
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Git Credential Manager
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Git.GCM"
-  #       source: winget
+      id: "Microsoft.WebDeploy"
+      source: winget
   - name: Install Git Credential Manager
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Git Credential Manager (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Git Credential Manager
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Git.GCM"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Windows App
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Windows App
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Microsoft.WindowsApp"
-  #       source: winget
+      id: "Git.GCM"
+      source: winget
   - name: Install Windows App
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Windows App (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Windows App
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Microsoft.WindowsApp"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Git
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Git
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Git.Git"
-  #       source: winget
+      id: "Microsoft.WindowsApp"
+      source: winget
   - name: Install Git
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Git (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Git
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Git.Git"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install GitHub Desktop
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install GitHub Desktop
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "GitHub.GitHubDesktop"
-  #       source: winget
+      id: "Git.Git"
+      source: winget
   - name: Install GitHub Desktop
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install GitHub Desktop (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install GitHub Desktop
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "GitHub.GitHubDesktop"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Git LFS
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Git LFS
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "GitHub.GitLFS"
-  #       source: winget
+      id: "GitHub.GitHubDesktop"
+      source: winget
   - name: Install Git LFS
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Git LFS (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Git LFS
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "GitHub.GitLFS"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Dual Monitor Tools
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Dual Monitor Tools
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "GNE.DualMonitorTools"
-  #       source: winget
+      id: "GitHub.GitLFS"
+      source: winget
   - name: Install Dual Monitor Tools
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Dual Monitor Tools (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Dual Monitor Tools
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "GNE.DualMonitorTools"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Google Chrome
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Google Chrome
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Google.Chrome"
-  #       source: winget
+      id: "GNE.DualMonitorTools"
+      source: winget
   - name: Install Google Chrome
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Google Chrome (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Google Chrome
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Google.Chrome"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Google Quick Share
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Google Quick Share
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Google.QuickShare"
-  #       source: winget
+      id: "Google.Chrome"
+      source: winget
   - name: Install Google Quick Share
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Google Quick Share (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Google Quick Share
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Google.QuickShare"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Cyberduck
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Cyberduck
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Iterate.Cyberduck"
-  #       source: winget
+      id: "Google.QuickShare"
+      source: winget
   - name: Install Cyberduck
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Cyberduck (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Cyberduck
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Iterate.Cyberduck"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Oh My Posh
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Oh My Posh
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "JanDeDobbeleer.OhMyPosh"
-  #       source: winget
+      id: "Iterate.Cyberduck"
+      source: winget
   - name: Install Oh My Posh
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Oh My Posh (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Oh My Posh
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "JanDeDobbeleer.OhMyPosh"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install mise
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install mise
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "jdx.mise"
-  #       source: winget
+      id: "JanDeDobbeleer.OhMyPosh"
+      source: winget
   - name: Install mise
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install mise (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install mise
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "jdx.mise"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install FontBase
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install FontBase
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Levitsky.FontBase"
-  #       source: winget
+      id: "jdx.mise"
+      source: winget
   - name: Install FontBase
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install FontBase (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install FontBase
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Levitsky.FontBase"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install LLVM
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install LLVM
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "LLVM.LLVM"
-  #       source: winget
+      id: "Levitsky.FontBase"
+      source: winget
   - name: Install LLVM
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install LLVM (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install LLVM
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "LLVM.LLVM"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install NanaZip
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install NanaZip
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "M2Team.NanaZip"
-  #       source: winget
+      id: "LLVM.LLVM"
+      source: winget
   - name: Install NanaZip
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install NanaZip (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install NanaZip
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "M2Team.NanaZip"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install UniGetUI
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install UniGetUI
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "MartiCliment.UniGetUI"
-  #       source: winget
+      id: "M2Team.NanaZip"
+      source: winget
+  # Known issue: UniGetUI may fail with winget error 0x8A150014 on DSCv3 preview.
+  # Workaround: run `winget install MartiCliment.UniGetUI --source winget` manually if this fails.
   - name: Install UniGetUI
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install UniGetUI (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install UniGetUI
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "MartiCliment.UniGetUI"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Microsoft App Installer
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Microsoft App Installer
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Microsoft.AppInstaller"
-  #       source: winget
+      id: "MartiCliment.UniGetUI"
+      source: winget
   - name: Install Microsoft App Installer
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Microsoft App Installer (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Microsoft App Installer
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Microsoft.AppInstaller"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Microsoft Edge
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Microsoft Edge
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Microsoft.Edge"
-  #       source: winget
+      id: "Microsoft.AppInstaller"
+      source: winget
   - name: Install Microsoft Edge
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Microsoft Edge (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Microsoft Edge
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Microsoft.Edge"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Microsoft Edge Beta
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Microsoft Edge Beta
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Microsoft.Edge.Beta"
-  #       source: winget
+      id: "Microsoft.Edge"
+      source: winget
   - name: Install Microsoft Edge Beta
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Microsoft Edge Beta (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Microsoft Edge Beta
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Microsoft.Edge.Beta"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Edge WebView2 Runtime
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Edge WebView2 Runtime
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Microsoft.EdgeWebView2Runtime"
-  #       source: winget
+      id: "Microsoft.Edge.Beta"
+      source: winget
   - name: Install Edge WebView2 Runtime
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Edge WebView2 Runtime (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Edge WebView2 Runtime
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Microsoft.EdgeWebView2Runtime"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Microsoft OneDrive
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Microsoft OneDrive
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Microsoft.OneDrive"
-  #       source: winget
+      id: "Microsoft.EdgeWebView2Runtime"
+      source: winget
   - name: Install Microsoft OneDrive
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Microsoft OneDrive (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Microsoft OneDrive
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Microsoft.OneDrive"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install PowerShell
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install PowerShell
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Microsoft.PowerShell"
-  #       source: winget
+      id: "Microsoft.OneDrive"
+      source: winget
   - name: Install PowerShell
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install PowerShell (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install PowerShell
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Microsoft.PowerShell"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install PowerToys
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install PowerToys
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Microsoft.PowerToys"
-  #       source: winget
+      id: "Microsoft.PowerShell"
+      source: winget
   - name: Install PowerToys
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install PowerToys (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install PowerToys
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Microsoft.PowerToys"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Rancher Desktop
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Rancher Desktop
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "SUSE.RancherDesktop"
-  #       source: winget
+      id: "Microsoft.PowerToys"
+      source: winget
   - name: Install Rancher Desktop
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Rancher Desktop (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Rancher Desktop
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "SUSE.RancherDesktop"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Windows Terminal Preview
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Windows Terminal Preview
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Microsoft.WindowsTerminal.Preview"
-  #       source: winget
+      id: "SUSE.RancherDesktop"
+      source: winget
   - name: Install Windows Terminal Preview
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Windows Terminal Preview (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Windows Terminal Preview
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Microsoft.WindowsTerminal.Preview"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Windows Subsystem for Linux
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Windows Subsystem for Linux
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Microsoft.WSL"
-  #       source: winget
+      id: "Microsoft.WindowsTerminal.Preview"
+      source: winget
   - name: Install Windows Subsystem for Linux
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Windows Subsystem for Linux (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Windows Subsystem for Linux
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Microsoft.WSL"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Mozilla Firefox
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Mozilla Firefox
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Mozilla.Firefox"
-  #       source: winget
+      id: "Microsoft.WSL"
+      source: winget
   - name: Install Mozilla Firefox
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Mozilla Firefox (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Mozilla Firefox
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Mozilla.Firefox"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Obsidian
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Obsidian
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Obsidian.Obsidian"
-  #       source: winget
+      id: "Mozilla.Firefox"
+      source: winget
   - name: Install Obsidian
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Obsidian (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Obsidian
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Obsidian.Obsidian"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Spotify
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Spotify
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Spotify.Spotify"
-  #       source: winget
+      id: "Obsidian.Obsidian"
+      source: winget
+  # Known issue: Spotify may fail with DeliveryOptimization 403 Forbidden on some networks.
+  # Workaround: install manually via `winget install Spotify.Spotify` or download from spotify.com.
   - name: Install Spotify
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Spotify (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Spotify
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Spotify.Spotify"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install VLC
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install VLC
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "VideoLAN.VLC"
-  #       source: winget
+      id: "Spotify.Spotify"
+      source: winget
   - name: Install VLC
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install VLC (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install VLC
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "VideoLAN.VLC"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install WinSCP
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install WinSCP
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "WinSCP.WinSCP"
-  #       source: winget
+      id: "VideoLAN.VLC"
+      source: winget
+  - name: Install WinSCP
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install WinSCP
+      module: "Microsoft.WinGet"
+    properties:
+      id: "WinSCP.WinSCP"
+      source: winget
   #   # Workaround: Microsoft.WinGet/Package does not support the 'override' property.
   #   # See: https://github.com/microsoft/winget-cli/issues/3401
   #   # Using Microsoft.DSC.Transitional/PowerShellScript for idempotent install with custom Inno Setup tasks.
-  - name: Install WinSCP
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
-    metadata:
-      description: "Install WinSCP (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
-    properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "WinSCP.WinSCP"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
   - name: Install Visual Studio Code
     type: Microsoft.DSC.Transitional/PowerShellScript
     metadata:
@@ -2030,7 +1154,7 @@ resources:
       testScript: |
         param($inputData)
         & winget list --id $inputData.id --exact --source $inputData.source 2>$null
-        @{ _inDesiredState = ($LASTEXITCODE -eq 0) } | ConvertTo-Json
+        return ($LASTEXITCODE -eq 0)
       setScript: |
         param($inputData)
         & winget install --id $inputData.id --source $inputData.source --silent --accept-package-agreements --accept-source-agreements --override $inputData.override
@@ -2049,371 +1173,131 @@ resources:
       testScript: |
         param($inputData)
         & winget list --id $inputData.id --exact --source $inputData.source 2>$null
-        @{ _inDesiredState = ($LASTEXITCODE -eq 0) } | ConvertTo-Json
+        return ($LASTEXITCODE -eq 0)
       setScript: |
         param($inputData)
         & winget install --id $inputData.id --source $inputData.source --silent --accept-package-agreements --accept-source-agreements --override $inputData.override
-  #   - name: Install DotNet SDK 8
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install DotNet SDK 8
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Microsoft.DotNet.SDK.8"
-  #       source: winget
   - name: Install DotNet SDK 8
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install DotNet SDK 8 (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install DotNet SDK 8
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Microsoft.DotNet.SDK.8"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install DotNet SDK 9
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install DotNet SDK 9
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Microsoft.DotNet.SDK.9"
-  #       source: winget
+      id: "Microsoft.DotNet.SDK.8"
+      source: winget
   - name: Install DotNet SDK 9
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install DotNet SDK 9 (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install DotNet SDK 9
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Microsoft.DotNet.SDK.9"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install VCRedist 2015 plus x64
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install VCRedist 2015 plus x64
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Microsoft.VCRedist.2015+.x64"
-  #       source: winget
+      id: "Microsoft.DotNet.SDK.9"
+      source: winget
   - name: Install VCRedist 2015 plus x64
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install VCRedist 2015 plus x64 (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install VCRedist 2015 plus x64
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Microsoft.VCRedist.2015+.x64"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install VCRedist 2013 x64
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install VCRedist 2013 x64
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Microsoft.VCRedist.2013.x64"
-  #       source: winget
+      id: "Microsoft.VCRedist.2015+.x64"
+      source: winget
   - name: Install VCRedist 2013 x64
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install VCRedist 2013 x64 (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install VCRedist 2013 x64
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Microsoft.VCRedist.2013.x64"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install VCRedist 2012 x64
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install VCRedist 2012 x64
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Microsoft.VCRedist.2012.x64"
-  #       source: winget
+      id: "Microsoft.VCRedist.2013.x64"
+      source: winget
   - name: Install VCRedist 2012 x64
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install VCRedist 2012 x64 (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install VCRedist 2012 x64
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Microsoft.VCRedist.2012.x64"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install VCRedist 2010 x64
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install VCRedist 2010 x64
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Microsoft.VCRedist.2010.x64"
-  #       source: winget
+      id: "Microsoft.VCRedist.2012.x64"
+      source: winget
   - name: Install VCRedist 2010 x64
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install VCRedist 2010 x64 (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install VCRedist 2010 x64
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Microsoft.VCRedist.2010.x64"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install VCRedist 2008 x64
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install VCRedist 2008 x64
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Microsoft.VCRedist.2008.x64"
-  #       source: winget
+      id: "Microsoft.VCRedist.2010.x64"
+      source: winget
   - name: Install VCRedist 2008 x64
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install VCRedist 2008 x64 (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install VCRedist 2008 x64
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Microsoft.VCRedist.2008.x64"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install VCRedist 2005 x64
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install VCRedist 2005 x64
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Microsoft.VCRedist.2005.x64"
-  #       source: winget
+      id: "Microsoft.VCRedist.2008.x64"
+      source: winget
   - name: Install VCRedist 2005 x64
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install VCRedist 2005 x64 (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install VCRedist 2005 x64
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Microsoft.VCRedist.2005.x64"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install DotNet Framework Redistributable 1 1
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install DotNet Framework Redistributable 1 1
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Microsoft.DotNet.Framework.Redistributable.1_1"
-  #       source: winget
+      id: "Microsoft.VCRedist.2005.x64"
+      source: winget
   - name: Install DotNet Framework Redistributable 1 1
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install DotNet Framework Redistributable 1 1 (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install DotNet Framework Redistributable 1 1
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Microsoft.DotNet.Framework.Redistributable.1_1"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install GitHub CLI
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install GitHub CLI
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "GitHub.cli"
-  #       source: winget
+      id: "Microsoft.DotNet.Framework.Redistributable.1_1"
+      source: winget
   - name: Install GitHub CLI
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install GitHub CLI (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install GitHub CLI
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "GitHub.cli"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install GitHub Copilot
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install GitHub Copilot
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "GitHub.Copilot"
-  #       source: winget
+      id: "GitHub.cli"
+      source: winget
   - name: Install GitHub Copilot
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install GitHub Copilot (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install GitHub Copilot
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "GitHub.Copilot"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install ILSpy
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install ILSpy
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "icsharpcode.ILSpy"
-  #       source: winget
+      id: "GitHub.Copilot"
+      source: winget
   - name: Install ILSpy
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install ILSpy (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install ILSpy
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "icsharpcode.ILSpy"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Visual Studio Locator
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Visual Studio Locator
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "Microsoft.VisualStudio.Locator"
-  #       source: winget
+      id: "icsharpcode.ILSpy"
+      source: winget
   - name: Install Visual Studio Locator
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Visual Studio Locator (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Visual Studio Locator
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "Microsoft.VisualStudio.Locator"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install croc
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install croc
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "schollz.croc"
-  #       source: winget
+      id: "Microsoft.VisualStudio.Locator"
+      source: winget
   - name: Install croc
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install croc (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install croc
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "schollz.croc"
-        - --source
-        - winget
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
-  #   - name: Install Microsoft Loop
-  #     type: Microsoft.WinGet/Package
-  #     metadata:
-  #       description: Install Microsoft Loop (9P1HQ5TQZMGD)
-  #       module: "Microsoft.WinGet"
-  #     properties:
-  #       id: "9P1HQ5TQZMGD"
-  #       source: msstore
-  #       acceptAgreements: true
+      id: "schollz.croc"
+      source: winget
   - name: Install Microsoft Loop
-    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Microsoft Loop (workaround for DSCv3 stateAndDiff bug)"
-      module: "Microsoft.DSC.Transitional"
+      description: Install Microsoft Loop (9P1HQ5TQZMGD)
+      module: "Microsoft.WinGet"
     properties:
-      executable: winget
-      arguments:
-        - install
-        - --id
-        - "9P1HQ5TQZMGD"
-        - --source
-        - msstore
-        - --silent
-        - --accept-package-agreements
-        - --accept-source-agreements
+      id: "9P1HQ5TQZMGD"
+      source: msstore
+      acceptAgreements: true
   - name: Microsoft.WinGet/UserSettingsFile-0
     type: Microsoft.WinGet/UserSettingsFile
     metadata:

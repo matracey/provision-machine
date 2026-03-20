@@ -2,40 +2,69 @@
 # Work appearance resources.
 $schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
 resources:
-  - name: Enable Dark Mode
-    type: Microsoft.Windows.Developer/EnableDarkMode
-    metadata:
-      description: "Enable system-wide dark mode and restart Explorer"
-      module: "Microsoft.Windows.Developer"
+  - name: Work appearance
+    type: Microsoft.Windows/RegistryList
+    requireVersion: "=1.0.0"
     properties:
-      Ensure: Present
-      RestartExplorer: true
-  - name: Taskbar Settings
-    type: Microsoft.Windows.Developer/Taskbar
-    metadata:
-      description: "Configure taskbar alignment, labels, search box, and widget visibility"
-      winget:
-        securityContext: "elevated"
-      module: "Microsoft.Windows.Developer"
+      registryEntries:
+        - keyPath: HKCU\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize
+          valueName: AppsUseLightTheme
+          valueData:
+            DWord: 0
+        - keyPath: HKCU\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize
+          valueName: SystemUsesLightTheme
+          valueData:
+            DWord: 0
+        - keyPath: HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+          valueName: TaskbarAl
+          valueData:
+            DWord: 0
+        - keyPath: HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+          valueName: TaskbarGlomLevel
+          valueData:
+            DWord: 0
+        - keyPath: HKCU\Software\Microsoft\Windows\CurrentVersion\Search
+          valueName: SearchboxTaskbarMode
+          valueData:
+            DWord: 0
+        - keyPath: HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+          valueName: ShowTaskViewButton
+          valueData:
+            DWord: 1
+        - keyPath: HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+          valueName: TaskbarDa
+          valueData:
+            DWord: 0
+        - keyPath: HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+          valueName: HideFileExt
+          valueData:
+            DWord: 0
+        - keyPath: HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+          valueName: AutoCheckSelect
+          valueData:
+            DWord: 0
+        - keyPath: HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+          valueName: ShowSecondsInSystemClock
+          valueData:
+            DWord: 1
+  - name: Refresh work appearance
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    dependsOn:
+      - "[resourceId('Microsoft.Windows/RegistryList', 'Work appearance')]"
     properties:
-      Alignment: Left
-      HideLabelsMode: Always
-      SearchboxMode: Hide
-      TaskViewButton: Show
-      WidgetsButton: Hide
-      RestartExplorer: true
-  - name: Windows Explorer Settings
-    type: Microsoft.Windows.Developer/WindowsExplorer
+      executable: pwsh
+      arguments:
+        - -NoProfile
+        - -NonInteractive
+        - -Command
+        - "$ErrorActionPreference = 'Stop'; $session = (Get-Process -Id $PID).SessionId; Get-Process explorer -ErrorAction SilentlyContinue | Where-Object SessionId -EQ $session | ForEach-Object { Stop-Process -Id $_.Id -Force }; Start-Process explorer.exe"
+  - name: Desktop Background Spotlight
+    type: Microsoft.Windows/Registry
     metadata:
-      description: "Show file extensions and hide item checkboxes in File Explorer"
-      module: "Microsoft.Windows.Developer"
+      description: "Set desktop background to Windows Spotlight"
+      module: "Microsoft.Windows"
     properties:
-      FileExtensions: Show
-      ItemCheckBoxes: Hide
-  - name: Show Seconds In Clock
-    type: Microsoft.Windows.Developer/ShowSecondsInClock
-    metadata:
-      description: "Display seconds in the system tray clock"
-      module: "Microsoft.Windows.Developer"
-    properties:
-      Ensure: Present
+      keyPath: HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Wallpapers
+      valueName: BackgroundType
+      valueData:
+        DWord: 3

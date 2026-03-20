@@ -417,20 +417,76 @@ resources:
     properties:
       Ensure: Present
       RestartExplorer: true
-  - name: Taskbar Settings
-    type: Microsoft.Windows.Developer/Taskbar
+  # Workaround: Microsoft.Windows.Developer/Taskbar still fails with unauthorized operation in DSC preview.
+  # Use native registry resources for the individual settings and restart Explorer afterwards.
+  - name: Taskbar Alignment Left
+    type: Microsoft.Windows/Registry
     metadata:
-      description: "Configure taskbar alignment, labels, search box, and widget visibility"
-      winget:
-        securityContext: "elevated"
-      module: "Microsoft.Windows.Developer"
+      description: "Align taskbar icons to the left"
+      module: "Microsoft.Windows"
     properties:
-      Alignment: Left
-      HideLabelsMode: Always
-      SearchboxMode: Hide
-      TaskViewButton: Show
-      WidgetsButton: Hide
-      RestartExplorer: true
+      keyPath: HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+      valueName: TaskbarAl
+      valueData:
+        DWord: 0
+  - name: Taskbar Never Combine
+    type: Microsoft.Windows/Registry
+    metadata:
+      description: "Never combine taskbar buttons"
+      module: "Microsoft.Windows"
+    properties:
+      keyPath: HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+      valueName: TaskbarGlomLevel
+      valueData:
+        DWord: 0
+  - name: Hide Taskbar Search Box
+    type: Microsoft.Windows/Registry
+    metadata:
+      description: "Hide the taskbar search box"
+      module: "Microsoft.Windows"
+    properties:
+      keyPath: HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+      valueName: SearchboxTaskbarMode
+      valueData:
+        DWord: 0
+  - name: Show Task View Button
+    type: Microsoft.Windows/Registry
+    metadata:
+      description: "Show the task view button on the taskbar"
+      module: "Microsoft.Windows"
+    properties:
+      keyPath: HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+      valueName: ShowTaskViewButton
+      valueData:
+        DWord: 1
+  - name: Hide Widgets Button
+    type: Microsoft.Windows/Registry
+    metadata:
+      description: "Hide the widgets button on the taskbar"
+      module: "Microsoft.Windows"
+    properties:
+      keyPath: HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+      valueName: TaskbarDa
+      valueData:
+        DWord: 0
+  - name: Restart Explorer For Taskbar Settings
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    metadata:
+      description: "Restart Explorer so taskbar registry changes take effect"
+      module: "Microsoft.DSC.Transitional"
+    dependsOn:
+      - "Taskbar Alignment Left"
+      - "Taskbar Never Combine"
+      - "Hide Taskbar Search Box"
+      - "Show Task View Button"
+      - "Hide Widgets Button"
+    properties:
+      executable: pwsh
+      arguments:
+        - -NoProfile
+        - -NonInteractive
+        - -Command
+        - "$procs = Get-Process explorer -ErrorAction SilentlyContinue; foreach ($proc in $procs) { Stop-Process -Id $proc.Id -Force }"
   - name: Windows Explorer Settings
     type: Microsoft.Windows.Developer/WindowsExplorer
     metadata:

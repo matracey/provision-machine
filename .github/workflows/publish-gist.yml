@@ -7,6 +7,7 @@ on:
       - "**/*.omp.json"
       - "winget/**/*.winget"
       - "winget/**/*.dsc.yaml"
+      - "**/taskbarlayout.*.xml"
       - "**/windowsterminal.*.json"
   workflow_dispatch:
 
@@ -107,7 +108,7 @@ jobs:
             name=$(basename "$f")
             echo "Adding $name"
             cp "$f" "/tmp/gist/$name"
-          done < <(find "$GITHUB_WORKSPACE" -type f \( -name '*.omp.json' -o -name '*.winget' -o -name 'windowsterminal.*.json' \) ! -name '*.new.winget' -print0)
+          done < <(find "$GITHUB_WORKSPACE" -type f \( -name '*.omp.json' -o -name '*.winget' -o -name '*.dsc.yaml' -o -name 'windowsterminal.*.json' -o -name 'taskbarlayout.*.xml' \) ! -name '*.new.winget' -print0)
 
           # Commit and push if there are changes
           git add -A

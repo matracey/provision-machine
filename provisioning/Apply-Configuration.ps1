@@ -174,6 +174,9 @@ Then restart your shell and try again.
     exit 1
 }
 
+# Set config root so DSC PowerShellScript resources can resolve local file paths
+$env:PROVISION_MACHINE_ROOT = Split-Path $configPath
+
 # Apply configuration
 # Workaround: winget configure does not yet support DSCv3 preview resource
 # discovery. Once it does, replace these with:

@@ -104,3 +104,34 @@ resources:
       valueName: BackgroundType
       valueData:
         DWord: 3
+  - name: Deploy Taskbar Layout
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: "Deploy managed taskbar pin layout via LayoutModification XML"
+      module: "Microsoft.DSC.Transitional"
+      winget:
+        securityContext: "elevated"
+    properties:
+      input:
+        gistBase: "https://gist.githubusercontent.com/matracey/f4c3a9194cd190a3b3de423aad5dc7e1/raw"
+        fileName: "taskbarlayout.work.xml"
+      testScript: |
+        param($inputData)
+        $layoutPath = 'C:\Users\Default\AppData\Local\Microsoft\Windows\Shell\LayoutModification.xml'
+        return (Test-Path $layoutPath)
+      setScript: |
+        param($inputData)
+        $layoutPath = 'C:\Users\Default\AppData\Local\Microsoft\Windows\Shell\LayoutModification.xml'
+        $layoutDir = Split-Path $layoutPath
+        if (-not (Test-Path $layoutDir)) { New-Item -ItemType Directory -Path $layoutDir -Force | Out-Null }
+        # Resolve source: WinGetConfigRoot (winget configure) > PROVISION_MACHINE_ROOT (dsc.exe) > gist
+        $roots = @($env:WinGetConfigRoot, $env:PROVISION_MACHINE_ROOT) | Where-Object { $_ }
+        foreach ($root in $roots) {
+          $localFile = Join-Path $root "..\provisioning\$($inputData.fileName)"
+          if (Test-Path $localFile) {
+            Copy-Item -Path $localFile -Destination $layoutPath -Force
+            return
+          }
+        }
+        $url = "$($inputData.gistBase)/$($inputData.fileName)"
+        Invoke-WebRequest -Uri $url -OutFile $layoutPath -UseBasicParsing

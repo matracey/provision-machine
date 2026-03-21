@@ -6,6 +6,7 @@ on:
     paths:
       - "**/*.omp.json"
       - "**/*.winget"
+      - "**/taskbarlayout.*.xml"
       - "**/windowsterminal.*.json"
   workflow_dispatch:
 
@@ -44,6 +45,24 @@ jobs:
             fi
             echo "::endgroup::"
           done < <(find . -type f \( -name '*.omp.json' -o -name 'windowsterminal.*.json' \) -print0)
+          exit $status
+
+      - name: Validate XML files
+        run: |
+          status=0
+          while IFS= read -r -d '' f; do
+            echo "::group::$f"
+            python3 -c "
+          import sys
+          import xml.etree.ElementTree as ET
+          ET.parse(sys.argv[1])
+          print(f'{sys.argv[1]} is well-formed XML')
+          " "$f"
+            if [ $? -ne 0 ]; then
+              status=1
+            fi
+            echo "::endgroup::"
+          done < <(find . -type f -name 'taskbarlayout.*.xml' -print0)
           exit $status
 
       - name: Validate DSC YAML files
@@ -106,7 +125,7 @@ jobs:
             name=$(basename "$f")
             echo "Adding $name"
             cp "$f" "/tmp/gist/$name"
-          done < <(find "$GITHUB_WORKSPACE" -type f \( -name '*.omp.json' -o -name '*.winget' -o -name 'windowsterminal.*.json' \) ! -name '*.new.winget' -print0)
+          done < <(find "$GITHUB_WORKSPACE" -type f \( -name '*.omp.json' -o -name '*.winget' -o -name 'windowsterminal.*.json' -o -name 'taskbarlayout.*.xml' \) ! -name '*.new.winget' -print0)
 
           # Commit and push if there are changes
           git add -A

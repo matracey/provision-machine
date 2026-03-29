@@ -76,6 +76,10 @@ resources:
   #   type: Microsoft.DSC/Include
   #   properties:
   #     configurationFile: ./modules/visual-studio-intpreview.dsc.yaml
+  - name: Include visual studio extensions
+    type: Microsoft.DSC/Include
+    properties:
+      configurationFile: ./modules/visual-studio-extensions.dsc.yaml
   - name: Include fonts
     type: Microsoft.DSC/Include
     properties:

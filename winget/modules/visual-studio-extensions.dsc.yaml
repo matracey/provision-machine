@@ -1,0 +1,81 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/PowerShell/DSC/main/schemas/2023/08/config/document.json
+# Visual Studio extensions from .vsconfig marketplace entries.
+$schema: https://raw.githubusercontent.com/PowerShell/DSC/main/schemas/2023/08/config/document.json
+resources:
+  - name: VS Extensions
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: "Install Visual Studio extensions from the marketplace"
+      module: "Microsoft.DSC.Transitional"
+      winget:
+        securityContext: "elevated"
+    properties:
+      input:
+        extensions:
+          - publisher: ms-azuretools
+            id: visualstudiobicep
+          - publisher: MadsKristensen
+            id: EmojiSense
+          - publisher: ProjectReunion
+            id: MicrosoftSingleProjectMSIXPackagingToolsDev17
+          - publisher: MadsKristensen
+            id: insertguid
+          - publisher: MadsKristensen
+            id: MarkdownEditor64
+          - publisher: MadsKristensen
+            id: RainbowBraces
+          - publisher: MadsKristensen
+            id: FontSizer2
+          - publisher: MadsKristensen
+            id: FileIcons
+          - publisher: MadsKristensen
+            id: Tweaks2022
+          - publisher: SteveCadwallader
+            id: CodeMaidVS2022
+          - publisher: LaurentKempe
+            id: GitDiffMargin
+          - publisher: MadsKristensen
+            id: ZenCoding
+      testScript: |
+        param($inputData)
+        try {
+          $ErrorActionPreference = 'SilentlyContinue'
+          $vsWhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          if (-not (Test-Path $vsWhere)) { return $false }
+          $vsPath = & $vsWhere -latest -prerelease -property installationPath
+          if (-not $vsPath) { return $false }
+          $extDir = Join-Path $vsPath 'Common7\IDE\Extensions'
+          # Check each extension by scanning vsixmanifest files for matching publisher/id
+          foreach ($ext in $inputData.extensions) {
+            $found = $false
+            Get-ChildItem $extDir -Recurse -Filter 'extension.vsixmanifest' -ErrorAction SilentlyContinue | ForEach-Object {
+              if (-not $found) {
+                try {
+                  $content = Get-Content $_.FullName -Raw
+                  if ($content -match $ext.id) { $found = $true }
+                } catch {}
+              }
+            }
+            if (-not $found) { return $false }
+          }
+          return $true
+        } catch { return $false }
+      setScript: |
+        param($inputData)
+        try {
+          $ErrorActionPreference = 'SilentlyContinue'
+          $vsWhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $vsPath = & $vsWhere -latest -prerelease -property installationPath
+          $vsixInstaller = Join-Path $vsPath 'Common7\IDE\VSIXInstaller.exe'
+          foreach ($ext in $inputData.extensions) {
+            $vsixUrl = "https://$($ext.publisher).gallery.vsassets.io/_apis/public/gallery/publisher/$($ext.publisher)/extension/$($ext.id)/latest/assetbyname/Microsoft.VisualStudio.Ide.Payload"
+            $tempFile = Join-Path $env:TEMP "$($ext.publisher).$($ext.id).vsix"
+            try {
+              Invoke-WebRequest -Uri $vsixUrl -OutFile $tempFile -UseBasicParsing
+              & $vsixInstaller /quiet /norepair $tempFile 2>&1 | Out-Null
+              Remove-Item $tempFile -ErrorAction SilentlyContinue
+            } catch {
+              # Skip extensions that fail to download or install
+            }
+          }
+        } catch { }

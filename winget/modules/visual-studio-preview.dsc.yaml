@@ -1,28 +1,28 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/PowerShell/DSC/main/schemas/2023/08/config/document.json
-# Visual Studio Enterprise (Release channel) installation and workloads.
+# Visual Studio Enterprise Preview channel installation and workloads.
 $schema: https://raw.githubusercontent.com/PowerShell/DSC/main/schemas/2023/08/config/document.json
 resources:
-  - name: Install Visual Studio Enterprise
+  - name: Install Visual Studio Enterprise Insiders
     type: Microsoft.WinGet/Package
     metadata:
-      description: "Install Visual Studio Enterprise via WinGet"
+      description: "Install Visual Studio Enterprise Insiders via WinGet"
       module: "Microsoft.WinGet"
     properties:
-      id: "Microsoft.VisualStudio.Enterprise"
+      id: "Microsoft.VisualStudio.Enterprise.Insiders"
       source: winget
       acceptAgreements: true
-  - name: VS Release Workloads
+  - name: VS Preview Workloads
     type: Microsoft.VisualStudio.DSC/VSComponents
     metadata:
-      description: "VS Release Workloads"
+      description: "VS Preview Workloads"
       winget:
         securityContext: "elevated"
       module: "Microsoft.VisualStudio.DSC"
     dependsOn:
-      - "[resourceId('Microsoft.WinGet/Package','Install Visual Studio Enterprise')]"
+      - "[resourceId('Microsoft.WinGet/Package','Install Visual Studio Enterprise Insiders')]"
     properties:
       ProductId: Microsoft.VisualStudio.Product.Enterprise
-      ChannelId: VisualStudio.18.Release
+      ChannelId: VisualStudio.18.Preview
       Components:
         - Microsoft.VisualStudio.Workload.Azure
         - Microsoft.VisualStudio.Workload.CoreEditor

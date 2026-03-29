@@ -1,0 +1,38 @@
+# yaml-language-server: $schema=https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+# Native DISM resources require the portable DSC distribution.
+$schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+resources:
+  - name: Windows Optional Features
+    type: Microsoft.Windows/WindowsFeatureList
+    requireVersion: "=0.1.1"
+    metadata:
+      winget:
+        securityContext: elevated
+    properties:
+      features:
+        - featureName: Containers-DisposableClientVM
+          state: Installed
+          enableAll: true
+        - featureName: Microsoft-Windows-Subsystem-Linux
+          state: Installed
+          enableAll: true
+        - featureName: VirtualMachinePlatform
+          state: Installed
+          enableAll: true
+        - featureName: Microsoft-Hyper-V-All
+          state: Installed
+          enableAll: true
+        - featureName: Client-ProjFS
+          state: Installed
+          enableAll: true
+        - featureName: NetFx3
+          state: Installed
+          enableAll: true
+  - name: Windows Capabilities
+    type: Microsoft.Windows/FeatureOnDemandList
+    requireVersion: "=0.1.1"
+    metadata:
+      winget:
+        securityContext: elevated
+    properties:
+      capabilities: []

@@ -1,0 +1,77 @@
+# yaml-language-server: $schema=https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+# Windows optional features and capabilities.
+#
+# NOTE: This module previously used PSDscResources/WindowsOptionalFeature and
+# ComputerManagementDsc/WindowsCapability via the Microsoft.Windows/WindowsPowerShell
+# adapter. The adapter is unreliable under DSC v3 preview on machines where the user's
+# Documents folder is redirected to OneDrive (the adapter inherits PSModulePath and
+# crashes inside Get-DscResource). It also hits upstream issue PowerShell/DSC#1416
+# during Set. Switched to Microsoft.DSC.Transitional/PowerShellScript which invokes
+# native DISM cmdlets directly, removing the adapter dependency entirely.
+$schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+resources:
+  - name: Windows Optional Features
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: "Enable Windows optional features via DISM"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      input:
+        features:
+          - Containers-DisposableClientVM
+          - Microsoft-Windows-Subsystem-Linux
+          - VirtualMachinePlatform
+          - Microsoft-Hyper-V-All
+          - Client-ProjFS
+          - NetFx3
+      testScript: |
+        param($inputData)
+        foreach ($f in $inputData.features) {
+          $state = (Get-WindowsOptionalFeature -Online -FeatureName $f -ErrorAction SilentlyContinue).State
+          if ($state -ne 'Enabled' -and $state -ne 'EnablePending') { return $false }
+        }
+        return $true
+      setScript: |
+        param($inputData)
+        foreach ($f in $inputData.features) {
+          $state = (Get-WindowsOptionalFeature -Online -FeatureName $f -ErrorAction SilentlyContinue).State
+          if ($state -eq 'Enabled' -or $state -eq 'EnablePending') { continue }
+          try {
+            Enable-WindowsOptionalFeature -Online -FeatureName $f -All -NoRestart -ErrorAction Stop | Out-Null
+          } catch {
+            Write-Warning "Failed to enable feature '$f': $($_.Exception.Message)"
+          }
+        }
+  - name: Windows Capabilities
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    metadata:
+      description: "Install Windows capabilities via DISM"
+      winget:
+        securityContext: "elevated"
+      module: "Microsoft.DSC.Transitional"
+    properties:
+      input:
+        capabilities:
+          # WMIC was removed in Windows 11 24H2+ (Add-WindowsCapability returns 0x800f0950).
+          # Re-add this list only when a required capability is available on current SKUs.
+          []
+      testScript: |
+        param($inputData)
+        foreach ($c in $inputData.capabilities) {
+          $cap = Get-WindowsCapability -Online -Name $c -ErrorAction SilentlyContinue
+          if (-not $cap -or ($cap.State -ne 'Installed' -and $cap.State -ne 'InstallPending')) { return $false }
+        }
+        return $true
+      setScript: |
+        param($inputData)
+        foreach ($c in $inputData.capabilities) {
+          $cap = Get-WindowsCapability -Online -Name $c -ErrorAction SilentlyContinue
+          if ($cap -and ($cap.State -eq 'Installed' -or $cap.State -eq 'InstallPending')) { continue }
+          try {
+            Add-WindowsCapability -Online -Name $c -ErrorAction Stop | Out-Null
+          } catch {
+            Write-Warning "Failed to add capability '$c': $($_.Exception.Message)"
+          }
+        }

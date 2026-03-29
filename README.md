@@ -36,6 +36,10 @@ Edit the top-level Includes in `winget\work.winget` or `winget\personal.winget` 
 
 The launcher uses local manifests when available. Add `-Remote` to download the context manifest from the Gist.
 
+When editing `winget\modules\windows-features.dsc.yaml`, omit unused DISM list resources rather than leaving empty `features` or `capabilities` arrays. DSC reads current state before applying changes, and DISM rejects empty lists.
+
+The Windows-features module installs .NET Framework 3.5 through `NetFx3` on Windows builds below 28000. [Windows 11 26H1 (build 28000) no longer includes that feature](https://learn.microsoft.com/en-us/dotnet/framework/install/dotnet-35-windows-11), so the module downloads Microsoft's standalone installer, verifies its Microsoft signature, and installs it silently without restarting. Restart when prompted. The standalone installer is Windows-version-specific; later builds require a matching installer and fail explicitly if .NET 3.5 is missing.
+
 ## Web editor
 
 The React app in `web\` has JSON, YAML, and mise editors with drag-and-drop ordering and file import/export. Its JSON editor uses the older configuration format; current provisioning uses the DSC modules in `winget\modules\`.

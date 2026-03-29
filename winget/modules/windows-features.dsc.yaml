@@ -1,0 +1,91 @@
+# yaml-language-server: $schema=https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+# Native DISM resources require the portable DSC distribution.
+$schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+resources:
+  - name: Windows Optional Features
+    type: Microsoft.Windows/WindowsFeatureList
+    requireVersion: "=0.1.1"
+    metadata:
+      winget:
+        securityContext: elevated
+    properties:
+      features:
+        - featureName: Containers-DisposableClientVM
+          state: Installed
+          enableAll: true
+        - featureName: Microsoft-Windows-Subsystem-Linux
+          state: Installed
+          enableAll: true
+        - featureName: VirtualMachinePlatform
+          state: Installed
+          enableAll: true
+        - featureName: Microsoft-Hyper-V-All
+          state: Installed
+          enableAll: true
+        - featureName: Client-ProjFS
+          state: Installed
+          enableAll: true
+  - name: Set WSL default version to 2
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    dependsOn:
+      - "[resourceId('Microsoft.Windows/WindowsFeatureList','Windows Optional Features')]"
+    properties:
+      executable: wsl.exe
+      arguments:
+        - --set-default-version
+        - "2"
+  - name: Install .NET Framework 3.5
+    type: Microsoft.DSC.Transitional/WindowsPowerShellScript
+    metadata:
+      winget:
+        securityContext: elevated
+    properties:
+      input:
+        installerUrl: https://go.microsoft.com/fwlink/?LinkID=2337635
+      testScript: |
+        param($inputData)
+        $ErrorActionPreference = 'Stop'
+        $build = [int](Get-ItemPropertyValue -LiteralPath 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' -Name CurrentBuildNumber)
+        if ($build -lt 28000) {
+            return (Get-WindowsOptionalFeature -Online -FeatureName NetFx3).State -eq 'Enabled'
+        }
+        $key = 'HKLM:\SOFTWARE\Microsoft\NET Framework Setup\NDP\v3.5'
+        if (-not (Test-Path -LiteralPath $key)) { return $false }
+        return (Get-ItemProperty -LiteralPath $key).Install -eq 1
+      setScript: |
+        param($inputData)
+        $ErrorActionPreference = 'Stop'
+        $build = [int](Get-ItemPropertyValue -LiteralPath 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' -Name CurrentBuildNumber)
+        if ($build -lt 28000) {
+            $feature = Get-WindowsOptionalFeature -Online -FeatureName NetFx3
+            if ($feature.State -ne 'Enabled') {
+                $result = Enable-WindowsOptionalFeature -Online -FeatureName NetFx3 -All -NoRestart
+                if ($result.RestartNeeded) { Write-Warning '.NET Framework 3.5 requires a restart.' }
+            }
+            return
+        }
+        $key = 'HKLM:\SOFTWARE\Microsoft\NET Framework Setup\NDP\v3.5'
+        if ((Test-Path -LiteralPath $key) -and (Get-ItemProperty -LiteralPath $key).Install -eq 1) { return }
+        if ($build -ne 28000) {
+            throw "No matching .NET Framework 3.5 standalone installer is configured for Windows build $build. The configured installer supports build 28000 only."
+        }
+        $directory = Join-Path $env:TEMP ('provision-netfx35-' + [guid]::NewGuid().ToString('N'))
+        New-Item -ItemType Directory -Path $directory | Out-Null
+        try {
+            $installer = Join-Path $directory 'dotnet35.exe'
+            Invoke-WebRequest -Uri $inputData.installerUrl -OutFile $installer -UseBasicParsing
+            $signature = Get-AuthenticodeSignature -LiteralPath $installer
+            if ($signature.Status -ne 'Valid' -or $signature.SignerCertificate.Subject -notmatch '(^|,\s*)CN=Microsoft Corporation(,|$)') {
+                throw '.NET Framework 3.5 installer does not have a valid Microsoft signature.'
+            }
+            $process = Start-Process -FilePath $installer -ArgumentList '/q', '/norestart' -Wait -PassThru
+            if ($process.ExitCode -notin @(0, 3010)) {
+                throw ".NET Framework 3.5 installer failed with exit code $($process.ExitCode)."
+            }
+            if (-not (Test-Path -LiteralPath $key) -or (Get-ItemProperty -LiteralPath $key).Install -ne 1) {
+                throw '.NET Framework 3.5 installer completed without registering a successful installation.'
+            }
+            if ($process.ExitCode -eq 3010) { Write-Warning '.NET Framework 3.5 requires a restart.' }
+        } finally {
+            Remove-Item -LiteralPath $directory -Recurse -Force
+        }

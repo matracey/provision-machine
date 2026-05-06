@@ -197,7 +197,7 @@ resources:
       description: Install UniGetUI
       module: "Microsoft.WinGet"
     properties:
-      id: "MartiCliment.UniGetUI"
+      id: "Devolutions.UniGetUI"
       source: winget
       acceptAgreements: true
   - name: Install Microsoft App Installer
@@ -296,8 +296,8 @@ resources:
       description: Install Spotify
       module: "Microsoft.WinGet"
     properties:
-      id: "Spotify.Spotify"
-      source: winget
+      id: "9NCBCSZSJRSB"
+      source: msstore
       acceptAgreements: true
   - name: Install VLC
     type: Microsoft.WinGet/Package

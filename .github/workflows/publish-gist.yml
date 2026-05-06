@@ -9,6 +9,10 @@ on:
       - "winget/**/*.dsc.yaml"
       - "**/taskbarlayout.*.xml"
       - "**/windowsterminal.*.json"
+      - "provisioning/**"
+      - ".github/tests/**"
+      - ".github/workflows/publish-gist.yml"
+      - ".github/workflows/update-dynamic-packages.yml"
   workflow_dispatch:
 
 # Required repository configuration:
@@ -18,7 +22,25 @@ on:
 #     GIST_ID - The ID of the target gist to update
 
 jobs:
+  test-provisioning:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - name: Test package generation
+        run: uv run --script .github/tests/test_dynamic_packages.py
+      - name: Validate the pinned DSC runtime and configuration
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Install-Module Pester -RequiredVersion 5.7.1 -Scope CurrentUser -Force
+          Import-Module Pester -RequiredVersion 5.7.1 -Force
+          . ./provisioning/DscRuntime.ps1
+          $env:PROVISION_TEST_DSC = Get-DscRuntime -Install -CacheRoot (Join-Path $env:RUNNER_TEMP 'dsc')
+          Invoke-Pester -Path ./provisioning/*.Tests.ps1 -CI
+
   validate-and-publish:
+    needs: test-provisioning
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

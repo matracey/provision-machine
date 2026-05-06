@@ -13,3 +13,9 @@ Desktop.ini
 
 # PowerShell
 *.ps1xml
+
+# Test/scratch artifacts
+*.log
+sweep-logs/
+sweep.ps1
+run-*.ps1

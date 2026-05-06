@@ -48,17 +48,77 @@ function Get-DscRuntime {
     return $executable
 }
 
+function Test-IsAdministrator {
+    $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
+    $principal = [Security.Principal.WindowsPrincipal]::new($identity)
+    return $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+}
+
+function ConvertTo-PowerShellLiteral {
+    param([Parameter(Mandatory)][AllowEmptyString()][string]$Value)
+    return "'$($Value.Replace("'", "''"))'"
+}
+
+function Invoke-GsudoProcess {
+    param(
+        [Parameter(Mandatory)][string]$Executable,
+        [Parameter(Mandatory)][string[]]$Arguments
+    )
+    & $Executable @Arguments
+    return $LASTEXITCODE
+}
+
+function Invoke-ElevatedScript {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)][string]$Path,
+        [Parameter(Mandatory)][hashtable]$BoundParameters
+    )
+
+    $arguments = foreach ($entry in $BoundParameters.GetEnumerator()) {
+        $value = $entry.Value
+        if ($value -is [switch]) {
+            if ($value.IsPresent) { "-$($entry.Key)" }
+            continue
+        }
+        if ($value -is [array]) {
+            $literals = @($value | ForEach-Object { ConvertTo-PowerShellLiteral ([string]$_) })
+            if ($literals.Count -gt 0) { "-$($entry.Key) @($($literals -join ', '))" }
+            continue
+        }
+        "-$($entry.Key) $(ConvertTo-PowerShellLiteral ([string]$value))"
+    }
+    $command = "& $(ConvertTo-PowerShellLiteral ([IO.Path]::GetFullPath($Path))) $($arguments -join ' ')"
+    $encoded = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($command))
+    try {
+        $powerShell = Join-Path $PSHOME 'pwsh.exe'
+        $gsudo = Get-Command -Name gsudo -ErrorAction SilentlyContinue
+        if ($gsudo) {
+            return (Invoke-GsudoProcess -Executable $gsudo.Source `
+                -Arguments @('pwsh', '-NoProfile', '-EncodedCommand', $encoded))
+        } else {
+            $process = Start-Process -FilePath $powerShell -Verb RunAs -Wait -PassThru `
+                -ArgumentList '-NoProfile', '-EncodedCommand', $encoded -ErrorAction Stop
+        }
+    } catch {
+        throw "The configuration requires administrator access and could not be elevated: $($_.Exception.Message)"
+    }
+    return $process.ExitCode
+}
+
 function Enter-DscRuntime {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][string]$Executable,
-        [Parameter(Mandatory)][string]$ConfigurationRoot
+        [Parameter(Mandatory)][string]$ConfigurationRoot,
+        [ValidateSet('work', 'personal')][string]$Context
     )
 
     $previous = @{
         PATH = $env:PATH
         DSC_RESOURCE_PATH = $env:DSC_RESOURCE_PATH
         PROVISION_MACHINE_ROOT = $env:PROVISION_MACHINE_ROOT
+        PROVISION_MACHINE_CONTEXT = $env:PROVISION_MACHINE_CONTEXT
     }
     $runtime = Split-Path $Executable
     $providers = @(
@@ -74,6 +134,7 @@ function Enter-DscRuntime {
     $env:DSC_RESOURCE_PATH = $providers -join [IO.Path]::PathSeparator
     $env:PATH = "$runtime$([IO.Path]::PathSeparator)$env:PATH"
     $env:PROVISION_MACHINE_ROOT = $ConfigurationRoot
+    $env:PROVISION_MACHINE_CONTEXT = $Context
     return $previous
 }
 

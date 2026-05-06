@@ -23,6 +23,49 @@ Describe 'Pinned runtime preparation' {
     }
 }
 
+Describe 'Elevated script launch' {
+    It 'prefers gsudo and preserves switches, arrays, and quoted values' {
+        Mock Get-Command { [pscustomobject]@{ Source = 'C:\fixture\gsudo.exe' } } -ParameterFilter {
+            $Name -eq 'gsudo'
+        }
+        Mock Invoke-GsudoProcess { 23 }
+        $result = Invoke-ElevatedScript -Path 'C:\fixture\Apply Configuration.ps1' -BoundParameters @{
+            Work = [switch]::new($true)
+            Test = [switch]::new($true)
+            Remote = [switch]::new($false)
+            Only = @('first.dsc.yaml', "second's module.dsc.yaml")
+        }
+        $result | Should -Be 23
+        Should -Invoke Invoke-GsudoProcess -Times 1 -Exactly -ParameterFilter {
+            $decoded = [Text.Encoding]::Unicode.GetString([Convert]::FromBase64String($Arguments[3]))
+            $Executable -eq 'C:\fixture\gsudo.exe' -and
+            $Arguments[0] -eq 'pwsh' -and
+            $Arguments[1] -eq '-NoProfile' -and $Arguments[2] -eq '-EncodedCommand' -and
+            $decoded.StartsWith("& 'C:\fixture\Apply Configuration.ps1' ") -and
+            $decoded -match '(?:^| )-Work(?: |$)' -and
+            $decoded -match '(?:^| )-Test(?: |$)' -and
+            $decoded -notmatch '(?:^| )-Remote(?: |$)' -and
+            $decoded -match [regex]::Escape("-Only @('first.dsc.yaml', 'second''s module.dsc.yaml')")
+        }
+    }
+
+    It 'falls back to RunAs when gsudo is unavailable' {
+        Mock Get-Command {} -ParameterFilter { $Name -eq 'gsudo' }
+        Mock Start-Process { [pscustomobject]@{ ExitCode = 0 } }
+        Invoke-ElevatedScript -Path 'C:\fixture\Apply.ps1' -BoundParameters @{} | Should -Be 0
+        Should -Invoke Start-Process -Times 1 -Exactly -ParameterFilter {
+            $FilePath -like '*\pwsh.exe' -and $Verb -eq 'RunAs' -and $Wait -and $PassThru
+        }
+    }
+
+    It 'reports a failed elevation request clearly' {
+        Mock Get-Command {} -ParameterFilter { $Name -eq 'gsudo' }
+        Mock Start-Process { throw 'The operation was canceled by the user.' }
+        { Invoke-ElevatedScript -Path 'C:\fixture\Apply.ps1' -BoundParameters @{} } |
+            Should -Throw '*requires administrator access*operation was canceled*'
+    }
+}
+
 Describe 'Stable WinGet requirement' {
     It 'accepts a supported stable version' {
         Mock winget { $global:LASTEXITCODE = 0; 'v1.29.380' }
@@ -67,6 +110,20 @@ Describe 'Scoped resource discovery' {
         } finally {
             $env:DSC_RESOURCE_PATH = $original
             $env:PATH = $originalPath
+        }
+    }
+    It 'sets and restores the selected provisioning context' {
+        Mock Get-AppxPackage { [pscustomobject]@{ InstallLocation = 'C:\fixture\winget' } }
+        $original = $env:PROVISION_MACHINE_CONTEXT
+        $env:PROVISION_MACHINE_CONTEXT = 'personal'
+        try {
+            $previous = Enter-DscRuntime -Executable 'C:\fixture\dsc\dsc.exe' `
+                -ConfigurationRoot 'C:\fixture\winget' -Context work
+            $env:PROVISION_MACHINE_CONTEXT | Should -Be work
+            Exit-DscRuntime -Previous $previous
+            $env:PROVISION_MACHINE_CONTEXT | Should -Be personal
+        } finally {
+            $env:PROVISION_MACHINE_CONTEXT = $original
         }
     }
 }

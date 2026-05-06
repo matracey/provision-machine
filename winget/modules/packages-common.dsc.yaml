@@ -218,6 +218,15 @@ resources:
       id: "Microsoft.Edge.Beta"
       source: winget
       acceptAgreements: true
+  - name: Install Microsoft Edge Dev
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Microsoft Edge Dev
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.Edge.Dev"
+      source: winget
+      acceptAgreements: true
   - name: Install Edge WebView2 Runtime
     type: Microsoft.WinGet/Package
     metadata:
@@ -414,6 +423,15 @@ resources:
       module: "Microsoft.WinGet"
     properties:
       id: "Microsoft.VisualStudio.Locator"
+      source: winget
+      acceptAgreements: true
+  - name: Install Visual Studio Enterprise Insiders
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Visual Studio Enterprise Insiders
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.VisualStudio.Enterprise.Insiders"
       source: winget
       acceptAgreements: true
   - name: Install croc

@@ -9,7 +9,7 @@ The configurations install apps through WinGet and Scoop, restore mise tools, an
 1. Install WinGet and DSC v3. Ensure `dsc` is available on `PATH` before running the launcher.
 2. Clone this repository, or [download the ZIP](https://github.com/matracey/provision-machine/archive/refs/heads/main.zip) and extract it. The commands below assume the repository is at `C:\src\provision-machine`.
 3. Review `winget\work.winget` or `winget\personal.winget` and the modules they include.
-4. Open PowerShell as Administrator under the Windows account you want to configure, then run:
+4. Open a normal, non-administrator PowerShell 7 session under the Windows account you want to configure, then run:
 
 ```powershell
 & {
@@ -26,6 +26,8 @@ The configurations install apps through WinGet and Scoop, restore mise tools, an
 Replace `-Work` with `-Personal` for a personal machine. Omit both switches to choose the context at a prompt.
 
 The launcher invokes `dsc config set` directly. It does not install its prerequisites.
+
+The Work and Personal commands run user-context package resources first, then automatically elevate only machine-level resources. The launcher uses `gsudo` when available and otherwise displays a standard UAC prompt. Do not start the full configuration from an already-elevated shell because WinGet user-context installers reject administrator execution.
 
 > [!WARNING]
 > A full run changes Windows settings, including Defender exclusions, remote access, file sharing, and UAC. User settings apply to the account running the launcher.

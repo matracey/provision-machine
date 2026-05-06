@@ -1,205 +1,104 @@
+#Requires -Version 7.4
 <#
 .SYNOPSIS
-    Thin launcher for DSCv3-based machine provisioning.
-
-.DESCRIPTION
-    Fetches the appropriate DSCv3 configuration document (Personal or Work)
-    and applies it using the DSCv3 Preview `dsc config set`. Supports both
-    local file paths
-    and remote Gist delivery.
-
-    Workaround: uses dsc.exe directly instead of `winget configure` because
-    winget configure does not yet support DSCv3 preview resource discovery
-    (e.g. Microsoft.DSC.Transitional/PowerShellScript, Microsoft.DSC/Include).
-    Revert to `winget configure --processor-path` once winget ships native
-    DSCv3 preview support.
-
-    and remote Gist URLs.
-
-.PARAMETER Personal
-    Apply the Personal context configuration.
-
-.PARAMETER Work
-    Apply the Work context configuration.
-
-.PARAMETER DryRun
-    Show current state without making changes (runs `dsc config get`).
-
-.PARAMETER Test
-    Show configuration drift (runs `dsc config test`).
-
-.PARAMETER Remote
-    Force fetching configuration from the Gist even when running from a
-    local clone.
-
+    Apply Personal or Work configuration with portable DSC 3.3.
 .PARAMETER InstallPrereqs
-    Install prerequisite DSC modules and DSCv3 Preview, then exit.
+    Install stable WinGet, the checksum-pinned DSC runtime and exact compatibility-module versions.
+.PARAMETER DryRun
+    Read current state with DSC get. Use Preview to request set --what-if.
+.PARAMETER Test
+    Report drift. Exit 2 means drift; exit 1 means failure.
+.PARAMETER Preview
+    Request set --what-if. Not every resource supports this operation.
+.PARAMETER Remote
+    Download the configuration bundle from the repository's Gist.
+.PARAMETER Skip
+    Included module filenames to omit. UAC remains opt-in.
+.PARAMETER Only
+    Restrict execution to the named included module files.
+.PARAMETER Monolithic
+    Compatibility switch. All runs now use native DSC Includes.
 #>
 [CmdletBinding(DefaultParameterSetName = 'Interactive')]
 param(
-    [Parameter(ParameterSetName = 'Personal')]
-    [switch]$Personal,
-
-    [Parameter(ParameterSetName = 'Work')]
-    [switch]$Work,
-
-    [Parameter(ParameterSetName = 'Prereqs')]
-    [switch]$InstallPrereqs,
-
+    [Parameter(ParameterSetName = 'Personal')][switch]$Personal,
+    [Parameter(ParameterSetName = 'Work')][switch]$Work,
+    [Parameter(ParameterSetName = 'Prereqs')][switch]$InstallPrereqs,
     [switch]$DryRun,
     [switch]$Test,
-    [switch]$Remote
+    [switch]$Preview,
+    [switch]$Remote,
+    [switch]$Monolithic,
+    [string[]]$Skip = @('uac.dsc.yaml'),
+    [string[]]$Only
 )
 
 $ErrorActionPreference = 'Stop'
-
-$GistBase = 'https://gist.githubusercontent.com/matracey/f4c3a9194cd190a3b3de423aad5dc7e1/raw'
-$GistId = 'f4c3a9194cd190a3b3de423aad5dc7e1'
-$DscGistPrefix = 'winget__'
-
-# --- Prerequisites -----------------------------------------------------------
-
-# Ensure DSCv3 Preview is installed.
-# The stable release (Microsoft.DSC / 3.1.x) does not include resources like
-# Microsoft.DSC.Transitional/PowerShellScript that our configs require.
-# WinGet's FindDscPackageStateMachine always installs/uses stable, so we pass
-# --processor-path to override the DSC executable when using winget configure.
-$previewPkg = Get-AppxPackage -Name 'Microsoft.DesiredStateConfiguration-Preview' -ErrorAction SilentlyContinue |
-    Where-Object { $_.PackageFamilyName -eq 'Microsoft.DesiredStateConfiguration-Preview_8wekyb3d8bbwe' }
-
-if (-not $previewPkg) {
-    Write-Host "Installing DSCv3 Preview..." -ForegroundColor Cyan
-    winget install --id Microsoft.DSC.Preview --source winget --silent --accept-package-agreements --accept-source-agreements
-    if ($LASTEXITCODE -ne 0) {
-        Write-Error "Failed to install DSCv3 Preview. Exit code: $LASTEXITCODE"
-        exit 1
-    }
-    $previewPkg = Get-AppxPackage -Name 'Microsoft.DesiredStateConfiguration-Preview' -ErrorAction SilentlyContinue |
-        Where-Object { $_.PackageFamilyName -eq 'Microsoft.DesiredStateConfiguration-Preview_8wekyb3d8bbwe' }
-    if (-not $previewPkg) {
-        Write-Error "DSCv3 Preview package not found after installation."
-        exit 1
-    }
-    Write-Host "DSCv3 Preview installed." -ForegroundColor Green
+if (@(@($DryRun, $Test, $Preview) | Where-Object { $_ }).Count -gt 1) {
+    throw 'Choose only one of -DryRun, -Test, or -Preview.'
 }
+. (Join-Path $PSScriptRoot 'DscRuntime.ps1')
+. (Join-Path $PSScriptRoot 'DscConfiguration.ps1')
 
-$DscExePath = Join-Path $previewPkg.InstallLocation 'dsc.exe'
-if (-not (Test-Path $DscExePath)) {
-    Write-Error "dsc.exe not found at expected path: $DscExePath"
-    exit 1
-}
-Write-Host "Using DSCv3 Preview ($($previewPkg.Version)): $DscExePath" -ForegroundColor Cyan
-
-# Ensure required DSC modules are installed
-# Resources that ship with DSCv3 are not checked here:
-#   Microsoft.DSC.Transitional (RunCommandOnSet, PowerShellScript)
-# Modules that ship with Windows/WinGet are not checked here:
-#   Microsoft.Windows, Microsoft.WinGet, Microsoft.WinGet.DSC
-# Modules installed by their parent app are not checked here:
-#   Microsoft.PowerToys (ships with PowerToys), Microsoft.VisualStudio.DSC (ships with VS)
-$requiredModules = @(
-    @{ Name = 'Microsoft.Windows.Developer'; Params = @{ AllowPrerelease = $true } }
-    @{ Name = 'Microsoft.Windows.Settings';  Params = @{ AllowPrerelease = $true } }
-    @{ Name = 'GitDsc';                      Params = @{ AllowPrerelease = $true } }
-    @{ Name = 'PSDscResources';              Params = @{} }
-    @{ Name = 'ComputerManagementDsc';       Params = @{} }
-)
-
-$missing = @()
-foreach ($mod in $requiredModules) {
-    if (-not (Get-Module -ListAvailable -Name $mod.Name)) {
-        $missing += $mod
-    }
-}
-
-if ($missing.Count -gt 0) {
-    Write-Host "`nInstalling $($missing.Count) required DSC module(s)..." -ForegroundColor Yellow
-    foreach ($mod in $missing) {
-        Write-Host "  Installing $($mod.Name)..." -ForegroundColor Cyan
-        $installParams = @{ Name = $mod.Name; Force = $true; AllowClobber = $true; Scope = 'CurrentUser' } + $mod.Params
-        Install-Module @installParams
-    }
-    Write-Host "All required modules installed.`n" -ForegroundColor Green
-}
-
-if ($InstallPrereqs) {
-    Write-Host "All prerequisites are installed." -ForegroundColor Green
-    exit 0
-}
-
-# --- Configuration -----------------------------------------------------------
-
-# Determine context
-if (-not $Personal -and -not $Work) {
-    $choice = Read-Host "Select context: [P]ersonal or [W]ork"
-    switch ($choice.ToUpper()) {
+if (-not $InstallPrereqs -and -not $Personal -and -not $Work) {
+    switch ((Read-Host 'Select context: [P]ersonal or [W]ork').ToUpperInvariant()) {
         'P' { $Personal = $true }
         'W' { $Work = $true }
-        default { Write-Error "Invalid choice. Use 'P' or 'W'."; exit 1 }
+        default { throw 'Invalid choice. Use -Personal or -Work.' }
     }
+}
+Assert-StableWinGet -Install:$InstallPrereqs
+$DscExePath = Get-DscRuntime -Install:$InstallPrereqs
+
+$requiredModules = @(
+    @{ Name = 'Microsoft.Windows.Developer'; Version = '0.4.0'; Prerelease = 'alpha' }
+    @{ Name = 'Microsoft.VisualStudio.DSC'; Version = '1.0.35'; Prerelease = '' }
+)
+if ($Personal -or $InstallPrereqs) {
+    $requiredModules += @{ Name = 'GitDsc'; Version = '0.2.0'; Prerelease = 'alpha' }
+}
+foreach ($module in $requiredModules) {
+    $installed = Get-Module -ListAvailable -Name $module.Name | Where-Object {
+        $_.Version -eq [version]$module.Version -and
+        [string]$_.PrivateData.PSData.Prerelease -eq $module.Prerelease
+    }
+    if ($installed) { continue }
+    if (-not $InstallPrereqs) {
+        throw "Missing pinned module $($module.Name). Run -InstallPrereqs in an elevated PowerShell session."
+    }
+    $version = $module.Version
+    if ($module.Prerelease) { $version += "-$($module.Prerelease)" }
+    Install-Module -Name $module.Name -RequiredVersion $version -AllowPrerelease:([bool]$module.Prerelease) `
+        -Scope AllUsers -Force -AllowClobber -ErrorAction Stop
+}
+if ($InstallPrereqs) {
+    Write-Host 'Pinned DSC prerequisites are installed.' -ForegroundColor Green
+    return
 }
 
 $context = if ($Personal) { 'personal' } else { 'work' }
-$fileName = "$context.winget"
-
-# Resolve configuration file
-$repoRoot = Resolve-Path (Join-Path $PSScriptRoot '..') -ErrorAction SilentlyContinue
-$localConfigPath = if ($repoRoot) { Join-Path $repoRoot "winget\$fileName" } else { $null }
-$useLocal = -not $Remote -and $localConfigPath -and (Test-Path $localConfigPath)
-
-if ($useLocal) {
-    $configPath = $localConfigPath
-    $configPath = Join-Path $PSScriptRoot "..\winget\$fileName"
-    if (-not (Test-Path $configPath)) {
-        Write-Error "Local configuration file not found: $fileName"
-        exit 1
+$temporaryBundle = $null
+$previous = $null
+try {
+    if ($Remote) {
+        $temporaryBundle = Join-Path $env:TEMP ("provision-machine-gist-" + [guid]::NewGuid().ToString('N'))
+        Save-DscBundle -Directory $temporaryBundle -GistId 'f4c3a9194cd190a3b3de423aad5dc7e1'
+        $configPath = Join-Path $temporaryBundle "winget\$context.winget"
+    } else {
+        $configPath = Join-Path $PSScriptRoot "..\winget\$context.winget"
     }
-    Write-Host "Using local file: $configPath" -ForegroundColor Cyan
-} else {
-    $tempRoot = Join-Path $env:TEMP "provision-machine-gist"
-    if (Test-Path $tempRoot) { Remove-Item -Path $tempRoot -Recurse -Force }
-    New-Item -ItemType Directory -Path $tempRoot -Force | Out-Null
-
-    Write-Host "Fetching DSC configuration bundle from Gist..." -ForegroundColor Cyan
-    $gist = Invoke-RestMethod -Uri "https://api.github.com/gists/$GistId" -Headers @{ 'User-Agent' = 'Provision-Machine' }
-    $gistFiles = @($gist.files.PSObject.Properties) | Where-Object { $_.Name -like "$DscGistPrefix*" }
-    if ($gistFiles.Count -eq 0) { Write-Error "No DSC files found in Gist."; exit 1 }
-    foreach ($gistFile in $gistFiles) {
-        $relativePath = ($gistFile.Name -split '__') -join '\'
-        $targetPath = Join-Path $tempRoot $relativePath
-        $targetDir = Split-Path $targetPath -Parent
-        if (-not (Test-Path $targetDir)) { New-Item -ItemType Directory -Path $targetDir -Force | Out-Null }
-        Invoke-WebRequest -Uri $gistFile.Value.raw_url -OutFile $targetPath -UseBasicParsing
+    $configuration = Get-DscConfiguration -Path $configPath -Executable $DscExePath -Only $Only -Skip $Skip
+    $previous = Enter-DscRuntime -Executable $DscExePath -ConfigurationRoot (Split-Path (Resolve-Path $configPath).Path)
+    $operation = if ($DryRun) { 'get' } elseif ($Test) { 'test' } else { 'set' }
+    $runName = "apply-$(Get-Date -Format 'yyyyMMdd-HHmmssfff')-$context-$operation"
+    $logRoot = Join-Path $PSScriptRoot "..\sweep-logs\$runName"
+    $result = Invoke-DscConfiguration -Executable $DscExePath -Configuration $configuration `
+        -Operation $operation -LogRoot $logRoot -Preview:$Preview
+    Write-Host "$($result.Status): $($result.ResultPath)"
+    exit $result.ExitCode
+} finally {
+    if ($previous) { Exit-DscRuntime -Previous $previous }
+    if ($temporaryBundle -and (Test-Path -LiteralPath $temporaryBundle)) {
+        Remove-Item -LiteralPath $temporaryBundle -Recurse -Force -ErrorAction Stop
     }
-    $configPath = Join-Path $tempRoot "winget\$fileName"
-    if (-not (Test-Path $configPath)) { Write-Error "Config not found after Gist reconstruction: winget\$fileName"; exit 1 }
-    Write-Host "Downloaded and reconstructed: $configPath" -ForegroundColor Green
-}
-
-# Verify dsc is available
-if (-not (Get-Command dsc -ErrorAction SilentlyContinue)) {
-    Write-Error @"
-The 'dsc' command is not available. Install DSCv3:
-  winget install Microsoft.DSC
-Then restart your shell and try again.
-"@
-    exit 1
-}
-
-# Set config root so DSC PowerShellScript resources can resolve local file paths
-$env:PROVISION_MACHINE_ROOT = Split-Path $configPath
-
-# Apply configuration
-# Workaround: winget configure does not yet support DSCv3 preview resource
-# discovery. Once it does, replace these with:
-#   winget configure -f $configPath --processor-path $DscExePath --accept-configuration-agreements --disable-interactivity
-if ($DryRun) {
-    Write-Host "`nRunning dsc config get (dry-run)..." -ForegroundColor Yellow
-    & $DscExePath config get --file $configPath
-} elseif ($Test) {
-    Write-Host "`nRunning dsc config test (drift detection)..." -ForegroundColor Yellow
-    & $DscExePath config test --file $configPath
-} else {
-    Write-Host "`nApplying $context configuration..." -ForegroundColor Green
-    & $DscExePath config set --file $configPath
 }

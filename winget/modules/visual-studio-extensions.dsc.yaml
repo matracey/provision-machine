@@ -38,44 +38,48 @@ resources:
             id: ZenCoding
       testScript: |
         param($inputData)
-        try {
-          $ErrorActionPreference = 'SilentlyContinue'
-          $vsWhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
-          if (-not (Test-Path $vsWhere)) { return $false }
-          $vsPath = & $vsWhere -latest -prerelease -property installationPath
-          if (-not $vsPath) { return $false }
-          $extDir = Join-Path $vsPath 'Common7\IDE\Extensions'
-          # Check each extension by scanning vsixmanifest files for matching publisher/id
-          foreach ($ext in $inputData.extensions) {
-            $found = $false
-            Get-ChildItem $extDir -Recurse -Filter 'extension.vsixmanifest' -ErrorAction SilentlyContinue | ForEach-Object {
-              if (-not $found) {
-                try {
-                  $content = Get-Content $_.FullName -Raw
-                  if ($content -match $ext.id) { $found = $true }
-                } catch {}
+        & {
+          try {
+            $ErrorActionPreference = 'SilentlyContinue'
+            $vsWhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+            if (-not (Test-Path $vsWhere)) { return $false }
+            $vsPath = & $vsWhere -latest -prerelease -property installationPath
+            if (-not $vsPath) { return $false }
+            $extDir = Join-Path $vsPath 'Common7\IDE\Extensions'
+            # Check each extension by scanning vsixmanifest files for matching publisher/id
+            foreach ($ext in $inputData.extensions) {
+              $found = $false
+              Get-ChildItem $extDir -Recurse -Filter 'extension.vsixmanifest' -ErrorAction SilentlyContinue | ForEach-Object {
+                if (-not $found) {
+                  try {
+                    $content = Get-Content $_.FullName -Raw
+                    if ($content -match $ext.id) { $found = $true }
+                  } catch {}
+                }
               }
+              if (-not $found) { return $false }
             }
-            if (-not $found) { return $false }
-          }
-          return $true
-        } catch { return $false }
+            return $true
+          } catch { return $false }
+        } 2>$null
       setScript: |
         param($inputData)
-        try {
-          $ErrorActionPreference = 'SilentlyContinue'
-          $vsWhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
-          $vsPath = & $vsWhere -latest -prerelease -property installationPath
-          $vsixInstaller = Join-Path $vsPath 'Common7\IDE\VSIXInstaller.exe'
-          foreach ($ext in $inputData.extensions) {
-            $vsixUrl = "https://$($ext.publisher).gallery.vsassets.io/_apis/public/gallery/publisher/$($ext.publisher)/extension/$($ext.id)/latest/assetbyname/Microsoft.VisualStudio.Ide.Payload"
-            $tempFile = Join-Path $env:TEMP "$($ext.publisher).$($ext.id).vsix"
-            try {
-              Invoke-WebRequest -Uri $vsixUrl -OutFile $tempFile -UseBasicParsing
-              & $vsixInstaller /quiet /norepair $tempFile 2>&1 | Out-Null
-              Remove-Item $tempFile -ErrorAction SilentlyContinue
-            } catch {
-              # Skip extensions that fail to download or install
+        & {
+          try {
+            $ErrorActionPreference = 'SilentlyContinue'
+            $vsWhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+            $vsPath = & $vsWhere -latest -prerelease -property installationPath
+            $vsixInstaller = Join-Path $vsPath 'Common7\IDE\VSIXInstaller.exe'
+            foreach ($ext in $inputData.extensions) {
+              $vsixUrl = "https://$($ext.publisher).gallery.vsassets.io/_apis/public/gallery/publisher/$($ext.publisher)/extension/$($ext.id)/latest/assetbyname/Microsoft.VisualStudio.Ide.Payload"
+              $tempFile = Join-Path $env:TEMP "$($ext.publisher).$($ext.id).vsix"
+              try {
+                Invoke-WebRequest -Uri $vsixUrl -OutFile $tempFile -UseBasicParsing
+                & $vsixInstaller /quiet /norepair $tempFile 2>&1 | Out-Null
+                Remove-Item $tempFile -ErrorAction SilentlyContinue
+              } catch {
+                # Skip extensions that fail to download or install
+              }
             }
-          }
-        } catch { }
+          } catch { }
+        } 2>$null

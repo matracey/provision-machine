@@ -12,11 +12,13 @@ resources:
         gistBase: "https://gist.githubusercontent.com/matracey/f4c3a9194cd190a3b3de423aad5dc7e1/raw"
         fileName: "mojada.personal.omp.json"
       testScript: |
-        $target = Join-Path $env:USERPROFILE '.config\oh-my-posh\mojada.omp.json'
+        $profileDir = Split-Path $PROFILE.CurrentUserAllHosts
+        $target = Join-Path $profileDir 'themes\mojada.omp.json'
         @{ _inDesiredState = (Test-Path $target) } | ConvertTo-Json
       setScript: |
         $in = $env:DSC_RESOURCE_INPUT | ConvertFrom-Json
-        $target = Join-Path $env:USERPROFILE '.config\oh-my-posh\mojada.omp.json'
+        $profileDir = Split-Path $PROFILE.CurrentUserAllHosts
+        $target = Join-Path $profileDir 'themes\mojada.omp.json'
         $dir = Split-Path $target
         if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
         $url = "$($in.input.gistBase)/$($in.input.fileName)"

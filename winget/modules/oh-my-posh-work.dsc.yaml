@@ -13,11 +13,13 @@ resources:
         fileName: "mojada.work.omp.json"
       testScript: |
         param($inputData)
-        $target = Join-Path $env:USERPROFILE '.config\oh-my-posh\mojada.omp.json'
+        $profileDir = Split-Path $PROFILE.CurrentUserAllHosts
+        $target = Join-Path $profileDir 'themes\mojada.omp.json'
         return (Test-Path $target)
       setScript: |
         param($inputData)
-        $target = Join-Path $env:USERPROFILE '.config\oh-my-posh\mojada.omp.json'
+        $profileDir = Split-Path $PROFILE.CurrentUserAllHosts
+        $target = Join-Path $profileDir 'themes\mojada.omp.json'
         $dir = Split-Path $target
         if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
         $url = "$($inputData.gistBase)/$($inputData.fileName)"

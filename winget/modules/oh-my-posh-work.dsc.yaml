@@ -13,12 +13,21 @@ resources:
         fileName: "mojada.work.omp.json"
       testScript: |
         param($inputData)
-        $target = Join-Path $env:USERPROFILE '.config\oh-my-posh\mojada.omp.json'
-        return (Test-Path $target)
+        $documents = [Environment]::GetFolderPath('MyDocuments', 'DoNotVerify')
+        if (-not $documents) { throw 'The Documents known folder could not be resolved.' }
+        foreach ($profileName in @('PowerShell', 'WindowsPowerShell')) {
+          $target = Join-Path (Join-Path $documents $profileName) 'themes\mojada.omp.json'
+          if (-not (Test-Path $target)) { return $false }
+        }
+        return $true
       setScript: |
         param($inputData)
-        $target = Join-Path $env:USERPROFILE '.config\oh-my-posh\mojada.omp.json'
-        $dir = Split-Path $target
-        if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+        $documents = [Environment]::GetFolderPath('MyDocuments', 'DoNotVerify')
+        if (-not $documents) { throw 'The Documents known folder could not be resolved.' }
         $url = "$($inputData.gistBase)/$($inputData.fileName)"
-        Invoke-WebRequest -Uri $url -OutFile $target -UseBasicParsing
+        foreach ($profileName in @('PowerShell', 'WindowsPowerShell')) {
+          $target = Join-Path (Join-Path $documents $profileName) 'themes\mojada.omp.json'
+          $dir = Split-Path $target
+          if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+          Invoke-WebRequest -Uri $url -OutFile $target -UseBasicParsing
+        }

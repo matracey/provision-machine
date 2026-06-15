@@ -413,6 +413,14 @@ resources:
   properties:
     id: Microsoft.DotNet.Framework.Redistributable.1_1
     source: winget
+- name: Install Microsoft DotNet Framework Redistributable 1_1
+  type: Microsoft.WinGet/Package
+  metadata:
+    description: Install Microsoft DotNet Framework Redistributable 1_1
+    module: Microsoft.WinGet
+  properties:
+    id: Microsoft.DotNet.Framework.Redistributable.1_1
+    source: winget
 - name: Install DotNet Framework Redistributable 1 1
   type: Microsoft.WinGet/Package
   metadata:

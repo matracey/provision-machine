@@ -317,14 +317,15 @@ resources:
     id: "WinSCP.WinSCP"
     source: winget
     acceptAgreements: true
-- name: Install DotNet SDK 8
+- name: Install DotNet SDK 10
   type: Microsoft.WinGet/Package
   metadata:
-    description: Install DotNet SDK 8
+    description: Install DotNet SDK 10
     module: Microsoft.WinGet
   properties:
-    id: Microsoft.DotNet.SDK.8
+    id: Microsoft.DotNet.SDK.10
     source: winget
+    acceptAgreements: true
 - name: Install DotNet SDK 9
   type: Microsoft.WinGet/Package
   metadata:
@@ -333,6 +334,7 @@ resources:
   properties:
     id: Microsoft.DotNet.SDK.9
     source: winget
+    acceptAgreements: true
 - name: Install VCRedist 2015+ x64
   type: Microsoft.WinGet/Package
   metadata:
@@ -341,6 +343,7 @@ resources:
   properties:
     id: Microsoft.VCRedist.2015+.x64
     source: winget
+    acceptAgreements: true
 - name: Install VCRedist 2013 x64
   type: Microsoft.WinGet/Package
   metadata:
@@ -349,6 +352,7 @@ resources:
   properties:
     id: Microsoft.VCRedist.2013.x64
     source: winget
+    acceptAgreements: true
 - name: Install VCRedist 2012 x64
   type: Microsoft.WinGet/Package
   metadata:
@@ -357,6 +361,7 @@ resources:
   properties:
     id: Microsoft.VCRedist.2012.x64
     source: winget
+    acceptAgreements: true
 - name: Install VCRedist 2010 x64
   type: Microsoft.WinGet/Package
   metadata:
@@ -365,6 +370,7 @@ resources:
   properties:
     id: Microsoft.VCRedist.2010.x64
     source: winget
+    acceptAgreements: true
 - name: Install VCRedist 2008 x64
   type: Microsoft.WinGet/Package
   metadata:
@@ -373,6 +379,7 @@ resources:
   properties:
     id: Microsoft.VCRedist.2008.x64
     source: winget
+    acceptAgreements: true
 - name: Install VCRedist 2005 x64
   type: Microsoft.WinGet/Package
   metadata:
@@ -381,158 +388,7 @@ resources:
   properties:
     id: Microsoft.VCRedist.2005.x64
     source: winget
-- name: Install Microsoft DotNet Framework Redistributable 1_1
-  type: Microsoft.WinGet/Package
-  metadata:
-    description: Install Microsoft DotNet Framework Redistributable 1_1
-    module: Microsoft.WinGet
-  properties:
-    id: Microsoft.DotNet.Framework.Redistributable.1_1
-    source: winget
-- name: Install Microsoft DotNet Framework Redistributable 1_1
-  type: Microsoft.WinGet/Package
-  metadata:
-    description: Install Microsoft DotNet Framework Redistributable 1_1
-    module: Microsoft.WinGet
-  properties:
-    id: Microsoft.DotNet.Framework.Redistributable.1_1
-    source: winget
-- name: Install Microsoft DotNet Framework Redistributable 1_1
-  type: Microsoft.WinGet/Package
-  metadata:
-    description: Install Microsoft DotNet Framework Redistributable 1_1
-    module: Microsoft.WinGet
-  properties:
-    id: Microsoft.DotNet.Framework.Redistributable.1_1
-    source: winget
-- name: Install Microsoft DotNet Framework Redistributable 1_1
-  type: Microsoft.WinGet/Package
-  metadata:
-    description: Install Microsoft DotNet Framework Redistributable 1_1
-    module: Microsoft.WinGet
-  properties:
-    id: Microsoft.DotNet.Framework.Redistributable.1_1
-    source: winget
-- name: Install Microsoft DotNet Framework Redistributable 1_1
-  type: Microsoft.WinGet/Package
-  metadata:
-    description: Install Microsoft DotNet Framework Redistributable 1_1
-    module: Microsoft.WinGet
-  properties:
-    id: Microsoft.DotNet.Framework.Redistributable.1_1
-    source: winget
-- name: Install Microsoft DotNet Framework Redistributable 1_1
-  type: Microsoft.WinGet/Package
-  metadata:
-    description: Install Microsoft DotNet Framework Redistributable 1_1
-    module: Microsoft.WinGet
-  properties:
-    id: Microsoft.DotNet.Framework.Redistributable.1_1
-    source: winget
-- name: Install Microsoft DotNet Framework Redistributable 1_1
-  type: Microsoft.WinGet/Package
-  metadata:
-    description: Install Microsoft DotNet Framework Redistributable 1_1
-    module: Microsoft.WinGet
-  properties:
-    id: Microsoft.DotNet.Framework.Redistributable.1_1
-    source: winget
-- name: Install Microsoft DotNet Framework Redistributable 1_1
-  type: Microsoft.WinGet/Package
-  metadata:
-    description: Install Microsoft DotNet Framework Redistributable 1_1
-    module: Microsoft.WinGet
-  properties:
-    id: Microsoft.DotNet.Framework.Redistributable.1_1
-    source: winget
-- name: Install Microsoft DotNet Framework Redistributable 1_1
-  type: Microsoft.WinGet/Package
-  metadata:
-    description: Install Microsoft DotNet Framework Redistributable 1_1
-    module: Microsoft.WinGet
-  properties:
-    id: Microsoft.DotNet.Framework.Redistributable.1_1
-    source: winget
-- name: Install Microsoft DotNet Framework Redistributable 1_1
-  type: Microsoft.WinGet/Package
-  metadata:
-    description: Install Microsoft DotNet Framework Redistributable 1_1
-    module: Microsoft.WinGet
-  properties:
-    id: Microsoft.DotNet.Framework.Redistributable.1_1
-    source: winget
-- name: Install Microsoft DotNet Framework Redistributable 1_1
-  type: Microsoft.WinGet/Package
-  metadata:
-    description: Install Microsoft DotNet Framework Redistributable 1_1
-    module: Microsoft.WinGet
-  properties:
-    id: Microsoft.DotNet.Framework.Redistributable.1_1
-    source: winget
-- name: Install Microsoft DotNet Framework Redistributable 1_1
-  type: Microsoft.WinGet/Package
-  metadata:
-    description: Install Microsoft DotNet Framework Redistributable 1_1
-    module: Microsoft.WinGet
-  properties:
-    id: Microsoft.DotNet.Framework.Redistributable.1_1
-    source: winget
-- name: Install Microsoft DotNet Framework Redistributable 1_1
-  type: Microsoft.WinGet/Package
-  metadata:
-    description: Install Microsoft DotNet Framework Redistributable 1_1
-    module: Microsoft.WinGet
-  properties:
-    id: Microsoft.DotNet.Framework.Redistributable.1_1
-    source: winget
-- name: Install Microsoft DotNet Framework Redistributable 1_1
-  type: Microsoft.WinGet/Package
-  metadata:
-    description: Install Microsoft DotNet Framework Redistributable 1_1
-    module: Microsoft.WinGet
-  properties:
-    id: Microsoft.DotNet.Framework.Redistributable.1_1
-    source: winget
-- name: Install Microsoft DotNet Framework Redistributable 1_1
-  type: Microsoft.WinGet/Package
-  metadata:
-    description: Install Microsoft DotNet Framework Redistributable 1_1
-    module: Microsoft.WinGet
-  properties:
-    id: Microsoft.DotNet.Framework.Redistributable.1_1
-    source: winget
-- name: Install Microsoft DotNet Framework Redistributable 1_1
-  type: Microsoft.WinGet/Package
-  metadata:
-    description: Install Microsoft DotNet Framework Redistributable 1_1
-    module: Microsoft.WinGet
-  properties:
-    id: Microsoft.DotNet.Framework.Redistributable.1_1
-    source: winget
-- name: Install Microsoft DotNet Framework Redistributable 1_1
-  type: Microsoft.WinGet/Package
-  metadata:
-    description: Install Microsoft DotNet Framework Redistributable 1_1
-    module: Microsoft.WinGet
-  properties:
-    id: Microsoft.DotNet.Framework.Redistributable.1_1
-    source: winget
-- name: Install Microsoft DotNet Framework Redistributable 1_1
-  type: Microsoft.WinGet/Package
-  metadata:
-    description: Install Microsoft DotNet Framework Redistributable 1_1
-    module: Microsoft.WinGet
-  properties:
-    id: Microsoft.DotNet.Framework.Redistributable.1_1
-    source: winget
-- name: Install Microsoft DotNet Framework Redistributable 1_1
-  type: Microsoft.WinGet/Package
-  metadata:
-    description: Install Microsoft DotNet Framework Redistributable 1_1
-    module: Microsoft.WinGet
-  properties:
-    id: Microsoft.DotNet.Framework.Redistributable.1_1
-    source: winget
+    acceptAgreements: true
 - name: Install DotNet Framework Redistributable 1 1
   type: Microsoft.WinGet/Package
   metadata:

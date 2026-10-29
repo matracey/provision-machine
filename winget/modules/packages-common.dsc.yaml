@@ -137,15 +137,6 @@ resources:
     id: "jdx.mise"
     source: winget
     acceptAgreements: true
-- name: Install FontBase
-  type: Microsoft.WinGet/Package
-  metadata:
-    description: Install FontBase
-    module: "Microsoft.WinGet"
-  properties:
-    id: "Levitsky.FontBase"
-    source: winget
-    acceptAgreements: true
 - name: Install LLVM
   type: Microsoft.WinGet/Package
   metadata:

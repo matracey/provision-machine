@@ -2,6 +2,14 @@
 # Mise tool manager deployment resources.
 $schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
 resources:
+  - name: Configure mise install directory
+    type: Microsoft.Windows/Registry
+    requireVersion: "=1.0.0"
+    properties:
+      keyPath: HKCU\Environment
+      valueName: MISE_INSTALLS_DIR
+      valueData:
+        String: C:\.tools\mise
   - name: Deploy mise config
     type: Microsoft.DSC.Transitional/PowerShellScript
     metadata:
@@ -26,8 +34,12 @@ resources:
       description: "Install language runtimes defined in the mise configuration"
       module: "Microsoft.DSC.Transitional"
     dependsOn:
+      - "[resourceId('Microsoft.Windows/Registry','Configure mise install directory')]"
       - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Deploy mise config')]"
     properties:
-      executable: mise
+      executable: cmd.exe
       arguments:
-        - install
+        - /d
+        - /c
+        # Registry changes do not refresh DSC's inherited environment.
+        - 'set MISE_INSTALLS_DIR=C:\.tools\mise&& mise install'

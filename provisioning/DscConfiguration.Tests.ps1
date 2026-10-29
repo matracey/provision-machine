@@ -70,6 +70,40 @@ $global:LASTEXITCODE = 0
         Set-Content $stub '$null = @($input); $global:LASTEXITCODE = 0; ''{}'''
         { Invoke-DscConfiguration -Executable $stub -Configuration @{} -Operation get -LogRoot $logs } | Should -Throw '*invalid configuration result*'
     }
+
+    It 'checks nested command exit <Actual> against expected <Expected>' -ForEach @(
+        @{ Expected = 0; Actual = 37 }
+        @{ Expected = 37; Actual = 37 }
+        @{ Expected = 37; Actual = 0 }
+        @{ Expected = 0; Actual = 0 }
+    ) {
+        $before = @{}
+        $after = @{}
+        if ($Expected -ne 0) { $before.exitCode = $Expected }
+        if ($Actual -ne 0) { $after.exitCode = $Actual }
+        $payload = @{
+            hadErrors = $false
+            results = @(@{ type = 'Microsoft.DSC/Include'; result = @(@{
+                name = 'Fixture'; type = 'Microsoft.DSC.Transitional/RunCommandOnSet'
+                result = @{ beforeState = $before; afterState = $after }
+            }) })
+        } | ConvertTo-Json -Depth 10 -Compress
+        Set-Content $stub "`$null = @(`$input); `$global:LASTEXITCODE = 0; '$payload'"
+        if ($Actual -ne $Expected) {
+            { Invoke-DscConfiguration -Executable $stub -Configuration @{} -Operation set -LogRoot $logs } |
+                Should -Throw "*exit code $Actual*"
+        } else {
+            (Invoke-DscConfiguration -Executable $stub -Configuration @{} -Operation set -LogRoot $logs).Status |
+                Should -Be 'OK'
+        }
+    }
+
+    It 'does not treat unrelated resource payload exit codes as command failures' {
+        { Assert-DscCommandSuccess @(@{
+            type = 'Microsoft.DSC.Debug/Echo'
+            result = @{ beforeState = @{}; afterState = @{ exitCode = 37 } }
+        }) } | Should -Not -Throw
+    }
 }
 
 Describe 'Structured Gist delivery' {

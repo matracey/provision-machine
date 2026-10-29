@@ -82,6 +82,27 @@ function Test-DscDrift {
     return $false
 }
 
+function Assert-DscCommandSuccess {
+    param($Value)
+    foreach ($entry in @($Value)) {
+        $result = $entry.result
+        if ($result -is [array]) {
+            Assert-DscCommandSuccess $result
+        } elseif ($entry.type -eq 'Microsoft.DSC.Transitional/RunCommandOnSet') {
+            if ($result.beforeState -isnot [System.Collections.IDictionary] -or
+                $result.afterState -isnot [System.Collections.IDictionary]) {
+                throw "Invalid command result for '$($entry.name)'."
+            }
+            # This resource omits zero exit codes and does not set hadErrors on failure.
+            $expected = if ($result.beforeState.Contains('exitCode')) { $result.beforeState.exitCode } else { 0 }
+            $actual = if ($result.afterState.Contains('exitCode')) { $result.afterState.exitCode } else { 0 }
+            if ($actual -ne $expected) {
+                throw "DSC command '$($entry.name)' failed with exit code $actual (expected $expected)."
+            }
+        }
+    }
+}
+
 function Invoke-DscConfiguration {
     [CmdletBinding()]
     param(
@@ -107,6 +128,7 @@ function Invoke-DscConfiguration {
         throw "DSC returned an invalid configuration result. See $outputPath."
     }
     if ($result.hadErrors) { throw "DSC reported resource errors. See $outputPath." }
+    if ($Operation -eq 'set' -and -not $Preview) { Assert-DscCommandSuccess $result.results }
     $drift = $Operation -eq 'test' -and (Test-DscDrift $result.results)
     [pscustomobject]@{
         Status = if ($drift) { 'DRIFT' } else { 'OK' }

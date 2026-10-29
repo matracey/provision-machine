@@ -2,6 +2,33 @@
 # Work-only WinGet package resources.
 $schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
 resources:
+  - name: Install Command Palette Workspace Launcher
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install VS and Code Workspace Launcher for Command Palette
+      module: "Microsoft.WinGet"
+    properties:
+      id: "15722UsefulApp.WorkspaceLauncherForVSCode"
+      source: winget
+      acceptAgreements: true
+  - name: Install Command Palette Port
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Port for Command Palette
+      module: "Microsoft.WinGet"
+    properties:
+      id: "15722UsefulApp.PortForCommandPalette"
+      source: winget
+      acceptAgreements: true
+  - name: Install Command Palette Unit Converter
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Unit Converter for Command Palette
+      module: "Microsoft.WinGet"
+    properties:
+      id: "9N46RM40VR8D"
+      source: msstore
+      acceptAgreements: true
   - name: Install Bruno
     type: Microsoft.WinGet/Package
     metadata:

@@ -92,24 +92,6 @@ resources:
     id: "FlorianHeidenreich.Mp3tag"
     source: winget
     acceptAgreements: true
-- name: Install Git Credential Manager
-  type: Microsoft.WinGet/Package
-  metadata:
-    description: Install Git Credential Manager
-    module: "Microsoft.WinGet"
-  properties:
-    id: "Git.GCM"
-    source: winget
-    acceptAgreements: true
-- name: Install Git
-  type: Microsoft.WinGet/Package
-  metadata:
-    description: Install Git
-    module: "Microsoft.WinGet"
-  properties:
-    id: "Git.Git"
-    source: winget
-    acceptAgreements: true
 - name: Install GitHub Desktop
   type: Microsoft.WinGet/Package
   metadata:

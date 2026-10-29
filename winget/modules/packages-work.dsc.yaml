@@ -128,6 +128,15 @@ resources:
       id: "Microsoft.Edge.Dev"
       source: winget
       acceptAgreements: true
+  - name: Install Microsoft Git
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Microsoft Git
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.Git"
+      source: winget
+      acceptAgreements: true
   - name: Install Microsoft ODBC Driver 18 for SQL Server
     type: Microsoft.WinGet/Package
     metadata:

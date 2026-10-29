@@ -27,8 +27,8 @@ resources:
           - innounp
           - lessmsi
           - wixtoolset
-      testScript: "param($inputData)\n& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $missing = $inputData.prereqs | Where-Object { -not (scoop list $_ 2>&1 | Select-String \"^  $_\\s\") }\n  return ($null -eq $missing -or $missing.Count -eq 0)\n  } catch { return $false }\n} 2>$null"
-      setScript: "param($inputData)\n& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  foreach ($pkg in $inputData.prereqs) { scoop install $pkg 2>&1 | Out-Null }\n  } catch { }\n} 2>$null"
+      testScript: "param($inputData)\n& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  $missing = $inputData.prereqs | Where-Object { -not ($_ -eq 'git' -and (Get-Command git -ErrorAction SilentlyContinue)) -and -not (scoop list $_ 2>&1 | Select-String \"^  $_\\s\") }\n  return ($null -eq $missing -or $missing.Count -eq 0)\n  } catch { return $false }\n} 2>$null"
+      setScript: "param($inputData)\n& {\n  try {\n    $ErrorActionPreference = 'SilentlyContinue'\n  foreach ($pkg in $inputData.prereqs) {\n    if ($pkg -eq 'git' -and (Get-Command git -ErrorAction SilentlyContinue)) { continue }\n    scoop install $pkg 2>&1 | Out-Null\n  }\n  } catch { }\n} 2>$null"
   - name: Scoop Bucket extras
     type: Microsoft.DSC.Transitional/PowerShellScript
     metadata:

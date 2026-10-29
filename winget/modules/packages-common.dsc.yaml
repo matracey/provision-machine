@@ -29,13 +29,13 @@ resources:
     id: "9PFHDD62MXS1"
     source: msstore
     acceptAgreements: true
-- name: Install Adobe Acrobat Reader 64 bit
+- name: Install PdfCraft
   type: Microsoft.WinGet/Package
   metadata:
-    description: Install Adobe Acrobat Reader 64 bit
+    description: Install PdfCraft
     module: "Microsoft.WinGet"
   properties:
-    id: "Adobe.Acrobat.Reader.64-bit"
+    id: "ArtCraft.PdfCraft"
     source: winget
     acceptAgreements: true
 - name: Install 1Password

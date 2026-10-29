@@ -11,7 +11,7 @@ resources:
       valueData:
         String: C:\.tools\mise
   - name: Deploy mise config
-    type: Microsoft.DSC.Transitional/PowerShellScript
+    type: Microsoft.DSC.Transitional/WindowsPowerShellScript
     metadata:
       description: "Deploy mise configuration for language runtime management"
       module: "Microsoft.DSC.Transitional"
@@ -35,7 +35,7 @@ resources:
       module: "Microsoft.DSC.Transitional"
     dependsOn:
       - "[resourceId('Microsoft.Windows/Registry','Configure mise install directory')]"
-      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Deploy mise config')]"
+      - "[resourceId('Microsoft.DSC.Transitional/WindowsPowerShellScript','Deploy mise config')]"
     properties:
       executable: cmd.exe
       arguments:

@@ -128,13 +128,13 @@ resources:
       id: "Microsoft.Edge.Dev"
       source: winget
       acceptAgreements: true
-  - name: Install Microsoft ODBC Driver 17 for SQL Server
+  - name: Install Microsoft ODBC Driver 18 for SQL Server
     type: Microsoft.WinGet/Package
     metadata:
-      description: Install Microsoft ODBC Driver 17 for SQL Server
+      description: Install Microsoft ODBC Driver 18 for SQL Server
       module: "Microsoft.WinGet"
     properties:
-      id: "Microsoft.msodbcsql.17"
+      id: "Microsoft.msodbcsql.18"
       source: winget
       acceptAgreements: true
   - name: Install Power Automate Desktop
@@ -164,13 +164,13 @@ resources:
       id: "Microsoft.ScoutAgent"
       source: winget
       acceptAgreements: true
-  - name: Install SQL Server Management Studio 22 Preview
+  - name: Install SQL Server Management Studio 22
     type: Microsoft.WinGet/Package
     metadata:
-      description: Install SQL Server Management Studio 22 Preview
+      description: Install SQL Server Management Studio 22
       module: "Microsoft.WinGet"
     properties:
-      id: "Microsoft.SQLServerManagementStudio.22.Preview"
+      id: "Microsoft.SQLServerManagementStudio.22"
       source: winget
       acceptAgreements: true
   - name: Install Microsoft Teams

@@ -146,6 +146,15 @@ resources:
       id: "Microsoft.RemoteHelp"
       source: winget
       acceptAgreements: true
+  - name: Install Scout
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Scout
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.ScoutAgent"
+      source: winget
+      acceptAgreements: true
   - name: Install SQL Server Management Studio 22 Preview
     type: Microsoft.WinGet/Package
     metadata:

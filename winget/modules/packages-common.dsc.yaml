@@ -287,8 +287,8 @@ resources:
     description: Install Spotify
     module: "Microsoft.WinGet"
   properties:
-    id: "9NCBCSZSJRSB"
-    source: msstore
+    id: "Spotify.Spotify"
+    source: winget
     acceptAgreements: true
 - name: Install VLC
   type: Microsoft.WinGet/Package

@@ -2,6 +2,15 @@
 # Personal-only WinGet package resources.
 $schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
 resources:
+  - name: Install Git
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Git
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Git.Git"
+      source: winget
+      acceptAgreements: true
   - name: Install Amazon Games
     type: Microsoft.WinGet/Package
     metadata:

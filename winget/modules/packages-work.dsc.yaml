@@ -110,6 +110,15 @@ resources:
       id: "Microsoft.CLRTypesSQLServer.2019"
       source: winget
       acceptAgreements: true
+  - name: Install Dev Tunnels
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install Dev Tunnels
+      module: "Microsoft.WinGet"
+    properties:
+      id: "Microsoft.devtunnel"
+      source: winget
+      acceptAgreements: true
   - name: Install Microsoft Edge Dev
     type: Microsoft.WinGet/Package
     metadata:

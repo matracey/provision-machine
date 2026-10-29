@@ -48,7 +48,8 @@ Describe 'DSC document contracts' {
 
     It 'parses inline scripts and requires the input parameter expected by the native script resource' {
         foreach ($document in $documents.Values) {
-            foreach ($resource in $document.resources | Where-Object type -EQ 'Microsoft.DSC.Transitional/PowerShellScript') {
+            foreach ($resource in $document.resources | Where-Object type -In @(
+                'Microsoft.DSC.Transitional/PowerShellScript', 'Microsoft.DSC.Transitional/WindowsPowerShellScript')) {
                 foreach ($operation in @('getScript', 'testScript', 'setScript')) {
                     $source = $resource.properties[$operation]
                     if (-not $source) { continue }
@@ -81,5 +82,28 @@ resources:
             -Operation test -LogRoot (Join-Path $TestDrive 'logs')
         $result.Status | Should -Be OK
         $result.ExitCode | Should -Be 0
+    }
+
+    It 'checks mise config deployment without PowerShell 7 on PATH' {
+        $document = $documents[[IO.Path]::GetFullPath((Join-Path $root 'modules\mise.dsc.yaml'))]
+        $deployment = $document.resources | Where-Object name -EQ 'Deploy mise config'
+        $configuration = @{ '$schema' = $document.'$schema'; resources = @($deployment) }
+        $originalPath = $env:PATH
+        $originalProfile = $env:USERPROFILE
+        try {
+            $env:PATH = "$(Split-Path $executable);$env:SystemRoot\System32;$env:SystemRoot\System32\WindowsPowerShell\v1.0"
+            $env:USERPROFILE = $TestDrive
+            $logRoot = Join-Path $TestDrive 'mise-logs'
+            (Invoke-DscConfiguration -Executable $executable -Configuration $configuration -Operation test -LogRoot $logRoot).Status |
+                Should -Be 'DRIFT'
+            $configDirectory = Join-Path $TestDrive '.config\mise'
+            New-Item -ItemType Directory -Path $configDirectory -Force | Out-Null
+            Set-Content -LiteralPath (Join-Path $configDirectory 'config.toml') -Value '[tools]'
+            (Invoke-DscConfiguration -Executable $executable -Configuration $configuration -Operation test -LogRoot $logRoot).Status |
+                Should -Be 'OK'
+        } finally {
+            $env:PATH = $originalPath
+            $env:USERPROFILE = $originalProfile
+        }
     }
 }

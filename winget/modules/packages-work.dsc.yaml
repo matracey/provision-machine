@@ -20,6 +20,15 @@ resources:
       id: "CodecGuide.K-LiteCodecPack.Mega"
       source: winget
       acceptAgreements: true
+  - name: Install GitHub Copilot Desktop
+    type: Microsoft.WinGet/Package
+    metadata:
+      description: Install GitHub Copilot Desktop
+      module: "Microsoft.WinGet"
+    properties:
+      id: "GitHub.CopilotApp"
+      source: winget
+      acceptAgreements: true
   - name: Install Azure AzCopy
     type: Microsoft.WinGet/Package
     metadata:

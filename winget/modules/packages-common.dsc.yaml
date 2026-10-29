@@ -119,15 +119,6 @@ resources:
     id: "GitHub.GitHubDesktop"
     source: winget
     acceptAgreements: true
-- name: Install Git LFS
-  type: Microsoft.WinGet/Package
-  metadata:
-    description: Install Git LFS
-    module: "Microsoft.WinGet"
-  properties:
-    id: "GitHub.GitLFS"
-    source: winget
-    acceptAgreements: true
 - name: Install Dual Monitor Tools
   type: Microsoft.WinGet/Package
   metadata:
@@ -396,24 +387,6 @@ resources:
     module: "Microsoft.WinGet"
   properties:
     id: "Microsoft.DotNet.Framework.Redistributable.1_1"
-    source: winget
-    acceptAgreements: true
-- name: Install GitHub CLI
-  type: Microsoft.WinGet/Package
-  metadata:
-    description: Install GitHub CLI
-    module: "Microsoft.WinGet"
-  properties:
-    id: "GitHub.cli"
-    source: winget
-    acceptAgreements: true
-- name: Install GitHub Copilot
-  type: Microsoft.WinGet/Package
-  metadata:
-    description: Install GitHub Copilot
-    module: "Microsoft.WinGet"
-  properties:
-    id: "GitHub.Copilot"
     source: winget
     acceptAgreements: true
 - name: Install ILSpy

@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+# Work-only tools restored after the shared mise configuration.
+$schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+resources:
+  - name: Include common mise
+    type: Microsoft.DSC/Include
+    properties:
+      configurationFile: ./mise.dsc.yaml
+  - name: Install Azurite
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    dependsOn:
+      - "[resourceId('Microsoft.DSC/Include','Include common mise')]"
+    properties:
+      executable: cmd.exe
+      arguments:
+        - /d
+        - /c
+        - 'set MISE_INSTALLS_DIR=C:\.tools\mise&& mise use --global npm:azurite@latest'

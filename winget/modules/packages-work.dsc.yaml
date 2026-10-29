@@ -74,15 +74,6 @@ resources:
       id: "Microsoft.Azure.FunctionsCoreTools"
       source: winget
       acceptAgreements: true
-  - name: Install Azure Storage Emulator
-    type: Microsoft.WinGet/Package
-    metadata:
-      description: Install Azure Storage Emulator
-      module: "Microsoft.WinGet"
-    properties:
-      id: "Microsoft.Azure.StorageEmulator"
-      source: winget
-      acceptAgreements: true
   - name: Install Azure Storage Explorer
     type: Microsoft.WinGet/Package
     metadata:

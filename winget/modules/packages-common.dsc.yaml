@@ -380,15 +380,6 @@ resources:
     id: Microsoft.VCRedist.2005.x64
     source: winget
     acceptAgreements: true
-- name: Install DotNet Framework Redistributable 1 1
-  type: Microsoft.WinGet/Package
-  metadata:
-    description: Install DotNet Framework Redistributable 1 1
-    module: "Microsoft.WinGet"
-  properties:
-    id: "Microsoft.DotNet.Framework.Redistributable.1_1"
-    source: winget
-    acceptAgreements: true
 - name: Install ILSpy
   type: Microsoft.WinGet/Package
   metadata:

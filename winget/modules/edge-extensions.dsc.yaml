@@ -1,0 +1,117 @@
+# yaml-language-server: $schema=https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+# Shared across installed Edge channels. Excludes built-in and organization-managed extensions.
+$schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+resources:
+  - name: Install optional Edge extensions
+    type: Microsoft.Windows/RegistryList
+    requireVersion: "=1.0.0"
+    properties:
+      registryEntries:
+        # 1Password
+        - keyPath: HKCU\Software\Policies\Microsoft\Edge\ExtensionSettings\dppgmdbiimibapkepcbdbmkaabgiofem
+          valueName: installation_mode
+          valueData:
+            String: normal_installed
+        - keyPath: HKCU\Software\Policies\Microsoft\Edge\ExtensionSettings\dppgmdbiimibapkepcbdbmkaabgiofem
+          valueName: update_url
+          valueData:
+            String: https://edge.microsoft.com/extensionwebstorebase/v1/crx
+        # dataslayer
+        - keyPath: HKCU\Software\Policies\Microsoft\Edge\ExtensionSettings\ikbablmmjldhamhcldjjigniffkkjgpo
+          valueName: installation_mode
+          valueData:
+            String: normal_installed
+        - keyPath: HKCU\Software\Policies\Microsoft\Edge\ExtensionSettings\ikbablmmjldhamhcldjjigniffkkjgpo
+          valueName: update_url
+          valueData:
+            String: https://clients2.google.com/service/update2/crx
+        # GTM GTAG Inspector
+        - keyPath: HKCU\Software\Policies\Microsoft\Edge\ExtensionSettings\hbddacgmlbobbhnakjimlkkhgogfndeb
+          valueName: installation_mode
+          valueData:
+            String: normal_installed
+        - keyPath: HKCU\Software\Policies\Microsoft\Edge\ExtensionSettings\hbddacgmlbobbhnakjimlkkhgogfndeb
+          valueName: update_url
+          valueData:
+            String: https://clients2.google.com/service/update2/crx
+        # Omnibug
+        - keyPath: HKCU\Software\Policies\Microsoft\Edge\ExtensionSettings\eideoafecdnkjfiomaaplogicinmmlee
+          valueName: installation_mode
+          valueData:
+            String: normal_installed
+        - keyPath: HKCU\Software\Policies\Microsoft\Edge\ExtensionSettings\eideoafecdnkjfiomaaplogicinmmlee
+          valueName: update_url
+          valueData:
+            String: https://edge.microsoft.com/extensionwebstorebase/v1/crx
+        # Playwright Extension
+        - keyPath: HKCU\Software\Policies\Microsoft\Edge\ExtensionSettings\mmlmfjhmonkocbjadbfplnigmagldckm
+          valueName: installation_mode
+          valueData:
+            String: normal_installed
+        - keyPath: HKCU\Software\Policies\Microsoft\Edge\ExtensionSettings\mmlmfjhmonkocbjadbfplnigmagldckm
+          valueName: update_url
+          valueData:
+            String: https://clients2.google.com/service/update2/crx
+        # Scrolling screenshot tool
+        - keyPath: HKCU\Software\Policies\Microsoft\Edge\ExtensionSettings\mfpiaehgjbbfednooihadalhehabhcjo
+          valueName: installation_mode
+          valueData:
+            String: normal_installed
+        - keyPath: HKCU\Software\Policies\Microsoft\Edge\ExtensionSettings\mfpiaehgjbbfednooihadalhehabhcjo
+          valueName: update_url
+          valueData:
+            String: https://clients2.google.com/service/update2/crx
+        # Session Buddy
+        - keyPath: HKCU\Software\Policies\Microsoft\Edge\ExtensionSettings\edacconmaakjimmfgnblocblbcdcpbko
+          valueName: installation_mode
+          valueData:
+            String: normal_installed
+        - keyPath: HKCU\Software\Policies\Microsoft\Edge\ExtensionSettings\edacconmaakjimmfgnblocblbcdcpbko
+          valueName: update_url
+          valueData:
+            String: https://clients2.google.com/service/update2/crx
+        # TagHound
+        - keyPath: HKCU\Software\Policies\Microsoft\Edge\ExtensionSettings\canpneabbfipaelecfibpmmjbdkiaolf
+          valueName: installation_mode
+          valueData:
+            String: normal_installed
+        - keyPath: HKCU\Software\Policies\Microsoft\Edge\ExtensionSettings\canpneabbfipaelecfibpmmjbdkiaolf
+          valueName: update_url
+          valueData:
+            String: https://clients2.google.com/service/update2/crx
+        # UET Tag Helper
+        - keyPath: HKCU\Software\Policies\Microsoft\Edge\ExtensionSettings\nmcihgehpmokipeigjpeckphhdejjpbf
+          valueName: installation_mode
+          valueData:
+            String: normal_installed
+        - keyPath: HKCU\Software\Policies\Microsoft\Edge\ExtensionSettings\nmcihgehpmokipeigjpeckphhdejjpbf
+          valueName: update_url
+          valueData:
+            String: https://edge.microsoft.com/extensionwebstorebase/v1/crx
+        # Violentmonkey
+        - keyPath: HKCU\Software\Policies\Microsoft\Edge\ExtensionSettings\eeagobfjdenkkddmbclomhiblgggliao
+          valueName: installation_mode
+          valueData:
+            String: normal_installed
+        - keyPath: HKCU\Software\Policies\Microsoft\Edge\ExtensionSettings\eeagobfjdenkkddmbclomhiblgggliao
+          valueName: update_url
+          valueData:
+            String: https://edge.microsoft.com/extensionwebstorebase/v1/crx
+        # Wappalyzer
+        - keyPath: HKCU\Software\Policies\Microsoft\Edge\ExtensionSettings\mnbndgmknlpdjdnjfmfcdjoegcckoikn
+          valueName: installation_mode
+          valueData:
+            String: normal_installed
+        - keyPath: HKCU\Software\Policies\Microsoft\Edge\ExtensionSettings\mnbndgmknlpdjdnjfmfcdjoegcckoikn
+          valueName: update_url
+          valueData:
+            String: https://edge.microsoft.com/extensionwebstorebase/v1/crx
+        # Windscribe
+        - keyPath: HKCU\Software\Policies\Microsoft\Edge\ExtensionSettings\dkkdbpgldnmkhcliffjpajcfdjkcaddf
+          valueName: installation_mode
+          valueData:
+            String: normal_installed
+        - keyPath: HKCU\Software\Policies\Microsoft\Edge\ExtensionSettings\dkkdbpgldnmkhcliffjpajcfdjkcaddf
+          valueName: update_url
+          valueData:
+            String: https://edge.microsoft.com/extensionwebstorebase/v1/crx

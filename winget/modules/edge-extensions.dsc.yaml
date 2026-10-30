@@ -1,0 +1,99 @@
+# yaml-language-server: $schema=https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+# Installs the current work extension set only in the Default profile.
+$schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+resources:
+  - name: Configure profile-specific Edge extensions
+    type: Microsoft.DSC.Transitional/WindowsPowerShellScript
+    requireVersion: "=0.2.0"
+    properties:
+      input:
+        channels: [Edge, Edge Beta, Edge Dev]
+        workProfile: Default
+        extensions:
+          - id: dppgmdbiimibapkepcbdbmkaabgiofem
+            updateUrl: https://edge.microsoft.com/extensionwebstorebase/v1/crx
+          - id: mmlmfjhmonkocbjadbfplnigmagldckm
+            updateUrl: https://clients2.google.com/service/update2/crx
+          - id: mfpiaehgjbbfednooihadalhehabhcjo
+            updateUrl: https://clients2.google.com/service/update2/crx
+          - id: edacconmaakjimmfgnblocblbcdcpbko
+            updateUrl: https://clients2.google.com/service/update2/crx
+          - id: eeagobfjdenkkddmbclomhiblgggliao
+            updateUrl: https://edge.microsoft.com/extensionwebstorebase/v1/crx
+          - id: mnbndgmknlpdjdnjfmfcdjoegcckoikn
+            updateUrl: https://edge.microsoft.com/extensionwebstorebase/v1/crx
+          - id: dkkdbpgldnmkhcliffjpajcfdjkcaddf
+            updateUrl: https://edge.microsoft.com/extensionwebstorebase/v1/crx
+        obsoleteExtensionIds:
+          - ikbablmmjldhamhcldjjigniffkkjgpo
+          - hbddacgmlbobbhnakjimlkkhgogfndeb
+          - eideoafecdnkjfiomaaplogicinmmlee
+          - canpneabbfipaelecfibpmmjbdkiaolf
+          - nmcihgehpmokipeigjpeckphhdejjpbf
+      testScript: |
+        param($inputData)
+        $roots = @(${env:ProgramFiles(x86)}, $env:ProgramFiles, $env:LOCALAPPDATA) | Where-Object { $_ }
+        foreach ($channel in $inputData.channels) {
+          $executable = $roots | ForEach-Object { Join-Path $_ "Microsoft\$channel\Application\msedge.exe" } |
+            Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
+          if (-not $executable) { continue }
+          $userData = Join-Path $env:LOCALAPPDATA "Microsoft\$channel\User Data"
+          foreach ($extension in $inputData.extensions) {
+            if (-not (Test-Path -LiteralPath (Join-Path $userData "$($inputData.workProfile)\Extensions\$($extension.id)"))) {
+              return $false
+            }
+          }
+        }
+        $policyRoot = 'HKCU:\Software\Policies\Microsoft\Edge\ExtensionSettings'
+        $ownedIds = @($inputData.extensions.id) + @($inputData.obsoleteExtensionIds)
+        foreach ($id in $ownedIds) {
+          if (Test-Path -LiteralPath (Join-Path $policyRoot $id)) { return $false }
+        }
+        return $true
+      setScript: |
+        param($inputData)
+        $ErrorActionPreference = 'Stop'
+        $roots = @(${env:ProgramFiles(x86)}, $env:ProgramFiles, $env:LOCALAPPDATA) | Where-Object { $_ }
+        $policyRoot = 'HKCU:\Software\Policies\Microsoft\Edge\ExtensionSettings'
+        $ownedIds = @($inputData.extensions.id) + @($inputData.obsoleteExtensionIds)
+        try {
+          foreach ($extension in $inputData.extensions) {
+            $key = Join-Path $policyRoot $extension.id
+            New-Item -Path $key -Force | Out-Null
+            Set-ItemProperty -LiteralPath $key -Name installation_mode -Value normal_installed
+            Set-ItemProperty -LiteralPath $key -Name update_url -Value $extension.updateUrl
+          }
+          foreach ($channel in $inputData.channels) {
+            $executable = $roots | ForEach-Object { Join-Path $_ "Microsoft\$channel\Application\msedge.exe" } |
+              Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
+            if (-not $executable) { continue }
+            Get-Process msedge -ErrorAction SilentlyContinue |
+              Where-Object Path -EQ $executable | Stop-Process -Force
+            $userData = Join-Path $env:LOCALAPPDATA "Microsoft\$channel\User Data"
+            Start-Process -FilePath $executable -ArgumentList @(
+              "--profile-directory=`"$($inputData.workProfile)`"",
+              '--no-first-run',
+              '--no-default-browser-check',
+              'about:blank'
+            ) | Out-Null
+            $deadline = (Get-Date).AddMinutes(2)
+            do {
+              Start-Sleep -Seconds 1
+              $ready = @($inputData.extensions | Where-Object {
+                -not (Test-Path -LiteralPath (Join-Path $userData "$($inputData.workProfile)\Extensions\$($_.id)"))
+              }).Count -eq 0
+            } while (-not $ready -and (Get-Date) -lt $deadline)
+            Get-Process msedge -ErrorAction SilentlyContinue |
+              Where-Object Path -EQ $executable | Stop-Process -Force
+            if (-not $ready) { throw "$channel did not install all Default-profile extensions." }
+          }
+        } finally {
+          foreach ($id in $ownedIds) {
+            $key = Join-Path $policyRoot $id
+            if (Test-Path -LiteralPath $key) { Remove-Item -LiteralPath $key -Recurse -Force }
+          }
+          if ((Test-Path -LiteralPath $policyRoot) -and
+              @(Get-ChildItem -LiteralPath $policyRoot -ErrorAction SilentlyContinue).Count -eq 0) {
+            Remove-Item -LiteralPath $policyRoot -Force
+          }
+        }

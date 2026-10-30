@@ -1,0 +1,111 @@
+# yaml-language-server: $schema=https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+# Profile-specific AppUserModelIDs keep the two taskbar buttons distinct.
+$schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+resources:
+  - name: Create Edge Dev desktop shortcuts
+    type: Microsoft.DSC.Transitional/WindowsPowerShellScript
+    requireVersion: "=0.2.0"
+    properties:
+      input:
+        desktopPath: "[concat(envvar('PUBLIC'), '\\Desktop')]"
+        profiles:
+          - name: Microsoft Edge Dev - Personal
+            directory: Profile 1
+            appId: MSEdgeDev.UserData.Profile1
+          - name: Microsoft Edge Dev - Work
+            directory: Default
+            appId: MSEdgeDev
+      testScript: |
+        param($inputData)
+        $ErrorActionPreference = 'Stop'
+        $roots = @(${env:ProgramFiles(x86)}, $env:ProgramFiles, $env:LOCALAPPDATA) | Where-Object { $_ }
+        $executables = @($roots | ForEach-Object { Join-Path $_ 'Microsoft\Edge Dev\Application\msedge.exe' } | Where-Object { Test-Path -LiteralPath $_ })
+        if ($executables.Count -eq 0) { return $false }
+        $wsh = New-Object -ComObject WScript.Shell
+        $shell = New-Object -ComObject Shell.Application
+        foreach ($profile in $inputData.profiles) {
+          $path = Join-Path $inputData.desktopPath "$($profile.name).lnk"
+          if (-not (Test-Path -LiteralPath $path)) { return $false }
+          $link = $wsh.CreateShortcut($path)
+          $item = $shell.Namespace($inputData.desktopPath).ParseName("$($profile.name).lnk")
+          try {
+            $matches = $link.TargetPath -eq $executables[0] -and
+                $link.Arguments -eq "--profile-directory=`"$($profile.directory)`"" -and
+                $link.WorkingDirectory -eq (Split-Path $executables[0]) -and
+                $item.ExtendedProperty('System.AppUserModel.ID') -eq $profile.appId
+          } finally {
+            [void][Runtime.InteropServices.Marshal]::FinalReleaseComObject($item)
+            [void][Runtime.InteropServices.Marshal]::FinalReleaseComObject($link)
+          }
+          if (-not $matches) { return $false }
+        }
+        return $true
+      setScript: |
+        param($inputData)
+        $ErrorActionPreference = 'Stop'
+        $roots = @(${env:ProgramFiles(x86)}, $env:ProgramFiles, $env:LOCALAPPDATA) | Where-Object { $_ }
+        $executables = @($roots | ForEach-Object { Join-Path $_ 'Microsoft\Edge Dev\Application\msedge.exe' } | Where-Object { Test-Path -LiteralPath $_ })
+        if ($executables.Count -eq 0) { throw 'Install Microsoft Edge Dev before creating its shortcuts.' }
+        if (-not ('ProvisionMachine.EdgeShortcut' -as [type])) {
+          Add-Type -TypeDefinition @'
+        using System;
+        using System.Runtime.InteropServices;
+        namespace ProvisionMachine {
+          public static class EdgeShortcut {
+            [StructLayout(LayoutKind.Sequential)]
+            public struct PropertyKey { public Guid Format; public uint Id; }
+            [StructLayout(LayoutKind.Explicit, Size = 24)]
+            public struct PropVariant {
+              [FieldOffset(0)] public ushort Type;
+              [FieldOffset(8)] public IntPtr Text;
+            }
+            [ComImport, Guid("886d8eeb-8cf2-4446-8d02-cdba1dbdcf99"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+            interface IPropertyStore {
+              [PreserveSig] int GetCount(out uint count);
+              [PreserveSig] int GetAt(uint index, out PropertyKey key);
+              [PreserveSig] int GetValue(ref PropertyKey key, out PropVariant value);
+              [PreserveSig] int SetValue(ref PropertyKey key, ref PropVariant value);
+              [PreserveSig] int Commit();
+            }
+            [DllImport("shell32.dll", CharSet = CharSet.Unicode, PreserveSig = false)]
+            static extern void SHGetPropertyStoreFromParsingName(string path, IntPtr context,
+              uint flags, ref Guid iid, out IPropertyStore store);
+            public static void SetAppId(string path, string appId) {
+              var iid = typeof(IPropertyStore).GUID;
+              IPropertyStore store;
+              SHGetPropertyStoreFromParsingName(path, IntPtr.Zero, 2, ref iid, out store);
+              var key = new PropertyKey { Format = new Guid("9f4c2855-9f79-4b39-a8d0-e1d42de1d5f3"), Id = 5 };
+              var value = new PropVariant { Type = 31 };
+              try {
+                value.Text = Marshal.StringToCoTaskMemUni(appId);
+                Marshal.ThrowExceptionForHR(store.SetValue(ref key, ref value));
+                Marshal.ThrowExceptionForHR(store.Commit());
+              } finally {
+                Marshal.FreeCoTaskMem(value.Text);
+                Marshal.ReleaseComObject(store);
+              }
+            }
+          }
+        }
+        '@
+        }
+        New-Item -ItemType Directory -Path $inputData.desktopPath -Force | Out-Null
+        $wsh = New-Object -ComObject WScript.Shell
+        foreach ($profile in $inputData.profiles) {
+          $path = Join-Path $inputData.desktopPath "$($profile.name).lnk"
+          $link = $wsh.CreateShortcut($path)
+          try {
+            $link.TargetPath = $executables[0]
+            $link.Arguments = "--profile-directory=`"$($profile.directory)`""
+            $link.WorkingDirectory = Split-Path $executables[0]
+            $link.Description = $profile.name
+            $icon = Join-Path $env:LOCALAPPDATA "Microsoft\Edge Dev\User Data\$($profile.directory)\Edge Profile.ico"
+            $link.IconLocation = if (Test-Path -LiteralPath $icon) {
+              "%LOCALAPPDATA%\Microsoft\Edge Dev\User Data\$($profile.directory)\Edge Profile.ico,0"
+            } else { "$($executables[0]),0" }
+            $link.Save()
+          } finally {
+            [void][Runtime.InteropServices.Marshal]::FinalReleaseComObject($link)
+          }
+          [ProvisionMachine.EdgeShortcut]::SetAppId($path, $profile.appId)
+        }

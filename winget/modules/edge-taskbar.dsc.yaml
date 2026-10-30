@@ -1,0 +1,41 @@
+# yaml-language-server: $schema=https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+# Windows 11 taskbar-only layout; no Start menu pins and no replacement of existing taskbar pins.
+$schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+resources:
+  - name: Write Edge taskbar layout
+    type: PSDesiredStateConfiguration/File
+    requireVersion: "=1.0.0"
+    properties:
+      DestinationPath: "[concat(envvar('ProgramData'), '\\provision-machine\\EdgeTaskbar.xml')]"
+      Type: File
+      Ensure: Present
+      Contents: |
+        <LayoutModificationTemplate
+          xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification"
+          xmlns:defaultlayout="http://schemas.microsoft.com/Start/2014/FullDefaultLayout"
+          xmlns:taskbar="http://schemas.microsoft.com/Start/2014/TaskbarLayout"
+          Version="1">
+          <CustomTaskbarLayoutCollection>
+            <defaultlayout:TaskbarLayout>
+              <taskbar:TaskbarPinList>
+                <taskbar:DesktopApp DesktopApplicationLinkPath="%PUBLIC%\Desktop\Microsoft Edge Dev - Personal.lnk" />
+                <taskbar:DesktopApp DesktopApplicationLinkPath="%PUBLIC%\Desktop\Microsoft Edge Dev - Work.lnk" />
+              </taskbar:TaskbarPinList>
+            </defaultlayout:TaskbarLayout>
+          </CustomTaskbarLayoutCollection>
+        </LayoutModificationTemplate>
+  - name: Apply Edge taskbar pins
+    type: Microsoft.Windows/RegistryList
+    requireVersion: "=1.0.0"
+    dependsOn:
+      - "[resourceId('PSDesiredStateConfiguration/File', 'Write Edge taskbar layout')]"
+    properties:
+      registryEntries:
+        - keyPath: HKCU\Software\Policies\Microsoft\Windows\Explorer
+          valueName: StartLayoutFile
+          valueData:
+            ExpandString: '%PROGRAMDATA%\provision-machine\EdgeTaskbar.xml'
+        - keyPath: HKCU\Software\Policies\Microsoft\Windows\Explorer
+          valueName: LockedStartLayout
+          valueData:
+            DWord: 1

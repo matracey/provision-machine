@@ -1,0 +1,77 @@
+# yaml-language-server: $schema=https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+# Shared Edge provisioning. Managed-user defaults apply at sign-in; DISM seeds new Windows profiles.
+$schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+resources:
+  - name: Install Microsoft Edge Dev
+    type: Microsoft.WinGet/Package
+    properties:
+      id: Microsoft.Edge.Dev
+      source: winget
+      acceptAgreements: true
+  - name: Create Edge configuration directory
+    type: PSDesiredStateConfiguration/File
+    requireVersion: "=1.0.0"
+    properties:
+      DestinationPath: "[concat(envvar('ProgramData'), '\\provision-machine')]"
+      Type: Directory
+      Ensure: Present
+  - name: Write Edge Dev default associations
+    type: PSDesiredStateConfiguration/File
+    requireVersion: "=1.0.0"
+    dependsOn:
+      - "[resourceId('PSDesiredStateConfiguration/File', 'Create Edge configuration directory')]"
+    properties:
+      DestinationPath: "[concat(envvar('ProgramData'), '\\provision-machine\\DefaultAssociations.xml')]"
+      Ensure: Present
+      Type: File
+      Contents: |
+        <DefaultAssociations Version="1">
+          <Association Identifier="http" ProgId="MSEdgeDHTML" ApplicationName="Microsoft Edge Dev" Suggested="true" />
+          <Association Identifier="https" ProgId="MSEdgeDHTML" ApplicationName="Microsoft Edge Dev" Suggested="true" />
+          <Association Identifier=".htm" ProgId="MSEdgeDHTML" ApplicationName="Microsoft Edge Dev" Suggested="true" />
+          <Association Identifier=".html" ProgId="MSEdgeDHTML" ApplicationName="Microsoft Edge Dev" Suggested="true" />
+        </DefaultAssociations>
+  - name: Set Edge Dev default browser policy
+    type: Microsoft.Windows/Registry
+    requireVersion: "=1.0.0"
+    dependsOn:
+      - "[resourceId('Microsoft.WinGet/Package', 'Install Microsoft Edge Dev')]"
+      - "[resourceId('PSDesiredStateConfiguration/File', 'Write Edge Dev default associations')]"
+    properties:
+      keyPath: HKLM\Software\Policies\Microsoft\Windows\System
+      valueName: DefaultAssociationsConfiguration
+      valueData:
+        String: "[concat(envvar('ProgramData'), '\\provision-machine\\DefaultAssociations.xml')]"
+  - name: Set Edge Dev defaults for new Windows profiles
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    dependsOn:
+      - "[resourceId('Microsoft.Windows/Registry', 'Set Edge Dev default browser policy')]"
+    properties:
+      executable: dism.exe
+      arguments:
+        - /Online
+        - "[concat('/Import-DefaultAppAssociations:', envvar('ProgramData'), '\\provision-machine\\DefaultAssociations.xml')]"
+  - name: Include Edge extensions
+    type: Microsoft.DSC/Include
+    properties:
+      configurationFile: ./edge-extensions.dsc.yaml
+  - name: Include Edge profiles
+    type: Microsoft.DSC/Include
+    dependsOn:
+      - "[resourceId('Microsoft.WinGet/Package', 'Install Microsoft Edge Dev')]"
+      - "[resourceId('Microsoft.DSC/Include', 'Include Edge extensions')]"
+    properties:
+      configurationFile: ./edge-profiles.dsc.yaml
+  - name: Include Edge shortcuts
+    type: Microsoft.DSC/Include
+    dependsOn:
+      - "[resourceId('Microsoft.DSC/Include', 'Include Edge profiles')]"
+    properties:
+      configurationFile: ./edge-shortcuts.dsc.yaml
+  - name: Include Edge taskbar pins
+    type: Microsoft.DSC/Include
+    dependsOn:
+      - "[resourceId('PSDesiredStateConfiguration/File', 'Create Edge configuration directory')]"
+      - "[resourceId('Microsoft.DSC/Include', 'Include Edge shortcuts')]"
+    properties:
+      configurationFile: ./edge-taskbar.dsc.yaml

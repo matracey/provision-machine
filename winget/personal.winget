@@ -62,6 +62,10 @@ resources:
     type: Microsoft.DSC/Include
     properties:
       configurationFile: ./modules/packages-personal.dsc.yaml
+  - name: Include Edge
+    type: Microsoft.DSC/Include
+    properties:
+      configurationFile: ./modules/edge.dsc.yaml
   - name: Include vscode
     type: Microsoft.DSC/Include
     properties:

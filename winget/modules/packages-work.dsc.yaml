@@ -110,15 +110,6 @@ resources:
       id: "Microsoft.devtunnel"
       source: winget
       acceptAgreements: true
-  - name: Install Microsoft Edge Dev
-    type: Microsoft.WinGet/Package
-    metadata:
-      description: Install Microsoft Edge Dev
-      module: "Microsoft.WinGet"
-    properties:
-      id: "Microsoft.Edge.Dev"
-      source: winget
-      acceptAgreements: true
   - name: Install Microsoft Git
     type: Microsoft.WinGet/Package
     metadata:

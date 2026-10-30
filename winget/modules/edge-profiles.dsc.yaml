@@ -1,0 +1,52 @@
+# yaml-language-server: $schema=https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+# Edge initializes its own profile files; no account or browsing data is copied.
+$schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+resources:
+  - name: Create Edge profiles
+    type: Microsoft.DSC.Transitional/WindowsPowerShellScript
+    requireVersion: "=0.2.0"
+    properties:
+      input:
+        channels: [Edge, Edge Beta, Edge Dev]
+        profiles: [Default, Profile 1]
+      testScript: |
+        param($inputData)
+        $ErrorActionPreference = 'Stop'
+        $roots = @(${env:ProgramFiles(x86)}, $env:ProgramFiles, $env:LOCALAPPDATA) | Where-Object { $_ }
+        foreach ($channel in $inputData.channels) {
+          $executables = @($roots | ForEach-Object { Join-Path $_ "Microsoft\$channel\Application\msedge.exe" } | Where-Object { Test-Path -LiteralPath $_ })
+          if ($executables.Count -eq 0) { continue }
+          $userData = Join-Path $env:LOCALAPPDATA "Microsoft\$channel\User Data"
+          $statePath = Join-Path $userData 'Local State'
+          if (-not (Test-Path -LiteralPath $statePath)) { return $false }
+          $state = Get-Content -LiteralPath $statePath -Raw | ConvertFrom-Json
+          foreach ($profile in $inputData.profiles) {
+            if ($state.profile.info_cache.PSObject.Properties.Name -notcontains $profile -or
+                -not (Test-Path -LiteralPath (Join-Path $userData "$profile\Preferences"))) { return $false }
+          }
+        }
+        return $true
+      setScript: |
+        param($inputData)
+        $ErrorActionPreference = 'Stop'
+        $roots = @(${env:ProgramFiles(x86)}, $env:ProgramFiles, $env:LOCALAPPDATA) | Where-Object { $_ }
+        foreach ($channel in $inputData.channels) {
+          $executables = @($roots | ForEach-Object { Join-Path $_ "Microsoft\$channel\Application\msedge.exe" } | Where-Object { Test-Path -LiteralPath $_ })
+          if ($executables.Count -eq 0) { continue }
+          $userData = Join-Path $env:LOCALAPPDATA "Microsoft\$channel\User Data"
+          $statePath = Join-Path $userData 'Local State'
+          foreach ($profile in $inputData.profiles) {
+            $preferences = Join-Path $userData "$profile\Preferences"
+            $state = if (Test-Path -LiteralPath $statePath) { Get-Content -LiteralPath $statePath -Raw | ConvertFrom-Json }
+            if ($state.profile.info_cache.PSObject.Properties.Name -contains $profile -and (Test-Path -LiteralPath $preferences)) { continue }
+            # Opening each missing profile lets Edge register it and process extension policies.
+            Start-Process -FilePath $executables[0] -ArgumentList @("--profile-directory=`"$profile`"", '--no-first-run', '--no-default-browser-check', 'about:blank') -ErrorAction Stop
+            $deadline = (Get-Date).AddSeconds(30)
+            do {
+              Start-Sleep -Milliseconds 250
+              $state = if (Test-Path -LiteralPath $statePath) { Get-Content -LiteralPath $statePath -Raw | ConvertFrom-Json }
+              $ready = $state.profile.info_cache.PSObject.Properties.Name -contains $profile -and (Test-Path -LiteralPath $preferences)
+            } while (-not $ready -and (Get-Date) -lt $deadline)
+            if (-not $ready) { throw "$channel did not create profile '$profile'. Check browser startup and UserDataDir policies." }
+          }
+        }

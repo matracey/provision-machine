@@ -299,6 +299,15 @@ resources:
     id: Microsoft.VCRedist.2015+.x64
     source: winget
     acceptAgreements: true
+- name: Install VCRedist 2015+ x86
+  type: Microsoft.WinGet/Package
+  metadata:
+    description: Install VCRedist 2015+ x86
+    module: Microsoft.WinGet
+  properties:
+    id: Microsoft.VCRedist.2015+.x86
+    source: winget
+    acceptAgreements: true
 - name: Install VCRedist 2013 x64
   type: Microsoft.WinGet/Package
   metadata:

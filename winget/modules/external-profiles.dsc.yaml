@@ -2,6 +2,28 @@
 # External user configuration repositories remain their own sources of truth.
 $schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
 resources:
+  - name: Install PowerShell profile modules
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    requireVersion: "=0.2.0"
+    properties:
+      input:
+        modules:
+          - posh-git
+          - Terminal-Icons
+      testScript: |
+        param($inputData)
+        foreach ($module in $inputData.modules) {
+          if (-not (Get-Module -ListAvailable -Name $module)) { return $false }
+        }
+        return $true
+      setScript: |
+        param($inputData)
+        $ErrorActionPreference = 'Stop'
+        foreach ($module in $inputData.modules) {
+          if (-not (Get-Module -ListAvailable -Name $module)) {
+            Install-Module -Name $module -Scope CurrentUser -Force -AllowClobber
+          }
+        }
   - name: Install dotagents
     type: Microsoft.DSC.Transitional/PowerShellScript
     requireVersion: "=0.2.0"
@@ -39,6 +61,40 @@ resources:
         $marker = Join-Path $env:LOCALAPPDATA 'provision-machine\external-profiles\dotagents-context.txt'
         New-Item -ItemType Directory -Path (Split-Path $marker) -Force | Out-Null
         Set-Content -LiteralPath $marker -Value $context
+  - name: Install PowerShell profile
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    requireVersion: "=0.2.0"
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/PowerShellScript','Install PowerShell profile modules')]"
+    properties:
+      input:
+        repository: https://github.com/matracey/PowerShell_Profile.git
+        branch: main
+        directory: .powershell-profile
+        patterns:
+          - "*.ps1"
+          - "*.psm1"
+          - powershell.config.json
+      testScript: |
+        param($inputData)
+        . (Join-Path $env:PROVISION_MACHINE_ROOT 'scripts\ExternalRepository.ps1')
+        $target = Join-Path $env:USERPROFILE $inputData.directory
+        if (-not (Test-GitCheckout -Target $target -Repository $inputData.repository `
+            -Ref "refs/heads/$($inputData.branch)")) { return $false }
+        $documents = [Environment]::GetFolderPath('MyDocuments', 'DoNotVerify')
+        if (-not $documents) { throw 'The Documents known folder could not be resolved.' }
+        $destinations = @((Join-Path $documents 'PowerShell'), (Join-Path $documents 'WindowsPowerShell'))
+        return Test-FileMirror -SourceRoot $target -DestinationRoots $destinations -Patterns $inputData.patterns
+      setScript: |
+        param($inputData)
+        $ErrorActionPreference = 'Stop'
+        . (Join-Path $env:PROVISION_MACHINE_ROOT 'scripts\ExternalRepository.ps1')
+        $target = Join-Path $env:USERPROFILE $inputData.directory
+        Sync-GitCheckout -Target $target -Repository $inputData.repository -Branch $inputData.branch
+        $documents = [Environment]::GetFolderPath('MyDocuments', 'DoNotVerify')
+        if (-not $documents) { throw 'The Documents known folder could not be resolved.' }
+        $destinations = @((Join-Path $documents 'PowerShell'), (Join-Path $documents 'WindowsPowerShell'))
+        Sync-FileMirror -SourceRoot $target -DestinationRoots $destinations -Patterns $inputData.patterns
   - name: Install Git configuration
     type: Microsoft.DSC.Transitional/PowerShellScript
     requireVersion: "=0.2.0"

@@ -6,9 +6,11 @@ BeforeAll {
 }
 
 Describe 'External profile integrations' {
-    It 'uses dotagents as its source of truth' {
+    It 'uses the external repositories as sources of truth' {
         ($document.resources | Where-Object name -EQ 'Install dotagents').properties.input.repository |
             Should -Be 'https://github.com/matracey/dotagents.git'
+        ($document.resources | Where-Object name -EQ 'Install PowerShell profile').properties.input.repository |
+            Should -Be 'https://github.com/matracey/PowerShell_Profile.git'
     }
 
     It 'passes the selected context to the dotagents installer' {
@@ -17,6 +19,18 @@ Describe 'External profile integrations' {
         $resource.properties.setScript | Should -Match 'Sync-GitCheckout'
         $resource.properties.setScript | Should -Match 'PROVISION_MACHINE_CONTEXT'
         $resource.properties.setScript | Should -Match 'install\.py.*--profile \$context'
+    }
+
+    It 'discovers PowerShell profile files by pattern' {
+        $resource = $document.resources | Where-Object name -EQ 'Install PowerShell profile'
+        $resource.properties.input.patterns | Should -Be @('*.ps1', '*.psm1', 'powershell.config.json')
+        $resource.properties.testScript | Should -Match 'Test-FileMirror'
+        $resource.properties.setScript | Should -Match 'Sync-FileMirror'
+    }
+
+    It 'installs the PowerShell modules imported by the profile' {
+        $resource = $document.resources | Where-Object name -EQ 'Install PowerShell profile modules'
+        $resource.properties.input.modules | Should -Be @('posh-git', 'Terminal-Icons')
     }
 
     It 'deploys the Git configuration gist with profile passthrough' {

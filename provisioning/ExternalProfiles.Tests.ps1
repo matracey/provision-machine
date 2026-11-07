@@ -19,4 +19,13 @@ Describe 'External profile integrations' {
         $resource.properties.setScript | Should -Match 'install\.py.*--profile \$context'
     }
 
+    It 'deploys the Git configuration gist with profile passthrough' {
+        $resource = $document.resources | Where-Object name -EQ 'Install Git configuration'
+        $resource.properties.input.gistId | Should -Be '8ab9c43a7cc61c7597cdb1582ede6ea5'
+        $resource.properties.testScript | Should -Match 'ExternalRepository\.ps1'
+        $resource.properties.setScript | Should -Match 'Sync-GitCheckout'
+        $resource.properties.setScript | Should -Match '\$context -eq ''personal'''
+        $resource.properties.setScript | Should -Match '--no-work'
+        $resource.properties.setScript | Should -Match 'deploy\.py'
+    }
 }

@@ -29,6 +29,7 @@ BeforeAll {
 
 Describe 'Mise install environment in <Module>' -ForEach @(
     @{ Module = 'mise'; ResourceName = 'Run mise install'; ExpectedArguments = 'install' }
+    @{ Module = 'mise'; ResourceName = 'Configure GitHub CLI credential helper'; ExpectedArguments = 'exec -- gh auth setup-git --hostname github.com --force' }
     @{ Module = 'mise-work'; ResourceName = 'Install Azurite'; ExpectedArguments = 'use --global npm:azurite@latest' }
 ) {
     BeforeAll {

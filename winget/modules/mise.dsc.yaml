@@ -43,3 +43,13 @@ resources:
         - /c
         # Registry changes do not refresh DSC's inherited environment.
         - 'set MISE_INSTALLS_DIR=C:\.tools\mise&& mise install'
+  - name: Configure GitHub CLI credential helper
+    type: Microsoft.DSC.Transitional/RunCommandOnSet
+    dependsOn:
+      - "[resourceId('Microsoft.DSC.Transitional/RunCommandOnSet','Run mise install')]"
+    properties:
+      executable: cmd.exe
+      arguments:
+        - /d
+        - /c
+        - 'set MISE_INSTALLS_DIR=C:\.tools\mise&& mise exec -- gh auth setup-git --hostname github.com --force'

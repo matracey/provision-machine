@@ -380,3 +380,102 @@ resources:
     id: "schollz.croc"
     source: winget
     acceptAgreements: true
+- name: Install CADCraft
+  type: Microsoft.WinGet/Package
+  metadata:
+    description: Install CADCraft
+    module: "Microsoft.WinGet"
+  properties:
+    id: "ArtCraft.CadCraft"
+    source: winget
+    acceptAgreements: true
+- name: Install DesignCraft
+  type: Microsoft.WinGet/Package
+  metadata:
+    description: Install DesignCraft
+    module: "Microsoft.WinGet"
+  properties:
+    id: "ArtCraft.DesignCraft"
+    source: winget
+    acceptAgreements: true
+- name: Install EffectCraft
+  type: Microsoft.WinGet/Package
+  metadata:
+    description: Install EffectCraft
+    module: "Microsoft.WinGet"
+  properties:
+    id: "ArtCraft.EffectCraft"
+    source: winget
+    acceptAgreements: true
+- name: Install FilmCraft
+  type: Microsoft.WinGet/Package
+  metadata:
+    description: Install FilmCraft
+    module: "Microsoft.WinGet"
+  properties:
+    id: "ArtCraft.FilmCraft"
+    source: winget
+    acceptAgreements: true
+- name: Install LightCraft
+  type: Microsoft.WinGet/Package
+  metadata:
+    description: Install LightCraft
+    module: "Microsoft.WinGet"
+  properties:
+    id: "ArtCraft.LightCraft"
+    source: winget
+    acceptAgreements: true
+- name: Install SoundCraft
+  type: Microsoft.WinGet/Package
+  metadata:
+    description: Install SoundCraft
+    module: "Microsoft.WinGet"
+  properties:
+    id: "ArtCraft.SoundCraft"
+    source: winget
+    acceptAgreements: true
+- name: Install VectorCraft
+  type: Microsoft.WinGet/Package
+  metadata:
+    description: Install VectorCraft
+    module: "Microsoft.WinGet"
+  properties:
+    id: "ArtCraft.VectorCraft"
+    source: winget
+    acceptAgreements: true
+- name: Install gsudo
+  type: Microsoft.WinGet/Package
+  metadata:
+    description: Install gsudo
+    module: "Microsoft.WinGet"
+  properties:
+    id: "gerardog.gsudo"
+    source: winget
+    acceptAgreements: true
+- name: Install GitHub CLI
+  type: Microsoft.WinGet/Package
+  metadata:
+    description: Install GitHub CLI
+    module: "Microsoft.WinGet"
+  properties:
+    id: "GitHub.cli"
+    source: winget
+    acceptAgreements: true
+- name: Install GitHub Copilot CLI
+  type: Microsoft.WinGet/Package
+  metadata:
+    description: Install GitHub Copilot CLI
+    module: "Microsoft.WinGet"
+  properties:
+    id: "GitHub.Copilot"
+    source: winget
+    acceptAgreements: true
+- name: Install Coreutils for Windows
+  type: Microsoft.WinGet/Package
+  metadata:
+    description: Install Coreutils for Windows
+    module: "Microsoft.WinGet"
+  properties:
+    id: "Microsoft.Coreutils"
+    source: winget
+    acceptAgreements: true

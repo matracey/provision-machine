@@ -1,0 +1,41 @@
+# yaml-language-server: $schema=https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+# External user configuration repositories remain their own sources of truth.
+$schema: https://aka.ms/dsc/schemas/v3/bundled/config/document.json
+resources:
+  - name: Install dotagents
+    type: Microsoft.DSC.Transitional/PowerShellScript
+    requireVersion: "=0.2.0"
+    properties:
+      input:
+        repository: https://github.com/matracey/dotagents.git
+        branch: main
+        directory: .agents
+        pythonIndex: https://packagefeedproxy.microsoft.io/pypi/simple/
+      testScript: |
+        param($inputData)
+        . (Join-Path $env:PROVISION_MACHINE_ROOT 'scripts\ExternalRepository.ps1')
+        $context = $env:PROVISION_MACHINE_CONTEXT
+        if ($context -notin @('work', 'personal')) { throw 'Provisioning context is unavailable.' }
+        $target = Join-Path $env:USERPROFILE $inputData.directory
+        if (-not (Test-GitCheckout -Target $target -Repository $inputData.repository `
+            -Ref "refs/heads/$($inputData.branch)")) { return $false }
+        $marker = Join-Path $env:LOCALAPPDATA 'provision-machine\external-profiles\dotagents-context.txt'
+        return (Test-Path -LiteralPath $marker) -and
+          ((Get-Content -LiteralPath $marker -Raw).Trim() -eq $context)
+      setScript: |
+        param($inputData)
+        $ErrorActionPreference = 'Stop'
+        . (Join-Path $env:PROVISION_MACHINE_ROOT 'scripts\ExternalRepository.ps1')
+        $context = $env:PROVISION_MACHINE_CONTEXT
+        if ($context -notin @('work', 'personal')) { throw 'Provisioning context is unavailable.' }
+        $target = Join-Path $env:USERPROFILE $inputData.directory
+        Sync-GitCheckout -Target $target -Repository $inputData.repository -Branch $inputData.branch
+        $env:UV_DEFAULT_INDEX = $inputData.pythonIndex
+        $env:UV_PYTHON = Join-Path (& mise where python@3.14) 'python.exe'
+        $env:UV_NO_MANAGED_PYTHON = '1'
+        & mise exec --cd $target uv@latest python@3.14 node@lts bun@latest -- `
+          uv run --python $env:UV_PYTHON --script (Join-Path $target 'install.py') --profile $context
+        if ($LASTEXITCODE -ne 0) { throw "dotagents installation failed with exit code $LASTEXITCODE." }
+        $marker = Join-Path $env:LOCALAPPDATA 'provision-machine\external-profiles\dotagents-context.txt'
+        New-Item -ItemType Directory -Path (Split-Path $marker) -Force | Out-Null
+        Set-Content -LiteralPath $marker -Value $context

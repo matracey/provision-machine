@@ -132,11 +132,13 @@ Describe 'Structured Gist delivery' {
         Mock Invoke-RestMethod { [pscustomobject]@{ files = [pscustomobject]@{
             'winget__work.winget' = @{ raw_url = 'https://example.test/work' }
             'winget__modules__example.dsc.yaml' = @{ raw_url = 'https://example.test/module' }
+            'winget__scripts__ExternalRepository.ps1' = @{ raw_url = 'https://example.test/helper' }
         } } }
         Mock Invoke-WebRequest { Set-Content -LiteralPath $OutFile -Value 'resources: []' }
         Save-DscBundle -Directory (Join-Path $TestDrive 'bundle') -GistId fixture
         Test-Path (Join-Path $TestDrive 'bundle\winget\work.winget') | Should -BeTrue
         Test-Path (Join-Path $TestDrive 'bundle\winget\modules\example.dsc.yaml') | Should -BeTrue
+        Test-Path (Join-Path $TestDrive 'bundle\winget\scripts\ExternalRepository.ps1') | Should -BeTrue
     }
     It 'rejects paths escaping the download directory' {
         Mock Invoke-RestMethod { [pscustomobject]@{ files = [pscustomobject]@{

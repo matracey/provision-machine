@@ -7,6 +7,7 @@ on:
       - "**/*.omp.json"
       - "winget/**/*.winget"
       - "winget/**/*.dsc.yaml"
+      - "winget/scripts/**/*.ps1"
       - "**/taskbarlayout.*.xml"
       - "**/windowsterminal.*.json"
       - "provisioning/**"
@@ -134,7 +135,7 @@ jobs:
             fi
             echo "Adding $name"
             cp "$f" "/tmp/gist/$name"
-          done < <(find "$GITHUB_WORKSPACE" -type f \( -name '*.omp.json' -o -name '*.winget' -o -name '*.dsc.yaml' -o -name 'windowsterminal.*.json' -o -name 'taskbarlayout.*.xml' \) ! -name '*.new.winget' -print0)
+          done < <(find "$GITHUB_WORKSPACE" -type f \( -name '*.omp.json' -o -name '*.winget' -o -name '*.dsc.yaml' -o -path "$GITHUB_WORKSPACE/winget/scripts/*.ps1" -o -name 'windowsterminal.*.json' -o -name 'taskbarlayout.*.xml' \) ! -name '*.new.winget' -print0)
 
           # Commit and push if there are changes
           git add -A

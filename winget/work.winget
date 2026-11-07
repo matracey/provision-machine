@@ -88,6 +88,10 @@ resources:
     type: Microsoft.DSC/Include
     properties:
       configurationFile: ./modules/mise-work.dsc.yaml
+  - name: Include external profiles
+    type: Microsoft.DSC/Include
+    properties:
+      configurationFile: ./modules/external-profiles.dsc.yaml
   - name: Include fonts
     type: Microsoft.DSC/Include
     properties:
